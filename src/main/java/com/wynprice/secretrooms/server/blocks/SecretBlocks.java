@@ -1,0 +1,23 @@
+package com.wynprice.secretrooms.server.blocks;
+
+import com.wynprice.secretrooms.SecretRooms6;
+import com.wynprice.secretrooms.server.utils.InjectedUtils;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ObjectHolder;
+
+@ObjectHolder(SecretRooms6.MODID)
+@Mod.EventBusSubscriber(modid = SecretRooms6.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class SecretBlocks {
+    public static final Block GHOST_BLOCK = InjectedUtils.injected();
+
+    @SubscribeEvent
+    public static void onBlockRegistry(RegistryEvent.Register<Block> event) {
+        event.getRegistry().registerAll(
+                new SecretBaseBlock(Block.Properties.create(Material.ROCK)).setRegistryName("ghost_block")
+        );
+    }
+}
