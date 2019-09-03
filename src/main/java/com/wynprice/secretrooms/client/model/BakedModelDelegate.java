@@ -42,14 +42,15 @@ public class BakedModelDelegate implements IBakedModel {
             IModelData removedModelData = new RemovedModelData(extraData).removeProperty(SecretModelData.SRM_MIRRORSTATE).removeProperty(SecretModelData.SRM_RENDER);
             BlockState mirrorState = extraData.getData(SecretModelData.SRM_MIRRORSTATE);
             if(mirrorState != null) {
+                IBakedModel model = MC.getBlockRendererDispatcher().getBlockModelShapes().getModel(mirrorState);
                 if(extraData.hasProperty(SecretModelData.SRM_RENDER)) {
                     SecretQuadProvider data = extraData.getData(SecretModelData.SRM_RENDER);
                     if(data != null) {
-                        return data.render(mirrorState, rand, removedModelData);
+                        return data.render(mirrorState, model, side, rand, removedModelData);
                     }
                 }
 
-                return MC.getBlockRendererDispatcher().getBlockModelShapes().getModel(mirrorState).getQuads(mirrorState, side, rand, removedModelData);
+                return SecretQuadProvider.INSTANCE.render(state, model, side, rand, removedModelData);
             }
         }
         return IBakedModel.super.getQuads(state, side, rand, extraData);

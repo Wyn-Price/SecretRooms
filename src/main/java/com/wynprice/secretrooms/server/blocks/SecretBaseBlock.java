@@ -3,14 +3,26 @@ package com.wynprice.secretrooms.server.blocks;
 import com.wynprice.secretrooms.client.model.providers.SecretQuadProvider;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.DiggingParticle;
+import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.particles.BlockParticleData;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.*;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -19,15 +31,8 @@ public class SecretBaseBlock extends Block {
 
     public static final BooleanProperty SOLID = BooleanProperty.create("solid");
 
-    private final SecretQuadProvider provider;
-
     public SecretBaseBlock(Properties properties) {
-        this(properties, null);
-    }
-
-    public SecretBaseBlock(Properties properties, SecretQuadProvider provider) {
         super(properties.variableOpacity());
-        this.provider = provider;
         this.setDefaultState(this.getStateContainer().getBaseState().with(SOLID, false));
     }
 
@@ -221,7 +226,8 @@ public class SecretBaseBlock extends Block {
 
     @Nullable
     public SecretQuadProvider getProvider(IBlockReader world, BlockPos pos, BlockState state) {
-        return this.provider;
+        return SecretQuadProvider.INSTANCE;
+    }
 
     public static <T, W extends IBlockReader> T getValue(W reader, BlockPos pos, StateFunction<T, W> function, T defaultValue) {
         return getMirrorState(reader, pos).map(mirror -> function.getValue(mirror, reader, pos)).orElse(defaultValue);
