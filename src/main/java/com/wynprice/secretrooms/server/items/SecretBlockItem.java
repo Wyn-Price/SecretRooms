@@ -25,6 +25,12 @@ public class SecretBlockItem extends BlockItem {
         }
         TileEntity placedOnTileEntity = context.getWorld().getTileEntity(offFace);
 
+        if(placedOnTileEntity instanceof SecretTileEntity) {
+            SecretData data = ((SecretTileEntity) placedOnTileEntity).getData();
+            placedOnState = data.getBlockState();
+            placedOnTileEntity = data.getTileEntityCache();
+        }
+
         if(super.placeBlock(context, state.with(SecretBaseBlock.SOLID, placedOnState.isSolid()))) {
             this.setData(context.getWorld().getTileEntity(context.getPos()), placedOnState, placedOnTileEntity);
             context.getWorld().getChunkProvider().getLightManager().checkBlock(context.getPos());
