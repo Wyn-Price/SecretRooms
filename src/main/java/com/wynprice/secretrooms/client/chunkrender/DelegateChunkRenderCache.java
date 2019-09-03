@@ -3,6 +3,7 @@ package com.wynprice.secretrooms.client.chunkrender;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.renderer.chunk.ChunkRenderCache;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.tileentity.TileEntity;
@@ -34,7 +35,6 @@ public class DelegateChunkRenderCache extends ChunkRenderCache {
                 return ((SecretTileEntity) te).getData().getBlockState();
             }
         }
-
         return state;
     }
 
@@ -42,7 +42,7 @@ public class DelegateChunkRenderCache extends ChunkRenderCache {
     @Override
     public TileEntity getTileEntity(BlockPos pos, Chunk.CreateEntityType type) {
         TileEntity te = this.cache.getTileEntity(pos, type);
-        if(te instanceof SecretTileEntity && this.getBlockState(pos).getBlock() instanceof SecretBaseBlock) {
+        if(te instanceof SecretTileEntity && this.cache.getBlockState(pos).getBlock() instanceof SecretBaseBlock) {
             return ((SecretTileEntity) te).getData().getTileEntityCache();
         }
         return te;
