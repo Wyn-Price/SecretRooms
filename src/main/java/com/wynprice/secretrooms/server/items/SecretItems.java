@@ -15,7 +15,9 @@ public class SecretItems {
     @SubscribeEvent
     public static void onRegisterItems(RegistryEvent.Register<Item> event) {
         event.getRegistry().registerAll(
-                new SecretBlockItem(SecretBlocks.GHOST_BLOCK, new Item.Properties()).setRegistryName("ghost_block")
+                new SecretBlockItem(SecretBlocks.GHOST_BLOCK, new Item.Properties()).setRegistryName("ghost_block"),
+                new SecretBlockItem(SecretBlocks.SECRET_STAIRS, new Item.Properties()).setRegistryName("secret_stairs")
+
         );
     }
 }
