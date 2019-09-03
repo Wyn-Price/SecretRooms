@@ -17,7 +17,7 @@ public class SecretBlocks {
     @SubscribeEvent
     public static void onBlockRegistry(RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(
-                new SecretBaseBlock(Block.Properties.create(Material.ROCK)).setRegistryName("ghost_block")
+                new GhostBlock(Block.Properties.create(Material.ROCK)).setRegistryName("ghost_block")
         );
     }
 }
