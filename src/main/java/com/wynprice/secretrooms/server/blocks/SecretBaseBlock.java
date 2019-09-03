@@ -148,29 +148,59 @@ public class SecretBaseBlock extends Block {
     }
 
     @Override
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return getValue(worldIn, pos, (mirror, reader, pos1) -> mirror.getShape(reader, pos1, context), super.getShape(state, worldIn, pos, context));
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return getValue(worldIn, pos, (mirror, reader, pos1) -> mirror.getShape(reader, pos1, context), super.getCollisionShape(state, worldIn, pos, context));
+    }
+
+    @Override
+    public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
+        return getValue(worldIn, pos, BlockState::getRenderShape, super.getRenderShape(state, worldIn, pos));
+    }
+
+    @Override
+    public VoxelShape getRaytraceShape(BlockState state, IBlockReader world, BlockPos pos) {
+        return getValue(world, pos, BlockState::getRaytraceShape, super.getRaytraceShape(state, world, pos));
+    }
+
+    @Nullable
+    @Override
+    public RayTraceResult getRayTraceResult(BlockState state, World world, BlockPos pos, Vec3d start, Vec3d end, RayTraceResult original) {
+        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getBlock().getRayTraceResult(mirror, world, pos, start, end, original), super.getRayTraceResult(state, world, pos, start, end, original));
+    }
+
+    @Override
+    public float getBlockHardness(BlockState state, IBlockReader world, BlockPos pos) {
+        return getValue(world, pos, BlockState::getBlockHardness, super.getBlockHardness(state, world, pos));
+    }
+
+    @Override
     public int getLightValue(BlockState state, IEnviromentBlockReader world, BlockPos pos) {
-        return getMirrorState(world, pos).map(mirror -> mirror.getLightValue(world, pos)).orElse(super.getLightValue(state, world, pos));
+        return getValue(world, pos, BlockState::getLightValue, super.getLightValue(state, world, pos));
     }
 
     @Override
     public int getOpacity(BlockState state, IBlockReader world, BlockPos pos) {
-        return getMirrorState(world, pos).map(mirror -> mirror.getOpacity(world, pos)).orElse(super.getOpacity(state, world, pos));
+        return getValue(world, pos, BlockState::getOpacity, super.getOpacity(state, world, pos));
     }
 
     @Override
     public float func_220080_a(BlockState state, IBlockReader world, BlockPos pos) {
-        return getMirrorState(world, pos).map(mirror -> mirror.func_215703_d(world, pos)).orElse(super.func_220080_a(state, world, pos));
+        return getValue(world, pos, BlockState::func_215703_d, super.func_220080_a(state, world, pos));
     }
 
     @Override
     public boolean propagatesSkylightDown(BlockState state, IBlockReader world, BlockPos pos) {
-        return getMirrorState(world, pos).map(mirror -> mirror.propagatesSkylightDown(world, pos)).orElse(super.propagatesSkylightDown(state, world, pos));
+        return getValue(world, pos, BlockState::propagatesSkylightDown, super.propagatesSkylightDown(state, world, pos));
     }
 
     @Override
     public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
-        return getMirrorState(world, pos).map(mirror -> mirror.isNormalCube(world, pos)).orElse(super.isNormalCube(state, world, pos));
-
+        return getValue(world, pos, BlockState::isNormalCube, super.isNormalCube(state, world, pos));
     }
 
     @Override
@@ -192,6 +222,9 @@ public class SecretBaseBlock extends Block {
     @Nullable
     public SecretQuadProvider getProvider(IBlockReader world, BlockPos pos, BlockState state) {
         return this.provider;
+
+    public static <T, W extends IBlockReader> T getValue(W reader, BlockPos pos, StateFunction<T, W> function, T defaultValue) {
+        return getMirrorState(reader, pos).map(mirror -> function.getValue(mirror, reader, pos)).orElse(defaultValue);
     }
 
     public static Optional<BlockState> getMirrorState(IBlockReader world, BlockPos pos) {
@@ -199,4 +232,9 @@ public class SecretBaseBlock extends Block {
         return world.getBlockState(pos).getBlock() instanceof SecretBaseBlock && te instanceof SecretTileEntity ?
                 Optional.of(((SecretTileEntity) te).getData().getBlockState()) : Optional.empty();
     }
+
+    private interface StateFunction<T, W extends IBlockReader> {
+        T getValue(BlockState mirror, W reader, BlockPos pos);
+    }
+
 }
