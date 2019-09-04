@@ -17,7 +17,8 @@ public class SecretItems {
         event.getRegistry().registerAll(
                 new SecretBlockItem(SecretBlocks.GHOST_BLOCK, new Item.Properties()).setRegistryName("ghost_block"),
                 new SecretBlockItem(SecretBlocks.SECRET_STAIRS, new Item.Properties()).setRegistryName("secret_stairs"),
-                new SecretBlockItem(SecretBlocks.SECRET_LEVER, new Item.Properties()).setRegistryName("secret_lever")
+                new SecretBlockItem(SecretBlocks.SECRET_LEVER, new Item.Properties()).setRegistryName("secret_lever"),
+                new SecretBlockItem(SecretBlocks.SECRET_REDSTONE, new Item.Properties()).setRegistryName("secret_redstone")
 
         );
     }
