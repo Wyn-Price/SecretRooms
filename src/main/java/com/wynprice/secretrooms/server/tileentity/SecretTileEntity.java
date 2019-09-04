@@ -6,6 +6,7 @@ import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.data.SecretData;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.data.IModelData;
@@ -13,7 +14,7 @@ import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nonnull;
 
-public class SecretTileEntity extends TileEntity {
+public class SecretTileEntity extends TileEntity implements ITickableTileEntity {
 
     private final SecretData data = new SecretData(this);
 
@@ -47,5 +48,13 @@ public class SecretTileEntity extends TileEntity {
 
     public SecretData getData() {
         return this.data;
+    }
+
+    @Override
+    public void tick() {
+        TileEntity te = this.getData().getTileEntityCache();
+        if(te instanceof ITickableTileEntity) {
+            ((ITickableTileEntity) te).tick();
+        }
     }
 }

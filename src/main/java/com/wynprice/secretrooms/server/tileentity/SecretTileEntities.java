@@ -18,7 +18,9 @@ public class SecretTileEntities {
     @SubscribeEvent
     public static void onTileEntityRegister(RegistryEvent.Register<TileEntityType<?>> event) {
         event.getRegistry().registerAll(
-                TileEntityType.Builder.create(SecretTileEntity::new, SecretBlocks.GHOST_BLOCK).build(null).setRegistryName("secret_tile_entity")
+                TileEntityType.Builder.create(SecretTileEntity::new,
+                        SecretBlocks.GHOST_BLOCK, SecretBlocks.SECRET_STAIRS, SecretBlocks.SECRET_LEVER, SecretBlocks.SECRET_REDSTONE)
+                        .build(null).setRegistryName("secret_tile_entity")
         );
     }
 

@@ -15,13 +15,15 @@ public class SecretBlocks {
     public static final Block GHOST_BLOCK = InjectedUtils.injected();
     public static final Block SECRET_STAIRS = InjectedUtils.injected();
     public static final Block SECRET_LEVER = InjectedUtils.injected();
+    public static final Block SECRET_REDSTONE = InjectedUtils.injected();
 
     @SubscribeEvent
     public static void onBlockRegistry(RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(
                 new GhostBlock(Block.Properties.create(Material.ROCK)).setRegistryName("ghost_block"),
                 new SecretStairs(Block.Properties.create(Material.ROCK)).setRegistryName("secret_stairs"),
-                new SecretLever(Block.Properties.create(Material.ROCK)).setRegistryName("secret_lever")
+                new SecretLever(Block.Properties.create(Material.ROCK)).setRegistryName("secret_lever"),
+                new SecretRedstone(Block.Properties.create(Material.ROCK)).setRegistryName("secret_redstone")
         );
     }
 }
