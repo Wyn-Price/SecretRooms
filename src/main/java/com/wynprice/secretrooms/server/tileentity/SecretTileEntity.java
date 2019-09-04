@@ -14,7 +14,7 @@ import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nonnull;
 
-public class SecretTileEntity extends TileEntity implements ITickableTileEntity {
+public class SecretTileEntity extends TileEntity {
 
     private final SecretData data = new SecretData(this);
 
@@ -48,13 +48,5 @@ public class SecretTileEntity extends TileEntity implements ITickableTileEntity 
 
     public SecretData getData() {
         return this.data;
-    }
-
-    @Override
-    public void tick() {
-        TileEntity te = this.getData().getTileEntityCache();
-        if(te instanceof ITickableTileEntity) {
-            ((ITickableTileEntity) te).tick();
-        }
     }
 }
