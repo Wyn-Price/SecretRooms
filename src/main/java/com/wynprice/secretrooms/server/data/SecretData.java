@@ -5,6 +5,7 @@ import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
@@ -21,6 +22,19 @@ public class SecretData {
 
     public SecretData(TileEntity base) {
         this.base = base;
+    }
+
+    public CompoundNBT writeNBT(CompoundNBT tag) {
+        tag.put("blockstate", NBTUtil.writeBlockState(this.getBlockState()));
+        if(this.tileEntityNBT != null) {
+            tag.put("tile_data", this.tileEntityNBT);
+        }
+        return tag;
+    }
+
+    public void readNBT(CompoundNBT tag) {
+        this.setBlockState(NBTUtil.readBlockState(tag.getCompound("blockstate")));
+        this.setTileEntityNBT(tag.getCompound("tile_data"));
     }
 
     public TileEntity getTileEntityCache() {
@@ -50,11 +64,10 @@ public class SecretData {
     }
 
     public void setTileEntityNBT(@Nullable CompoundNBT tileEntityNBT) {
-        this.tileEntityNBT = tileEntityNBT;
-    }
-
-    @Nullable
-    public CompoundNBT getTileEntityNBT() {
-        return this.tileEntityNBT;
+        if(tileEntityNBT != null && tileEntityNBT.isEmpty()) {
+            this.tileEntityNBT = null;
+        } else {
+            this.tileEntityNBT = tileEntityNBT;
+        }
     }
 }

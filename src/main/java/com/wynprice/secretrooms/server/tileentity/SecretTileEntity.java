@@ -6,6 +6,7 @@ import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.data.SecretData;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.model.ModelDataManager;
@@ -20,6 +21,18 @@ public class SecretTileEntity extends TileEntity {
 
     public SecretTileEntity() {
         super(SecretTileEntities.SECRET_TILE_ENTITY);
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT compound) {
+        this.data.writeNBT(compound.getCompound("secret_data"));
+        return super.write(compound);
+    }
+
+    @Override
+    public void read(CompoundNBT compound) {
+        super.read(compound);
+        this.data.readNBT(compound.getCompound("secret_data"));
     }
 
     @Override
