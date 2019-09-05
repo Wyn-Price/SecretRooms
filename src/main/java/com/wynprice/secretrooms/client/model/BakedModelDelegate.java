@@ -3,6 +3,7 @@ package com.wynprice.secretrooms.client.model;
 import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.client.SecretModelData;
 import com.wynprice.secretrooms.client.model.providers.SecretQuadProvider;
+import com.wynprice.secretrooms.server.utils.ModelDataUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.*;
@@ -19,7 +20,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Supplier;
 
@@ -36,25 +39,17 @@ public class BakedModelDelegate implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        if(extraData.hasProperty(SecretModelData.SRM_DO_RENDER)) {
-            Supplier<Boolean> shouldRender = extraData.getData(SecretModelData.SRM_DO_RENDER);
-            if(shouldRender != null && shouldRender.get() && extraData.hasProperty(SecretModelData.SRM_BASESTATE)) {
-                IModelData removedModelData = new RemovedModelData(extraData).removeProperty(SecretModelData.SRM_BASESTATE).removeProperty(SecretModelData.SRM_RENDER);
-                BlockState baseState = extraData.getData(SecretModelData.SRM_BASESTATE);
-                if(baseState != null) {
-                    IBakedModel model = MC.getBlockRendererDispatcher().getBlockModelShapes().getModel(state);
-                    if(extraData.hasProperty(SecretModelData.SRM_RENDER)) {
-                        SecretQuadProvider data = extraData.getData(SecretModelData.SRM_RENDER);
-                        if(data != null) {
-                            return data.render(state, baseState, model, side, rand, removedModelData);
-                        }
-                    }
+        return (ModelDataUtils.getData(extraData, SecretModelData.SRM_DO_RENDER).map(Supplier::get).orElse(false) ?
+                ModelDataUtils.getData(extraData, SecretModelData.SRM_BASESTATE).map(baseState -> {
+                    IModelData removedModelData = new RemovedModelData(extraData).removeProperty(SecretModelData.SRM_BASESTATE).removeProperty(SecretModelData.SRM_RENDER);
+                    IBakedModel stateModel = MC.getBlockRendererDispatcher().getBlockModelShapes().getModel(state);
+                    return ModelDataUtils.getData(extraData, SecretModelData.SRM_RENDER)
+                            .orElse(SecretQuadProvider.INSTANCE)
+                            .render(state, baseState, stateModel, side, rand, removedModelData);
+                })
+                : Optional.<List<BakedQuad>>empty())
+        .orElse(IBakedModel.super.getQuads(state, side, rand, extraData));
 
-                    return SecretQuadProvider.INSTANCE.render(state, baseState, model, side, rand, removedModelData);
-                }
-            }
-        }
-        return IBakedModel.super.getQuads(state, side, rand, extraData);
     }
 
     public boolean isGui3d() {

@@ -1,6 +1,7 @@
 package com.wynprice.secretrooms.client.model;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -25,6 +26,10 @@ public class OneWayGlassBlockstateDelegate extends BlockState {
     //Used in block#shouldSideBeRendered.
     @Override
     public VoxelShape func_215702_a(IBlockReader worldIn, BlockPos pos, Direction directionIn) {
+        BlockState blockState = worldIn.getBlockState(pos.offset(directionIn));
+        if(blockState.getBlock() == Blocks.GLASS) {
+            return VoxelShapes.fullCube();
+        }
         return VoxelShapes.empty();
     }
 

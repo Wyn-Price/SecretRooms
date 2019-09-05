@@ -1,8 +1,10 @@
 package com.wynprice.secretrooms.client.model.providers;
 
 import com.wynprice.secretrooms.SecretRooms6;
+import com.wynprice.secretrooms.client.SecretModelData;
 import com.wynprice.secretrooms.client.model.OneWayGlassBlockstateDelegate;
 import com.wynprice.secretrooms.server.utils.CachedObject;
+import com.wynprice.secretrooms.server.utils.ModelDataUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SixWayBlock;
@@ -37,7 +39,6 @@ public class OneWayGlassProvider extends SecretQuadProvider {
 
     @Override
     public List<BakedQuad> render(@Nullable BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        List<BakedQuad> quads = new ArrayList<>();
 
         //Make sure that the mirror state isn't the delegate state, otherwise the model will still be missing.
         BlockState delegateImpl = mirrorState instanceof OneWayGlassBlockstateDelegate ? ((OneWayGlassBlockstateDelegate) mirrorState).getDelegate() : mirrorState;
@@ -53,18 +54,17 @@ public class OneWayGlassProvider extends SecretQuadProvider {
         CachedObject<List<BakedQuad>> superQuads = new CachedObject<>(() -> super.render(delegate, baseState, MC.getBlockRendererDispatcher().getModelForState(delegate), side, rand, extraData));
 
         if(delegate.isSolid()) {
-            quads.addAll(this.getQuadsSolid(baseState, delegate, superQuads, side, rand, extraData));
+            return this.getQuadsSolid(baseState, delegate, superQuads, side, rand, extraData);
         } else {
-            quads.addAll(this.getQuadsNotSolid(baseState, delegate, superQuads, extraData));
+            return this.getQuadsNotSolid(baseState, delegate, superQuads, extraData);
         }
-        return quads;
     }
 
     private List<BakedQuad> getQuadsSolid(BlockState baseState, BlockState delegate, CachedObject<List<BakedQuad>> superQuads, Direction side, Random rand, IModelData extraData) {
         BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
 
         if(side != null && baseState.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(side))) {
-            if (layer == BlockRenderLayer.CUTOUT) {
+            if (layer == BlockRenderLayer.CUTOUT && ModelDataUtils.getData(extraData, SecretModelData.SRM_ONE_WAY_GLASS_SIDES).map(directions -> directions.contains(side)).orElse(true)) {
                 return glassModel.getQuads(Blocks.GLASS.getDefaultState(), side, rand, extraData);
             }
         } else {

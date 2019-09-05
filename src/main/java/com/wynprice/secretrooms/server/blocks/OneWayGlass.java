@@ -14,7 +14,6 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
@@ -25,12 +24,17 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class OneWayGlass extends SecretBaseBlock {
 
@@ -128,19 +132,15 @@ public class OneWayGlass extends SecretBaseBlock {
         return super.getStateForPlacement(context).with(SixWayBlock.FACING_TO_PROPERTY_MAP.get(context.getNearestLookingDirection().getOpposite()), false);
     }
 
-    @Override
-    public VoxelShape getRaytraceShape(BlockState state, IBlockReader world, BlockPos pos) {
-        return super.getRaytraceShape(state, world, pos);
-    }
+
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return super.getShape(state, worldIn, pos, context);
-    }
-
-    @Override
-    public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return super.getCollisionShape(state, worldIn, pos, context);
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        TileEntity tileEntity = worldIn.getTileEntity(currentPos);
+        if(tileEntity != null && tileEntity.getWorld().isRemote) {
+            tileEntity.requestModelDataUpdate();
+        }
+        return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     @Override
@@ -163,15 +163,10 @@ public class OneWayGlass extends SecretBaseBlock {
 
     @Override
     public void applyExtraModelData(IBlockReader world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
-        builder.withInitial(SecretModelData.SRM_ONE_WAY_GLASS_CULLED_SIDES,
-                Util.make(Maps.newHashMap(), map -> {
-                    for (Direction value : Direction.values()) {
-                        BlockState offState = world.getBlockState(pos.offset(value));
-                        if(offState.isSolid()) {
-                            map.put(value, offState);
-                        }
-                    }
-                })
-        );
+        List<Direction> collect = Arrays.stream(Direction.values())
+                .filter(direction -> world.getBlockState(pos.offset(direction)).getBlock() != Blocks.GLASS)
+                .collect(Collectors.toList());
+        builder.withInitial(SecretModelData.SRM_ONE_WAY_GLASS_SIDES, collect);
+
     }
 }
