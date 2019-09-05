@@ -46,7 +46,6 @@ public class SecretData {
             } else {
                 SecretRooms6.LOGGER.warn("Unable to create Block Entity with id {}. Disregarding it from future references ", this.tileEntityNBT.getString("id"));
                 this.tileEntityNBT = null;
-                return null;
             }
         }
         return this.tileEntityCache;
@@ -57,7 +56,7 @@ public class SecretData {
     }
 
     public BlockState getBlockState() {
-        if(this.blockState.getBlock() instanceof SecretBaseBlock) {
+        if(this.blockState.getBlock() instanceof SecretBaseBlock || this.blockState.isAir(this.base.getWorld(), this.base.getPos())) {
             this.blockState = Blocks.STONE.getDefaultState();
         }
         return this.blockState;

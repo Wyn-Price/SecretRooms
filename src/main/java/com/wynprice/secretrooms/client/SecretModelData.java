@@ -2,9 +2,19 @@ package com.wynprice.secretrooms.client;
 
 import com.wynprice.secretrooms.client.model.providers.SecretQuadProvider;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.Direction;
 import net.minecraftforge.client.model.data.ModelProperty;
 
+import java.util.Map;
+import java.util.function.Supplier;
+
 public class SecretModelData {
-    public static final ModelProperty<BlockState> SRM_MIRRORSTATE = new ModelProperty<>();
+    //Thi is used until https://github.com/MinecraftForge/MinecraftForge/pull/6115 is merged.
+    public static final ModelProperty<Supplier<Boolean>> SRM_DO_RENDER = new ModelProperty<>();
+
+    public static final ModelProperty<BlockState> SRM_BASESTATE = new ModelProperty<>();
     public static final ModelProperty<SecretQuadProvider> SRM_RENDER = new ModelProperty<>();
+
+    public static final ModelProperty<Map<Direction, BlockState>> SRM_ONE_WAY_GLASS_CULLED_SIDES = new ModelProperty<>();
+
 }

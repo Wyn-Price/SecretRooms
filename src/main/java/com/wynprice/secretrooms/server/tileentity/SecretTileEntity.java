@@ -1,15 +1,11 @@
 package com.wynprice.secretrooms.server.tileentity;
 
 import com.wynprice.secretrooms.client.SecretModelData;
-import com.wynprice.secretrooms.client.world.SetTileEntityWorld;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.data.SecretData;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 
@@ -38,7 +34,7 @@ public class SecretTileEntity extends TileEntity {
     @Override
     public void remove() {
         super.remove();
-        if(this.world.isRemote) {
+        if (this.world.isRemote) {
             this.requestModelDataUpdate();
             ModelDataManager.getModelData(new SetTileEntityWorld((ClientWorld) this.world, this.pos, this), this.pos); //Update it with the
         }
@@ -61,10 +57,12 @@ public class SecretTileEntity extends TileEntity {
             return super.getModelData();
         }
         ModelDataMap.Builder builder = new ModelDataMap.Builder()
-                .withInitial(SecretModelData.SRM_MIRRORSTATE, this.data.getBlockState());
-        BlockState state = this.world.getBlockState(pos);
+                .withInitial(SecretModelData.SRM_BASESTATE, this.getWorld().getBlockState(this.getPos()))
+                .withInitial(SecretModelData.SRM_DO_RENDER, () -> !this.removed);
+        BlockState state = this.world.getBlockState(this.pos);
         if(state.getBlock() instanceof SecretBaseBlock) {
             builder.withInitial(SecretModelData.SRM_RENDER, ((SecretBaseBlock) state.getBlock()).getProvider(this.world, this.pos, state));
+            ((SecretBaseBlock) state.getBlock()).applyExtraModelData(this.world, this.pos, state, builder);
         }
         return builder.build();
     }

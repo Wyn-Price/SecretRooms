@@ -19,7 +19,7 @@ public class SecretQuadProvider {
     public static final SecretQuadProvider INSTANCE = new SecretQuadProvider();
 
     @OnlyIn(Dist.CLIENT)
-    public List<BakedQuad> render(@Nullable BlockState mirrorState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+    public List<BakedQuad> render(@Nullable BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         return new ArrayList<>(model.getQuads(mirrorState, side, rand, extraData));
     }
 }

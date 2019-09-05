@@ -16,8 +16,8 @@ public class GhostBlockProvider extends SecretQuadProvider {
 
     public static final GhostBlockProvider GHOST_BLOCK = new GhostBlockProvider();
     @Override
-    public List<BakedQuad> render(@Nullable BlockState mirrorState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        List<BakedQuad> quadList = super.render(mirrorState, model, side, rand, extraData);
+    public List<BakedQuad> render(@Nullable BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+        List<BakedQuad> quadList = super.render(mirrorState, baseState, model, side, rand, extraData);
 
         //As ghost blocks don't have a collision, we need to render the quads on both sides
         if(side == null) {

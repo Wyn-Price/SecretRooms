@@ -32,7 +32,7 @@ public class DelegateChunkRenderCache extends ChunkRenderCache {
         if(state.getBlock() instanceof SecretBaseBlock) {
             TileEntity te = this.cache.getTileEntity(pos);
             if(te instanceof SecretTileEntity) {
-                return ((SecretTileEntity) te).getData().getBlockState();
+                return ((SecretBaseBlock) state.getBlock()).delegateState(((SecretTileEntity) te).getData().getBlockState());
             }
         }
         return state;

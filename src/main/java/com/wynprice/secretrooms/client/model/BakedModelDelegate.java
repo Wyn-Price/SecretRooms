@@ -5,10 +5,7 @@ import com.wynprice.secretrooms.client.SecretModelData;
 import com.wynprice.secretrooms.client.model.providers.SecretQuadProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -24,6 +21,7 @@ import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = SecretRooms6.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class BakedModelDelegate implements IBakedModel {
@@ -38,19 +36,22 @@ public class BakedModelDelegate implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        if(extraData.hasProperty(SecretModelData.SRM_MIRRORSTATE)) {
-            IModelData removedModelData = new RemovedModelData(extraData).removeProperty(SecretModelData.SRM_MIRRORSTATE).removeProperty(SecretModelData.SRM_RENDER);
-            BlockState mirrorState = extraData.getData(SecretModelData.SRM_MIRRORSTATE);
-            if(mirrorState != null) {
-                IBakedModel model = MC.getBlockRendererDispatcher().getBlockModelShapes().getModel(mirrorState);
-                if(extraData.hasProperty(SecretModelData.SRM_RENDER)) {
-                    SecretQuadProvider data = extraData.getData(SecretModelData.SRM_RENDER);
-                    if(data != null) {
-                        return data.render(mirrorState, model, side, rand, removedModelData);
+        if(extraData.hasProperty(SecretModelData.SRM_DO_RENDER)) {
+            Supplier<Boolean> shouldRender = extraData.getData(SecretModelData.SRM_DO_RENDER);
+            if(shouldRender != null && shouldRender.get() && extraData.hasProperty(SecretModelData.SRM_BASESTATE)) {
+                IModelData removedModelData = new RemovedModelData(extraData).removeProperty(SecretModelData.SRM_BASESTATE).removeProperty(SecretModelData.SRM_RENDER);
+                BlockState baseState = extraData.getData(SecretModelData.SRM_BASESTATE);
+                if(baseState != null) {
+                    IBakedModel model = MC.getBlockRendererDispatcher().getBlockModelShapes().getModel(state);
+                    if(extraData.hasProperty(SecretModelData.SRM_RENDER)) {
+                        SecretQuadProvider data = extraData.getData(SecretModelData.SRM_RENDER);
+                        if(data != null) {
+                            return data.render(state, baseState, model, side, rand, removedModelData);
+                        }
                     }
-                }
 
-                return SecretQuadProvider.INSTANCE.render(state, model, side, rand, removedModelData);
+                    return SecretQuadProvider.INSTANCE.render(state, baseState, model, side, rand, removedModelData);
+                }
             }
         }
         return IBakedModel.super.getQuads(state, side, rand, extraData);

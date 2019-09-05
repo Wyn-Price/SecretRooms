@@ -27,6 +27,8 @@ import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -247,6 +249,13 @@ public class SecretBaseBlock extends Block {
     @Nullable
     public SecretQuadProvider getProvider(IBlockReader world, BlockPos pos, BlockState state) {
         return SecretQuadProvider.INSTANCE;
+    }
+
+    public void applyExtraModelData(IBlockReader world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
+    }
+
+    public BlockState delegateState(BlockState mirroredState) {
+        return mirroredState;
     }
 
     public static <T, W extends IBlockReader> T getValue(W reader, BlockPos pos, StateFunction<T, W> function, T defaultValue) {

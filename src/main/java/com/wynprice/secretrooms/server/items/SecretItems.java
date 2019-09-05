@@ -2,6 +2,7 @@ package com.wynprice.secretrooms.server.items;
 
 import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.server.blocks.SecretBlocks;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,8 +19,8 @@ public class SecretItems {
                 new SecretBlockItem(SecretBlocks.GHOST_BLOCK, new Item.Properties()).setRegistryName("ghost_block"),
                 new SecretBlockItem(SecretBlocks.SECRET_STAIRS, new Item.Properties()).setRegistryName("secret_stairs"),
                 new SecretBlockItem(SecretBlocks.SECRET_LEVER, new Item.Properties()).setRegistryName("secret_lever"),
-                new SecretBlockItem(SecretBlocks.SECRET_REDSTONE, new Item.Properties()).setRegistryName("secret_redstone")
-
+                new SecretBlockItem(SecretBlocks.SECRET_REDSTONE, new Item.Properties()).setRegistryName("secret_redstone"),
+                new SecretBlockItem(SecretBlocks.ONE_WAY_GLASS, new Item.Properties()).setRegistryName("one_way_glass")
         );
     }
 }
