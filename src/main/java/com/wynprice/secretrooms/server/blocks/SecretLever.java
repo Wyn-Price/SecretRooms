@@ -20,6 +20,7 @@ public class SecretLever extends SecretBaseBlock {
     private static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public SecretLever(Properties properties) {
         super(properties);
+        this.setDefaultState(this.getDefaultState().with(POWERED, false));
     }
 
     @Override

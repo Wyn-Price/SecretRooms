@@ -64,9 +64,7 @@ public class OneWayGlass extends SecretBaseBlock {
     public OneWayGlass(Properties properties) {
         super(properties);
 
-        this.setDefaultState(this.getStateContainer().getBaseState()
-                .with(SOLID, false)
-
+        this.setDefaultState(this.getDefaultState()
                 .with(NORTH, true)
                 .with(EAST, true)
                 .with(SOUTH, true)
