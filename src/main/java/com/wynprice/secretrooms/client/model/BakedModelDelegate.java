@@ -111,5 +111,7 @@ public class BakedModelDelegate implements IBakedModel {
     @SubscribeEvent
     public static void onModelBaked(ModelBakeEvent event) {
         event.getModelRegistry().replaceAll((location, model) -> new BakedModelDelegate(model));
+
+        event.getModelManager().defaultModel = event.getModelManager().getModel(ModelBakery.MODEL_MISSING);
     }
 }
