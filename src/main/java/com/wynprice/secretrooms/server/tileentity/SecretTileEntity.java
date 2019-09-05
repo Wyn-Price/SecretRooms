@@ -32,15 +32,6 @@ public class SecretTileEntity extends TileEntity {
     }
 
     @Override
-    public void remove() {
-        super.remove();
-        if (this.world.isRemote) {
-            this.requestModelDataUpdate();
-            ModelDataManager.getModelData(new SetTileEntityWorld((ClientWorld) this.world, this.pos, this), this.pos); //Update it with the
-        }
-    }
-
-    @Override
     public CompoundNBT getUpdateTag() {
         return this.write(new CompoundNBT());
     }
