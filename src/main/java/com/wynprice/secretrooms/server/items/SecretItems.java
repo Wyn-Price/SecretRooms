@@ -4,6 +4,7 @@ import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.server.blocks.SecretBlocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.WallOrFloorItem;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -20,7 +21,10 @@ public class SecretItems {
                 new SecretBlockItem(SecretBlocks.SECRET_STAIRS, new Item.Properties()).setRegistryName("secret_stairs"),
                 new SecretBlockItem(SecretBlocks.SECRET_LEVER, new Item.Properties()).setRegistryName("secret_lever"),
                 new SecretBlockItem(SecretBlocks.SECRET_REDSTONE, new Item.Properties()).setRegistryName("secret_redstone"),
-                new SecretBlockItem(SecretBlocks.ONE_WAY_GLASS, new Item.Properties()).setRegistryName("one_way_glass")
+                new SecretBlockItem(SecretBlocks.ONE_WAY_GLASS, new Item.Properties()).setRegistryName("one_way_glass"),
+                new SecretBlockItem(SecretBlocks.SECRET_WOODEN_BUTTON, new Item.Properties()).setRegistryName("secret_wooden_button"),
+                new SecretBlockItem(SecretBlocks.SECRET_STONE_BUTTON, new Item.Properties()).setRegistryName("secret_stone_button"),
+                new WallOrFloorItem(SecretBlocks.TORCH_LEVER, SecretBlocks.WALL_TORCH_LEVER, new Item.Properties()).setRegistryName("torch_lever")
         );
     }
 }
