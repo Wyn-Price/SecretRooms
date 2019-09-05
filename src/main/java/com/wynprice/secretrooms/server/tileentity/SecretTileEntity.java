@@ -25,7 +25,7 @@ public class SecretTileEntity extends TileEntity {
 
     @Override
     public CompoundNBT write(CompoundNBT compound) {
-        this.data.writeNBT(compound.getCompound("secret_data"));
+        compound.put("secret_data", this.data.writeNBT(new CompoundNBT()));
         return super.write(compound);
     }
 
@@ -42,6 +42,16 @@ public class SecretTileEntity extends TileEntity {
             this.requestModelDataUpdate();
             ModelDataManager.getModelData(new SetTileEntityWorld((ClientWorld) this.world, this.pos, this), this.pos); //Update it with the
         }
+    }
+
+    @Override
+    public CompoundNBT getUpdateTag() {
+        return this.write(new CompoundNBT());
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundNBT tag) {
+        this.read(tag);
     }
 
     @Nonnull
