@@ -65,7 +65,7 @@ public class SecretBaseBlock extends Block {
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return getValue(worldIn, pos, (mirror, reader, pos1) -> mirror.getShape(reader, pos1, context), super.getCollisionShape(state, worldIn, pos, context));
+        return getValue(worldIn, pos, (mirror, reader, pos1) -> mirror.getCollisionShape(reader, pos1, context), super.getCollisionShape(state, worldIn, pos, context));
     }
 
     @Override
