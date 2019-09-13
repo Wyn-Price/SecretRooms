@@ -6,7 +6,6 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class SecretModelData {
@@ -17,5 +16,7 @@ public class SecretModelData {
     public static final ModelProperty<SecretQuadProvider> SRM_RENDER = new ModelProperty<>();
 
     public static final ModelProperty<List<Direction>> SRM_ONE_WAY_GLASS_SIDES = new ModelProperty<>();
+
+    public static final ModelProperty<BlockState> MODEL_MAP_STATE = new ModelProperty<>();
 
 }

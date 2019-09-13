@@ -52,7 +52,7 @@ public class SecretLever extends SecretBaseBlock {
 
     @Override
     public boolean shouldCheckWeakPower(BlockState state, IWorldReader world, BlockPos pos, Direction side) {
-        return false;
+        return !state.get(POWERED);
     }
 
     @Override

@@ -69,4 +69,9 @@ public class SecretData {
             this.tileEntityNBT = tileEntityNBT;
         }
     }
+
+    @Nullable
+    public CompoundNBT getTileEntityNBT() {
+        return tileEntityNBT;
+    }
 }

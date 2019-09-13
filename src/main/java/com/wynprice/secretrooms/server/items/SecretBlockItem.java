@@ -9,6 +9,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class SecretBlockItem extends BlockItem {
     public SecretBlockItem(Block blockIn, Properties builder) {
@@ -31,15 +32,27 @@ public class SecretBlockItem extends BlockItem {
             placedOnTileEntity = data.getTileEntityCache();
         }
 
-        if(super.placeBlock(context, state.with(SecretBaseBlock.SOLID, placedOnState.isSolid()))) {
-            this.setData(context.getWorld().getTileEntity(context.getPos()), placedOnState, placedOnTileEntity);
-            context.getWorld().getChunkProvider().getLightManager().checkBlock(context.getPos());
+//        if(super.placeBlock(context, state.with(SecretBaseBlock.SOLID, placedOnState.isSolid()))) {
+//            this.setData(context.getWorld(), context.getPos(), placedOnState, placedOnTileEntity);
+//            context.getWorld().getChunkProvider().getLightManager().checkBlock(context.getPos());
+//            return true;
+//        }
+//        return false;
+
+        return this.doSetBlock(context.getWorld(), context.getPos(), state, placedOnState, placedOnTileEntity);
+    }
+
+    protected boolean doSetBlock(World world, BlockPos pos, BlockState state, BlockState placedOnState, TileEntity placedOnTileEntity) {
+        if(world.setBlockState(pos, state.with(SecretBaseBlock.SOLID, placedOnState.isSolid()), 11)) {
+            this.setData(world, pos, placedOnState, placedOnTileEntity);
+            world.getChunkProvider().getLightManager().checkBlock(pos);
             return true;
         }
         return false;
     }
 
-    private void setData(TileEntity te, BlockState placedOnState, TileEntity placedOnTileEntity) {
+    protected void setData(World world, BlockPos pos, BlockState placedOnState, TileEntity placedOnTileEntity) {
+        TileEntity te = world.getTileEntity(pos);
         if(te instanceof SecretTileEntity) {
             SecretData data = ((SecretTileEntity) te).getData();
             data.setBlockState(placedOnState);

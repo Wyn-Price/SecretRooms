@@ -32,6 +32,7 @@ import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class SecretBaseBlock extends Block {
 
@@ -44,74 +45,74 @@ public class SecretBaseBlock extends Block {
 
     @Override
     public SoundType getSoundType(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
-        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getSoundType(reader, pos1, entity), super.getSoundType(state, world, pos, entity));
+        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getSoundType(reader, pos1, entity), () -> super.getSoundType(state, world, pos, entity));
     }
 
     @Override
     public int getPackedLightmapCoords(BlockState state, IEnviromentBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::getPackedLightmapCoords, super.getPackedLightmapCoords(state, world, pos));
+        return getValue(world, pos, BlockState::getPackedLightmapCoords, () -> super.getPackedLightmapCoords(state, world, pos));
     }
 
     @Nullable
     @Override
     public PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos, @Nullable MobEntity entity) {
-        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getAiPathNodeType(reader, pos1, entity), super.getAiPathNodeType(state, world, pos, entity));
+        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getAiPathNodeType(reader, pos1, entity), () -> super.getAiPathNodeType(state, world, pos, entity));
     }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return getValue(worldIn, pos, (mirror, reader, pos1) -> mirror.getShape(reader, pos1, context), super.getShape(state, worldIn, pos, context));
+        return getValue(worldIn, pos, (mirror, reader, pos1) -> mirror.getShape(reader, pos1, context), () -> super.getShape(state, worldIn, pos, context));
     }
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return getValue(worldIn, pos, (mirror, reader, pos1) -> mirror.getCollisionShape(reader, pos1, context), super.getCollisionShape(state, worldIn, pos, context));
+        return getValue(worldIn, pos, (mirror, reader, pos1) -> mirror.getCollisionShape(reader, pos1, context), () -> super.getCollisionShape(state, worldIn, pos, context));
     }
 
     @Override
     public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
-        return getValue(worldIn, pos, BlockState::getRenderShape, super.getRenderShape(state, worldIn, pos));
+        return getValue(worldIn, pos, BlockState::getRenderShape, () -> super.getRenderShape(state, worldIn, pos));
     }
 
     @Override
     public VoxelShape getRaytraceShape(BlockState state, IBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::getRaytraceShape, super.getRaytraceShape(state, world, pos));
+        return getValue(world, pos, BlockState::getRaytraceShape, () -> super.getRaytraceShape(state, world, pos));
     }
 
     @Nullable
     @Override
     public RayTraceResult getRayTraceResult(BlockState state, World world, BlockPos pos, Vec3d start, Vec3d end, RayTraceResult original) {
-        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getBlock().getRayTraceResult(mirror, world, pos, start, end, original), super.getRayTraceResult(state, world, pos, start, end, original));
+        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getBlock().getRayTraceResult(mirror, world, pos, start, end, original), () -> super.getRayTraceResult(state, world, pos, start, end, original));
     }
 
     @Override
     public float getBlockHardness(BlockState state, IBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::getBlockHardness, super.getBlockHardness(state, world, pos));
+        return getValue(world, pos, BlockState::getBlockHardness, () -> super.getBlockHardness(state, world, pos));
     }
 
     @Override
     public int getLightValue(BlockState state, IEnviromentBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::getLightValue, super.getLightValue(state, world, pos));
+        return getValue(world, pos, BlockState::getLightValue, () -> super.getLightValue(state, world, pos));
     }
 
     @Override
     public int getOpacity(BlockState state, IBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::getOpacity, super.getOpacity(state, world, pos));
+        return getValue(world, pos, BlockState::getOpacity, () -> super.getOpacity(state, world, pos));
     }
 
     @Override
     public float func_220080_a(BlockState state, IBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::func_215703_d, super.func_220080_a(state, world, pos));
+        return getValue(world, pos, BlockState::func_215703_d, () -> super.func_220080_a(state, world, pos));
     }
 
     @Override
     public boolean propagatesSkylightDown(BlockState state, IBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::propagatesSkylightDown, super.propagatesSkylightDown(state, world, pos));
+        return getValue(world, pos, BlockState::propagatesSkylightDown, () -> super.propagatesSkylightDown(state, world, pos));
     }
 
     @Override
     public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::isNormalCube, super.isNormalCube(state, world, pos));
+        return getValue(world, pos, BlockState::isNormalCube, () -> super.isNormalCube(state, world, pos));
     }
 
     @Override
@@ -139,9 +140,8 @@ public class SecretBaseBlock extends Block {
 
                         vec3d.x * -4.0D, 1.5D, vec3d.z * -4.0D);
             }
-            return true;
         }
-        return false;
+        return true;
     }
     //ParticleManager#addBlockHitEffects
 
@@ -178,10 +178,9 @@ public class SecretBaseBlock extends Block {
                                     .multipleParticleScaleBy(0.6F)
                     );
                 }
-                return true;
             }
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -220,9 +219,8 @@ public class SecretBaseBlock extends Block {
                     }
                 }
             });
-            return true;
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -230,9 +228,8 @@ public class SecretBaseBlock extends Block {
         Optional<BlockState> mirrorState = getMirrorState(worldserver, pos);
         if(mirrorState.isPresent()) {
             worldserver.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, mirrorState.get()), entity.posX, entity.posY, entity.posZ, numberOfParticles, 0.0D, 0.0D, 0.0D, 0.15F);
-            return true;
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -258,14 +255,21 @@ public class SecretBaseBlock extends Block {
         return mirroredState;
     }
 
-    public static <T, W extends IBlockReader> T getValue(W reader, BlockPos pos, StateFunction<T, W> function, T defaultValue) {
-        return getMirrorState(reader, pos).map(mirror -> function.getValue(mirror, reader, pos)).orElse(defaultValue);
+    public static <T, W extends IBlockReader> T getValue(W reader, BlockPos pos, StateFunction<T, W> function, Supplier<T> defaultValue) {
+        return getMirrorState(reader, pos).map(mirror -> function.getValue(mirror, reader, pos)).orElseGet(defaultValue);
     }
 
     public static Optional<BlockState> getMirrorState(IBlockReader world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
         return world.getBlockState(pos).getBlock() instanceof SecretBaseBlock && te instanceof SecretTileEntity ?
                 Optional.of(((SecretTileEntity) te).getData().getBlockState()) : Optional.empty();
+    }
+
+    public static void requestModelRefresh(IBlockReader world, BlockPos pos) {
+        TileEntity tileEntity = world.getTileEntity(pos);
+        if(tileEntity != null) {
+            tileEntity.requestModelDataUpdate();
+        }
     }
 
     private interface StateFunction<T, W extends IBlockReader> {
