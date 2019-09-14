@@ -1,6 +1,5 @@
 package com.wynprice.secretrooms.client.model;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -19,11 +18,12 @@ public class MappedModelBlockstateDelegate extends BlockState {
     //Used in block#shouldSideBeRendered.
     @Override
     public VoxelShape func_215702_a(IBlockReader worldIn, BlockPos pos, Direction directionIn) {
-        BlockState blockState = worldIn.getBlockState(pos.offset(directionIn));
-        if(Block.hasSolidSide(blockState, worldIn, pos, directionIn.getOpposite())) {
-            return VoxelShapes.empty();
-        }
-        return VoxelShapes.fullCube();
+        return VoxelShapes.empty();
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
     }
 
     public BlockState getDelegate() {

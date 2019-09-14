@@ -28,6 +28,8 @@ public class SecretBlocks {
     public static final Block SECRET_DOOR = InjectedUtils.injected();
     public static final Block SECRET_IRON_DOOR = InjectedUtils.injected();
 
+    //TODO: add a non full stairs block, that uses the mapped model blockstates
+
     @SubscribeEvent
     public static void onBlockRegistry(RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(
