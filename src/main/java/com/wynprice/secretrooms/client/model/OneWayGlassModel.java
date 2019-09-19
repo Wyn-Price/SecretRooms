@@ -18,7 +18,6 @@ import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -44,12 +43,14 @@ public class OneWayGlassModel extends SecretBlockModel {
 
     @Override
     public List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+        BlockRenderLayer startLayer = MinecraftForgeClient.getRenderLayer();
+
         CachedObject<List<BakedQuad>> superQuads = new CachedObject<>(() -> super.render(mirrorState, baseState, MC.getBlockRendererDispatcher().getModelForState(mirrorState), side, rand, extraData));
-        if(mirrorState.isSolid()) {
-            return this.getQuadsSolid(baseState, mirrorState, superQuads, side, rand, extraData);
-        } else {
-            return this.getQuadsNotSolid(baseState, mirrorState, superQuads, extraData);
-        }
+        List<BakedQuad> out = mirrorState.isSolid() ? this.getQuadsSolid(baseState, mirrorState, superQuads, side, rand, extraData) : this.getQuadsNotSolid(baseState, mirrorState, superQuads, extraData);
+
+        ForgeHooksClient.setRenderLayer(startLayer);
+
+        return out;
     }
 
     private List<BakedQuad> getQuadsSolid(BlockState baseState, BlockState delegate, CachedObject<List<BakedQuad>> superQuads, Direction side, Random rand, IModelData extraData) {
@@ -60,6 +61,7 @@ public class OneWayGlassModel extends SecretBlockModel {
                 return glassModel.getQuads(Blocks.GLASS.getDefaultState(), side, rand, extraData);
             }
         } else {
+            ForgeHooksClient.setRenderLayer(layer);
             if(delegate.canRenderInLayer(layer)) {
                 //Render the delegate model
                 return superQuads.get();

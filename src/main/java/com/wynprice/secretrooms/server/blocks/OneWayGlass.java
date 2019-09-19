@@ -2,6 +2,7 @@ package com.wynprice.secretrooms.server.blocks;
 
 import com.google.common.collect.Maps;
 import com.wynprice.secretrooms.client.SecretModelData;
+import com.wynprice.secretrooms.server.blocks.states.OneWayGlassState;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -11,7 +12,6 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
@@ -55,17 +55,29 @@ public class OneWayGlass extends SecretBaseBlock {
         map.put(Direction.DOWN, DOWN_SHAPE);
     });
 
+    //This is needed as BlockState#func_215702_a doesn't allow for directional sensitive calls on the Block
+    private final StateContainer<Block, BlockState> oneWayGlassStateContainer;
+
     public OneWayGlass(Properties properties) {
         super(properties);
 
-        this.setDefaultState(this.getDefaultState()
-                .with(NORTH, true)
-                .with(EAST, true)
-                .with(SOUTH, true)
-                .with(WEST, true)
-                .with(UP, true)
-                .with(DOWN, true)
+        StateContainer.Builder<Block, BlockState> builder = new StateContainer.Builder<>(this);
+        this.fillStateContainer(builder);
+        this.oneWayGlassStateContainer = builder.create(OneWayGlassState::new);
+
+        this.setDefaultState(this.oneWayGlassStateContainer.getBaseState()
+            .with(NORTH, true)
+            .with(EAST, true)
+            .with(SOUTH, true)
+            .with(WEST, true)
+            .with(UP, true)
+            .with(DOWN, true)
         );
+    }
+
+    @Override
+    public StateContainer<Block, BlockState> getStateContainer() {
+        return this.oneWayGlassStateContainer != null ? this.oneWayGlassStateContainer : super.getStateContainer();
     }
 
     @Override
