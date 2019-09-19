@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class OneWayGlass extends SecretBaseBlock {
@@ -143,10 +144,11 @@ public class OneWayGlass extends SecretBaseBlock {
 
     @Override
     public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
-        return state.get(SOLID) ?
+        Optional<BlockState> mirror = getMirrorState(worldIn, pos);
+        return state.get(SOLID) && mirror.isPresent() ?
                 VoxelShapes.or(VoxelShapes.empty(),
                         Arrays.stream(Direction.values())
-                                .filter(value -> !state.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(value)))
+                                .filter(value -> !state.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(value)) && Block.hasSolidSide(mirror.get(), worldIn, pos.offset(value), value.getOpposite()))
                                 .map(FACING_TO_SHAPE_MAP::get)
                                 .toArray(VoxelShape[]::new)
                 )

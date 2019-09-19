@@ -13,11 +13,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IEnviromentBlockReader;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.common.MinecraftForge;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -39,7 +36,7 @@ public class SecretBlockModel implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand, IModelData extraData) {
-        return ModelDataUtils.getData(extraData, SecretModelData.SRM_BASESTATE)
+        return ModelDataUtils.getData(extraData, SecretModelData.SRM_BLOCKSTATE)
             .filter(this::canRenderInLater)
             .map(mirrorState -> this.render(mirrorState, state, DISPATCHER.get().getModelForState(mirrorState), side, rand, extraData))
             .orElse(new ArrayList<>());
@@ -55,7 +52,7 @@ public class SecretBlockModel implements IBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleTexture(IModelData data) {
-        return ModelDataUtils.getData(data, SecretModelData.SRM_BASESTATE).map(DISPATCHER.get()::getModelForState).orElse(this.model).getParticleTexture(data);
+        return ModelDataUtils.getData(data, SecretModelData.SRM_BLOCKSTATE).map(DISPATCHER.get()::getModelForState).orElse(this.model).getParticleTexture(data);
     }
 
     @Override

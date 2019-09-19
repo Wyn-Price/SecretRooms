@@ -2,6 +2,7 @@ package com.wynprice.secretrooms.client.model;
 
 import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.client.SecretModelData;
+import com.wynprice.secretrooms.client.model.quads.NoTintBakedQuadRetextured;
 import com.wynprice.secretrooms.server.utils.CachedObject;
 import com.wynprice.secretrooms.server.utils.ModelDataUtils;
 import net.minecraft.block.BlockState;
@@ -45,29 +46,12 @@ public class OneWayGlassModel extends SecretBlockModel {
     public List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         BlockRenderLayer startLayer = MinecraftForgeClient.getRenderLayer();
 
-        CachedObject<List<BakedQuad>> superQuads = new CachedObject<>(() -> super.render(mirrorState, baseState, MC.getBlockRendererDispatcher().getModelForState(mirrorState), side, rand, extraData));
-        List<BakedQuad> out = mirrorState.isSolid() ? this.getQuadsSolid(baseState, mirrorState, superQuads, side, rand, extraData) : this.getQuadsNotSolid(baseState, mirrorState, superQuads, extraData);
+        CachedObject<List<BakedQuad>> superQuads = new CachedObject<>(() -> getQuadsForSide(mirrorState, baseState, side, rand, extraData));
+        List<BakedQuad> out = this.getQuadsNotSolid(baseState, mirrorState, superQuads, extraData);
 
         ForgeHooksClient.setRenderLayer(startLayer);
 
         return out;
-    }
-
-    private List<BakedQuad> getQuadsSolid(BlockState baseState, BlockState delegate, CachedObject<List<BakedQuad>> superQuads, Direction side, Random rand, IModelData extraData) {
-        BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
-
-        if(side != null && baseState.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(side))) {
-            if (layer == BlockRenderLayer.CUTOUT && ModelDataUtils.getData(extraData, SecretModelData.SRM_ONE_WAY_GLASS_SIDES).map(directions -> directions.contains(side)).orElse(true)) {
-                return glassModel.getQuads(Blocks.GLASS.getDefaultState(), side, rand, extraData);
-            }
-        } else {
-            ForgeHooksClient.setRenderLayer(layer);
-            if(delegate.canRenderInLayer(layer)) {
-                //Render the delegate model
-                return superQuads.get();
-            }
-        }
-        return new ArrayList<>();
     }
 
     private List<BakedQuad> getQuadsNotSolid(BlockState baseState, BlockState delegate, CachedObject<List<BakedQuad>> superQuads, IModelData extraData) {
@@ -89,17 +73,15 @@ public class OneWayGlassModel extends SecretBlockModel {
         for (BlockRenderLayer value : BlockRenderLayer.values()) {
             ForgeHooksClient.setRenderLayer(value);
 
-            if(delegate.canRenderInLayer(value)) {
+            if(delegate.canRenderInLayer(value) || MinecraftForgeClient.getRenderLayer() == BlockRenderLayer.CUTOUT) {
                 for (BakedQuad bakedQuad : superQuads.get()) {
                     //If the quads facing direction is set to glass in the one way glass state
                     if (baseState.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(bakedQuad.getFace())) && MinecraftForgeClient.getRenderLayer() == BlockRenderLayer.CUTOUT) {
-                        quads.add(new BakedQuadRetextured(bakedQuad, glassModel.getParticleTexture(extraData)));
+                        quads.add(new NoTintBakedQuadRetextured(bakedQuad, glassModel.getParticleTexture(extraData)));
                     }
                 }
             }
-
         }
-
         return quads;
     }
 
@@ -113,6 +95,15 @@ public class OneWayGlassModel extends SecretBlockModel {
                 }
             }
         }
+        return quads;
+    }
+
+    private List<BakedQuad> getQuadsForSide(BlockState mirrorState, BlockState baseState, Direction side, Random rand, IModelData extraData) {
+        List<BakedQuad> quads = super.render(mirrorState, baseState, MC.getBlockRendererDispatcher().getModelForState(mirrorState), side, rand, extraData);
+        super.render(mirrorState, baseState, MC.getBlockRendererDispatcher().getModelForState(mirrorState), null, rand, extraData).stream()
+            .filter(q -> q.getFace() == side)
+            .forEach(quads::add);
+
         return quads;
     }
 

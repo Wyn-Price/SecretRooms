@@ -48,7 +48,7 @@ public class SecretTileEntity extends TileEntity {
             return super.getModelData();
         }
         ModelDataMap.Builder builder = new ModelDataMap.Builder()
-                .withInitial(SecretModelData.SRM_BASESTATE, this.data.getBlockState());
+                .withInitial(SecretModelData.SRM_BLOCKSTATE, this.data.getBlockState());
         BlockState state = this.world.getBlockState(this.pos);
         if(state.getBlock() instanceof SecretBaseBlock) {
             ((SecretBaseBlock) state.getBlock()).applyExtraModelData(this.world, this.pos, state, builder);

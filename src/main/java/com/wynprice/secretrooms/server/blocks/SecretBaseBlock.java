@@ -1,5 +1,6 @@
 package com.wynprice.secretrooms.server.blocks;
 
+import com.wynprice.secretrooms.server.data.SecretData;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -255,9 +256,16 @@ public class SecretBaseBlock extends Block {
     }
 
     public static Optional<BlockState> getMirrorState(IBlockReader world, BlockPos pos) {
+        return getMirrorData(world, pos).map(SecretData::getBlockState);
+    }
+
+    public static Optional<SecretData> getMirrorData(IBlockReader world, BlockPos pos) {
+        if(world == null || pos == null) {
+            return Optional.empty();
+        }
         TileEntity te = world.getTileEntity(pos);
         return world.getBlockState(pos).getBlock() instanceof SecretBaseBlock && te instanceof SecretTileEntity ?
-                Optional.of(((SecretTileEntity) te).getData().getBlockState()) : Optional.empty();
+            Optional.of(((SecretTileEntity) te).getData()) : Optional.empty();
     }
 
     public static void requestModelRefresh(IBlockReader world, BlockPos pos) {
