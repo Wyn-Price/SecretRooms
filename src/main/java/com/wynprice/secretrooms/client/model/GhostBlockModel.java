@@ -1,4 +1,4 @@
-package com.wynprice.secretrooms.client.model.providers;
+package com.wynprice.secretrooms.client.model;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -12,9 +12,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class GhostBlockProvider extends SecretQuadProvider {
+public class GhostBlockModel extends SecretBlockModel {
+    public GhostBlockModel(IBakedModel model) {
+        super(model);
+    }
 
-    public static final GhostBlockProvider GHOST_BLOCK = new GhostBlockProvider();
     @Override
     public List<BakedQuad> render(@Nullable BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         List<BakedQuad> quadList = super.render(mirrorState, baseState, model, side, rand, extraData);
@@ -70,4 +72,3 @@ public class GhostBlockProvider extends SecretQuadProvider {
         }
     }
 }
-

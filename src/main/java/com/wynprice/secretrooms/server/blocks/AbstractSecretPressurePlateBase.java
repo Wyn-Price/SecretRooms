@@ -1,7 +1,5 @@
 package com.wynprice.secretrooms.server.blocks;
 
-import com.wynprice.secretrooms.client.model.providers.GhostBlockProvider;
-import com.wynprice.secretrooms.client.model.providers.SecretQuadProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Direction;
@@ -13,7 +11,6 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
 import java.util.Random;
 
 public abstract class AbstractSecretPressurePlateBase extends SecretBaseBlock {
@@ -24,12 +21,6 @@ public abstract class AbstractSecretPressurePlateBase extends SecretBaseBlock {
     @Override
     public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         return super.getCollisionShape(state, worldIn, pos, context);
-    }
-
-    @Nullable
-    @Override
-    public SecretQuadProvider getProvider(IBlockReader world, BlockPos pos, BlockState state) {
-        return GhostBlockProvider.GHOST_BLOCK;
     }
 
     @Override

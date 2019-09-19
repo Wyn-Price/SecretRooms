@@ -1,6 +1,5 @@
 package com.wynprice.secretrooms.server.blocks;
 
-import com.wynprice.secretrooms.client.model.providers.SecretQuadProvider;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -18,6 +17,7 @@ import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -27,7 +27,6 @@ import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nullable;
@@ -113,6 +112,11 @@ public class SecretBaseBlock extends Block {
     @Override
     public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
         return getValue(world, pos, BlockState::isNormalCube, () -> super.isNormalCube(state, world, pos));
+    }
+
+    @Override
+    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
+        return true;
     }
 
     @Override
@@ -243,16 +247,7 @@ public class SecretBaseBlock extends Block {
         return new SecretTileEntity();
     }
 
-    @Nullable
-    public SecretQuadProvider getProvider(IBlockReader world, BlockPos pos, BlockState state) {
-        return SecretQuadProvider.INSTANCE;
-    }
-
     public void applyExtraModelData(IBlockReader world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
-    }
-
-    public BlockState delegateState(BlockState mirroredState) {
-        return mirroredState;
     }
 
     public static <T, W extends IBlockReader> T getValue(W reader, BlockPos pos, StateFunction<T, W> function, Supplier<T> defaultValue) {

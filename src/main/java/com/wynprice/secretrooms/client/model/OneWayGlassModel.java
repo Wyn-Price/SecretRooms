@@ -1,8 +1,7 @@
-package com.wynprice.secretrooms.client.model.providers;
+package com.wynprice.secretrooms.client.model;
 
 import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.client.SecretModelData;
-import com.wynprice.secretrooms.client.model.OneWayGlassBlockstateDelegate;
 import com.wynprice.secretrooms.server.utils.CachedObject;
 import com.wynprice.secretrooms.server.utils.ModelDataUtils;
 import net.minecraft.block.BlockState;
@@ -19,6 +18,7 @@ import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -29,34 +29,26 @@ import java.util.List;
 import java.util.Random;
 
 @Mod.EventBusSubscriber(modid = SecretRooms6.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class OneWayGlassProvider extends SecretQuadProvider {
+public class OneWayGlassModel extends SecretBlockModel {
+    public OneWayGlassModel(IBakedModel model) {
+        super(model);
+    }
 
     private static final Minecraft MC = Minecraft.getInstance();
-
-    public static final OneWayGlassProvider ONE_WAY_GLASS = new OneWayGlassProvider();
-
     private static IBakedModel glassModel;
 
     @Override
-    public List<BakedQuad> render(@Nullable BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+    protected boolean canRenderInLater(BlockState state) {
+        return MinecraftForgeClient.getRenderLayer() == BlockRenderLayer.CUTOUT || super.canRenderInLater(state);
+    }
 
-        //Make sure that the mirror state isn't the delegate state, otherwise the model will still be missing.
-        BlockState delegateImpl = mirrorState instanceof OneWayGlassBlockstateDelegate ? ((OneWayGlassBlockstateDelegate) mirrorState).getDelegate() : mirrorState;
-        if(delegateImpl == null) {
-            if(mirrorState == null) {
-                delegateImpl = Blocks.STONE.getDefaultState();
-            } else {
-                delegateImpl = mirrorState;
-            }
-        }
-        BlockState delegate = delegateImpl; //Used as needs to be effectively final
-
-        CachedObject<List<BakedQuad>> superQuads = new CachedObject<>(() -> super.render(delegate, baseState, MC.getBlockRendererDispatcher().getModelForState(delegate), side, rand, extraData));
-
-        if(delegate.isSolid()) {
-            return this.getQuadsSolid(baseState, delegate, superQuads, side, rand, extraData);
+    @Override
+    public List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+        CachedObject<List<BakedQuad>> superQuads = new CachedObject<>(() -> super.render(mirrorState, baseState, MC.getBlockRendererDispatcher().getModelForState(mirrorState), side, rand, extraData));
+        if(mirrorState.isSolid()) {
+            return this.getQuadsSolid(baseState, mirrorState, superQuads, side, rand, extraData);
         } else {
-            return this.getQuadsNotSolid(baseState, delegate, superQuads, extraData);
+            return this.getQuadsNotSolid(baseState, mirrorState, superQuads, extraData);
         }
     }
 
@@ -81,6 +73,7 @@ public class OneWayGlassProvider extends SecretQuadProvider {
 
         if(MinecraftForgeClient.getRenderLayer() == BlockRenderLayer.CUTOUT) {
             quads.addAll(this.getGlassQuadsNotSolid(baseState, delegate, superQuads, extraData));
+            ForgeHooksClient.setRenderLayer(BlockRenderLayer.CUTOUT);
         }
         quads.addAll(this.getDelegateQuadsNotSolid(baseState, delegate, superQuads));
 
@@ -97,16 +90,13 @@ public class OneWayGlassProvider extends SecretQuadProvider {
             if(delegate.canRenderInLayer(value)) {
                 for (BakedQuad bakedQuad : superQuads.get()) {
                     //If the quads facing direction is set to glass in the one way glass state
-                    if (baseState.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(bakedQuad.getFace()))) {
-                        if (MinecraftForgeClient.getRenderLayer() == BlockRenderLayer.CUTOUT) {
-                            quads.add(new BakedQuadRetextured(bakedQuad, glassModel.getParticleTexture(extraData)));
-                        }
+                    if (baseState.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(bakedQuad.getFace())) && MinecraftForgeClient.getRenderLayer() == BlockRenderLayer.CUTOUT) {
+                        quads.add(new BakedQuadRetextured(bakedQuad, glassModel.getParticleTexture(extraData)));
                     }
                 }
             }
 
         }
-        ForgeHooksClient.setRenderLayer(BlockRenderLayer.CUTOUT);
 
         return quads;
     }
