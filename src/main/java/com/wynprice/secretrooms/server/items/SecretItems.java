@@ -27,7 +27,8 @@ public class SecretItems {
             new SecretBlockItem(SecretBlocks.SECRET_PRESSURE_PLATE, new Item.Properties()).setRegistryName("secret_pressure_plate"),
             new SecretBlockItem(SecretBlocks.SECRET_PLAYER_PRESSURE_PLATE, new Item.Properties()).setRegistryName("secret_player_pressure_plate"),
             new SecretDoubleBlockItem(SecretBlocks.SECRET_DOOR, new Item.Properties()).setRegistryName("secret_door"),
-            new SecretDoubleBlockItem(SecretBlocks.SECRET_IRON_DOOR, new Item.Properties()).setRegistryName("secret_iron_door")
+            new SecretDoubleBlockItem(SecretBlocks.SECRET_IRON_DOOR, new Item.Properties()).setRegistryName("secret_iron_door"),
+            new SecretBlockItem(SecretBlocks.SECRET_CHEST, new Item.Properties()).setRegistryName("secret_chest")
         );
     }
 }

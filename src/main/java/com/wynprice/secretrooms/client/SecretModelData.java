@@ -9,8 +9,6 @@ import java.util.List;
 public class SecretModelData {
     public static final ModelProperty<BlockState> SRM_BLOCKSTATE = new ModelProperty<>();
 
-    public static final ModelProperty<List<Direction>> SRM_ONE_WAY_GLASS_SIDES = new ModelProperty<>();
-
     public static final ModelProperty<BlockState> MODEL_MAP_STATE = new ModelProperty<>();
 
 }

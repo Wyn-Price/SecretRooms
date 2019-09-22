@@ -32,12 +32,12 @@ public class DelegateWorld implements IEnviromentBlockReader {
     @Nullable
     @Override
     public TileEntity getTileEntity(BlockPos pos) {
-        return SecretBaseBlock.getMirrorData(this, pos).map(SecretData::getTileEntityCache).orElseGet(() -> this.world.getTileEntity(pos));
+        return SecretBaseBlock.getMirrorData(this.world, pos).map(SecretData::getTileEntityCache).orElseGet(() -> this.world.getTileEntity(pos));
     }
 
     @Override
     public BlockState getBlockState(BlockPos pos) {
-        return SecretBaseBlock.getMirrorState(this, pos).orElseGet(() -> this.world.getBlockState(pos));
+        return SecretBaseBlock.getMirrorState(this.world, pos).orElseGet(() -> this.world.getBlockState(pos));
 
     }
 

@@ -31,7 +31,8 @@ public class SecretModelHandler {
         BlockColors colors = event.getBlockColors();
         colors.register((state, world, pos, index) -> SecretBaseBlock.getMirrorState(world, pos).map(mirror -> colors.getColor(mirror, new DelegateWorld(world), pos, index)).orElse(-1),
             GHOST_BLOCK, SECRET_STAIRS, SECRET_LEVER, SECRET_REDSTONE, ONE_WAY_GLASS, SECRET_WOODEN_BUTTON,
-            SECRET_STONE_BUTTON, SECRET_PRESSURE_PLATE, SECRET_PLAYER_PRESSURE_PLATE, SECRET_DOOR, SECRET_IRON_DOOR
+            SECRET_STONE_BUTTON, SECRET_PRESSURE_PLATE, SECRET_PLAYER_PRESSURE_PLATE, SECRET_DOOR, SECRET_IRON_DOOR,
+            SECRET_CHEST
         );
     }
 
@@ -39,7 +40,7 @@ public class SecretModelHandler {
     public static void onModelBaked(ModelBakeEvent event) {
         Map<ResourceLocation, IBakedModel> registry = event.getModelRegistry();
 
-        put(registry, SecretBlockModel::new, SECRET_STAIRS, SECRET_LEVER, SECRET_REDSTONE, SECRET_WOODEN_BUTTON, SECRET_STONE_BUTTON, SECRET_PRESSURE_PLATE, SECRET_PLAYER_PRESSURE_PLATE);
+        put(registry, SecretBlockModel::new, SECRET_STAIRS, SECRET_LEVER, SECRET_REDSTONE, SECRET_WOODEN_BUTTON, SECRET_STONE_BUTTON, SECRET_PRESSURE_PLATE, SECRET_PLAYER_PRESSURE_PLATE, SECRET_CHEST);
 
         put(registry, SecretMappedModel::new, SECRET_DOOR, SECRET_IRON_DOOR);
         put(registry, OneWayGlassModel::new, ONE_WAY_GLASS);

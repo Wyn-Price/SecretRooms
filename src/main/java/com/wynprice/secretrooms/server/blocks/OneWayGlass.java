@@ -1,11 +1,9 @@
 package com.wynprice.secretrooms.server.blocks;
 
 import com.google.common.collect.Maps;
-import com.wynprice.secretrooms.client.SecretModelData;
 import com.wynprice.secretrooms.server.blocks.states.OneWayGlassState;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.SixWayBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
@@ -22,32 +20,29 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class OneWayGlass extends SecretBaseBlock {
 
-    public static final BooleanProperty NORTH = SixWayBlock.NORTH;
-    public static final BooleanProperty EAST = SixWayBlock.EAST;
-    public static final BooleanProperty SOUTH = SixWayBlock.SOUTH;
-    public static final BooleanProperty WEST = SixWayBlock.WEST;
-    public static final BooleanProperty UP = SixWayBlock.UP;
-    public static final BooleanProperty DOWN = SixWayBlock.DOWN;
+    private static final BooleanProperty NORTH = SixWayBlock.NORTH;
+    private static final BooleanProperty EAST = SixWayBlock.EAST;
+    private static final BooleanProperty SOUTH = SixWayBlock.SOUTH;
+    private static final BooleanProperty WEST = SixWayBlock.WEST;
+    private static final BooleanProperty UP = SixWayBlock.UP;
+    private static final BooleanProperty DOWN = SixWayBlock.DOWN;
 
-    public static final VoxelShape NORTH_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 16, 2);
-    public static final VoxelShape EAST_SHAPE = Block.makeCuboidShape(14, 0, 0, 16, 16, 16);
-    public static final VoxelShape SOUTH_SHAPE = Block.makeCuboidShape(0, 0, 14, 16, 16, 16);
-    public static final VoxelShape WEST_SHAPE = Block.makeCuboidShape(0, 0, 0, 2, 16, 16);
-    public static final VoxelShape UP_SHAPE = Block.makeCuboidShape(0, 14, 0, 16, 16, 16);
-    public static final VoxelShape DOWN_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 2, 16);
+    private static final VoxelShape NORTH_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 16, 2);
+    private static final VoxelShape EAST_SHAPE = Block.makeCuboidShape(14, 0, 0, 16, 16, 16);
+    private static final VoxelShape SOUTH_SHAPE = Block.makeCuboidShape(0, 0, 14, 16, 16, 16);
+    private static final VoxelShape WEST_SHAPE = Block.makeCuboidShape(0, 0, 0, 2, 16, 16);
+    private static final VoxelShape UP_SHAPE = Block.makeCuboidShape(0, 14, 0, 16, 16, 16);
+    private static final VoxelShape DOWN_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 2, 16);
 
-    public static final Map<Direction, VoxelShape> FACING_TO_SHAPE_MAP = Util.make(Maps.newEnumMap(Direction.class), map -> {
+    private static final Map<Direction, VoxelShape> FACING_TO_SHAPE_MAP = Util.make(Maps.newEnumMap(Direction.class), map -> {
         map.put(Direction.NORTH, NORTH_SHAPE);
         map.put(Direction.EAST, EAST_SHAPE);
         map.put(Direction.SOUTH, SOUTH_SHAPE);
@@ -131,8 +126,6 @@ public class OneWayGlass extends SecretBaseBlock {
         return super.getStateForPlacement(context).with(SixWayBlock.FACING_TO_PROPERTY_MAP.get(context.getNearestLookingDirection().getOpposite()), false);
     }
 
-
-
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
         TileEntity tileEntity = worldIn.getTileEntity(currentPos);
@@ -153,15 +146,5 @@ public class OneWayGlass extends SecretBaseBlock {
                                 .toArray(VoxelShape[]::new)
                 )
                 : VoxelShapes.empty();
-    }
-
-
-    @Override
-    public void applyExtraModelData(IBlockReader world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
-        List<Direction> collect = Arrays.stream(Direction.values())
-                .filter(direction -> world.getBlockState(pos.offset(direction)).getBlock() != Blocks.GLASS)
-                .collect(Collectors.toList());
-        builder.withInitial(SecretModelData.SRM_ONE_WAY_GLASS_SIDES, collect);
-
     }
 }
