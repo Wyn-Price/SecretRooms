@@ -5,12 +5,15 @@ import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.data.SecretData;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class SecretTileEntity extends TileEntity {
 
@@ -44,6 +47,18 @@ public class SecretTileEntity extends TileEntity {
     @Override
     public void handleUpdateTag(CompoundNBT tag) {
         this.read(tag);
+    }
+
+    @Nullable
+    @Override
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(this.pos, -1, this.data.writeNBT(new CompoundNBT()));
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+        this.data.readNBT(pkt.getNbtCompound());
+        this.requestModelDataUpdate();
     }
 
     @Nonnull
