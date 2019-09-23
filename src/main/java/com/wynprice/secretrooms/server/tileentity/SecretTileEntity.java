@@ -6,6 +6,7 @@ import com.wynprice.secretrooms.server.data.SecretData;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 
@@ -14,6 +15,10 @@ import javax.annotation.Nonnull;
 public class SecretTileEntity extends TileEntity {
 
     private final SecretData data = new SecretData(this);
+
+    public SecretTileEntity(TileEntityType<?> tileEntityType) {
+        super(tileEntityType);
+    }
 
     public SecretTileEntity() {
         super(SecretTileEntities.SECRET_TILE_ENTITY);

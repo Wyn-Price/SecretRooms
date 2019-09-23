@@ -30,7 +30,8 @@ public class SecretItems {
             new SecretDoubleBlockItem(SecretBlocks.SECRET_IRON_DOOR, new Item.Properties()).setRegistryName("secret_iron_door"),
             new SecretBlockItem(SecretBlocks.SECRET_CHEST, new Item.Properties()).setRegistryName("secret_chest"),
             new SecretBlockItem(SecretBlocks.SECRET_TRAPDOOR, new Item.Properties()).setRegistryName("secret_trapdoor"),
-            new SecretBlockItem(SecretBlocks.SECRET_IRON_DOOR, new Item.Properties()).setRegistryName("secret_iron_trapdoor")
+            new SecretBlockItem(SecretBlocks.SECRET_IRON_DOOR, new Item.Properties()).setRegistryName("secret_iron_trapdoor"),
+            new SecretBlockItem(SecretBlocks.SECRET_TRAPPED_CHEST, new Item.Properties()).setRegistryName("secret_trapped_chest")
         );
     }
 }

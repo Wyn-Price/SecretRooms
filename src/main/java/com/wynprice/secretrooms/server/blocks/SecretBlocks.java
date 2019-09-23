@@ -30,6 +30,7 @@ public class SecretBlocks {
     public static final Block SECRET_CHEST = InjectedUtils.injected();
     public static final Block SECRET_TRAPDOOR = InjectedUtils.injected();
     public static final Block SECRET_IRON_TRAPDOOR = InjectedUtils.injected();
+    public static final Block SECRET_TRAPPED_CHEST = InjectedUtils.injected();
 
     //TODO: add a non full stairs block, that uses the mapped model blockstates
 
@@ -51,7 +52,8 @@ public class SecretBlocks {
             new SecretDoor(Block.Properties.create(Material.IRON)).setRegistryName("secret_iron_door"),
             new SecretChest(Block.Properties.create(Material.ROCK)).setRegistryName("secret_chest"),
             new SecretTrapdoor(Block.Properties.create(Material.WOOD)).setRegistryName("secret_trapdoor"),
-            new SecretTrapdoor(Block.Properties.create(Material.IRON)).setRegistryName("secret_iron_trapdoor")
+            new SecretTrapdoor(Block.Properties.create(Material.IRON)).setRegistryName("secret_iron_trapdoor"),
+            new SecretTrappedChest(Block.Properties.create(Material.IRON)).setRegistryName("secret_trapped_chest")
         );
     }
 }

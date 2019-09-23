@@ -1,6 +1,5 @@
 package com.wynprice.secretrooms.server.tileentity;
 
-import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
@@ -17,6 +16,11 @@ import javax.annotation.Nullable;
 
 public class SecretChestTileEntity extends SecretTileEntity implements IInventory, INamedContainerProvider {
     private final ItemStackHandler handler = new ItemStackHandler(27);
+    private int numPlayersUsing;
+
+    public SecretChestTileEntity() {
+        super(SecretTileEntities.SECRET_CHEST_ENTITY);
+    }
 
     @Override
     public void read(CompoundNBT compound) {
@@ -39,6 +43,33 @@ public class SecretChestTileEntity extends SecretTileEntity implements IInventor
     @Override
     public Container createMenu(int id, PlayerInventory inv, PlayerEntity player) {
         return ChestContainer.createGeneric9X3(id, inv, this);
+    }
+
+    @Override
+    public void openInventory(PlayerEntity player) {
+        if (!player.isSpectator()) {
+            if (this.numPlayersUsing < 0) {
+                this.numPlayersUsing = 0;
+            }
+
+            ++this.numPlayersUsing;
+            this.onOpenOrClose();
+        }
+
+    }
+
+    @Override
+    public void closeInventory(PlayerEntity player) {
+        if (!player.isSpectator()) {
+            --this.numPlayersUsing;
+            this.onOpenOrClose();
+        }
+
+    }
+
+    private void onOpenOrClose() {
+        this.world.notifyNeighborsOfStateChange(this.pos, this.getBlockState().getBlock());
+        this.world.notifyNeighborsOfStateChange(this.pos.down(), this.getBlockState().getBlock());
     }
 
     @Override
@@ -87,5 +118,9 @@ public class SecretChestTileEntity extends SecretTileEntity implements IInventor
         for (int i = 0; i < this.handler.getSlots(); i++) {
             this.handler.setStackInSlot(i, ItemStack.EMPTY);
         }
+    }
+
+    public int getNumPlayersUsing() {
+        return numPlayersUsing;
     }
 }
