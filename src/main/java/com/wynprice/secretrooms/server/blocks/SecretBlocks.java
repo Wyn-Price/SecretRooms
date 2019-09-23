@@ -28,6 +28,8 @@ public class SecretBlocks {
     public static final Block SECRET_DOOR = InjectedUtils.injected();
     public static final Block SECRET_IRON_DOOR = InjectedUtils.injected();
     public static final Block SECRET_CHEST = InjectedUtils.injected();
+    public static final Block SECRET_TRAPDOOR = InjectedUtils.injected();
+    public static final Block SECRET_IRON_TRAPDOOR = InjectedUtils.injected();
 
     //TODO: add a non full stairs block, that uses the mapped model blockstates
 
@@ -47,7 +49,9 @@ public class SecretBlocks {
             new SecretPressurePlate(Block.Properties.create(Material.ROCK), entity -> entity instanceof PlayerEntity).setRegistryName("secret_player_pressure_plate"),
             new SecretDoor(Block.Properties.create(Material.WOOD)).setRegistryName("secret_door"),
             new SecretDoor(Block.Properties.create(Material.IRON)).setRegistryName("secret_iron_door"),
-            new SecretChest(Block.Properties.create(Material.ROCK)).setRegistryName("secret_chest")
+            new SecretChest(Block.Properties.create(Material.ROCK)).setRegistryName("secret_chest"),
+            new SecretTrapdoor(Block.Properties.create(Material.WOOD)).setRegistryName("secret_trapdoor"),
+            new SecretTrapdoor(Block.Properties.create(Material.IRON)).setRegistryName("secret_iron_trapdoor")
         );
     }
 }
