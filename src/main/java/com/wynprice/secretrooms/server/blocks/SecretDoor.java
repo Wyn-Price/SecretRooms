@@ -1,9 +1,6 @@
 package com.wynprice.secretrooms.server.blocks;
 
 import com.wynprice.secretrooms.client.SecretModelData;
-import com.wynprice.secretrooms.client.model.MappedModelBlockstateDelegate;
-import com.wynprice.secretrooms.client.model.providers.MappedModelProvider;
-import com.wynprice.secretrooms.client.model.providers.SecretQuadProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -66,17 +63,6 @@ public class SecretDoor extends SecretBaseBlock {
     public void applyExtraModelData(IBlockReader world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
         builder.withInitial(SecretModelData.MODEL_MAP_STATE, Blocks.OAK_DOOR.getDefaultState().with(FACING, state.get(FACING)).with(OPEN, state.get(OPEN)).with(HINGE, state.get(HINGE)).with(POWERED, state.get(POWERED)).with(HALF, state.get(HALF)));
         super.applyExtraModelData(world, pos, state, builder);
-    }
-
-    @Nullable
-    @Override
-    public SecretQuadProvider getProvider(IBlockReader world, BlockPos pos, BlockState state) {
-        return MappedModelProvider.MAPPED_MODEL_PROVIDER;
-    }
-
-    @Override
-    public BlockState delegateState(BlockState mirroredState) {
-        return new MappedModelBlockstateDelegate(mirroredState);
     }
 
     @Override

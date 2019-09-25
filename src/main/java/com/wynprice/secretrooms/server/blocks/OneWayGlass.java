@@ -1,13 +1,9 @@
 package com.wynprice.secretrooms.server.blocks;
 
 import com.google.common.collect.Maps;
-import com.wynprice.secretrooms.client.SecretModelData;
-import com.wynprice.secretrooms.client.model.OneWayGlassBlockstateDelegate;
-import com.wynprice.secretrooms.client.model.providers.OneWayGlassProvider;
-import com.wynprice.secretrooms.client.model.providers.SecretQuadProvider;
+import com.wynprice.secretrooms.server.blocks.states.OneWayGlassState;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.SixWayBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
@@ -19,40 +15,34 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.client.model.ModelDataManager;
-import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 public class OneWayGlass extends SecretBaseBlock {
 
-    public static final BooleanProperty NORTH = SixWayBlock.NORTH;
-    public static final BooleanProperty EAST = SixWayBlock.EAST;
-    public static final BooleanProperty SOUTH = SixWayBlock.SOUTH;
-    public static final BooleanProperty WEST = SixWayBlock.WEST;
-    public static final BooleanProperty UP = SixWayBlock.UP;
-    public static final BooleanProperty DOWN = SixWayBlock.DOWN;
+    private static final BooleanProperty NORTH = SixWayBlock.NORTH;
+    private static final BooleanProperty EAST = SixWayBlock.EAST;
+    private static final BooleanProperty SOUTH = SixWayBlock.SOUTH;
+    private static final BooleanProperty WEST = SixWayBlock.WEST;
+    private static final BooleanProperty UP = SixWayBlock.UP;
+    private static final BooleanProperty DOWN = SixWayBlock.DOWN;
 
-    public static final VoxelShape NORTH_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 16, 2);
-    public static final VoxelShape EAST_SHAPE = Block.makeCuboidShape(14, 0, 0, 16, 16, 16);
-    public static final VoxelShape SOUTH_SHAPE = Block.makeCuboidShape(0, 0, 14, 16, 16, 16);
-    public static final VoxelShape WEST_SHAPE = Block.makeCuboidShape(0, 0, 0, 2, 16, 16);
-    public static final VoxelShape UP_SHAPE = Block.makeCuboidShape(0, 14, 0, 16, 16, 16);
-    public static final VoxelShape DOWN_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 2, 16);
+    private static final VoxelShape NORTH_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 16, 2);
+    private static final VoxelShape EAST_SHAPE = Block.makeCuboidShape(14, 0, 0, 16, 16, 16);
+    private static final VoxelShape SOUTH_SHAPE = Block.makeCuboidShape(0, 0, 14, 16, 16, 16);
+    private static final VoxelShape WEST_SHAPE = Block.makeCuboidShape(0, 0, 0, 2, 16, 16);
+    private static final VoxelShape UP_SHAPE = Block.makeCuboidShape(0, 14, 0, 16, 16, 16);
+    private static final VoxelShape DOWN_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 2, 16);
 
-    public static final Map<Direction, VoxelShape> FACING_TO_SHAPE_MAP = Util.make(Maps.newEnumMap(Direction.class), map -> {
+    private static final Map<Direction, VoxelShape> FACING_TO_SHAPE_MAP = Util.make(Maps.newEnumMap(Direction.class), map -> {
         map.put(Direction.NORTH, NORTH_SHAPE);
         map.put(Direction.EAST, EAST_SHAPE);
         map.put(Direction.SOUTH, SOUTH_SHAPE);
@@ -61,23 +51,29 @@ public class OneWayGlass extends SecretBaseBlock {
         map.put(Direction.DOWN, DOWN_SHAPE);
     });
 
+    //This is needed as BlockState#func_215702_a doesn't allow for directional sensitive calls on the Block
+    private final StateContainer<Block, BlockState> oneWayGlassStateContainer;
+
     public OneWayGlass(Properties properties) {
         super(properties);
 
-        this.setDefaultState(this.getDefaultState()
-                .with(NORTH, true)
-                .with(EAST, true)
-                .with(SOUTH, true)
-                .with(WEST, true)
-                .with(UP, true)
-                .with(DOWN, true)
+        StateContainer.Builder<Block, BlockState> builder = new StateContainer.Builder<>(this);
+        this.fillStateContainer(builder);
+        this.oneWayGlassStateContainer = builder.create(OneWayGlassState::new);
+
+        this.setDefaultState(this.oneWayGlassStateContainer.getBaseState()
+            .with(NORTH, true)
+            .with(EAST, true)
+            .with(SOUTH, true)
+            .with(WEST, true)
+            .with(UP, true)
+            .with(DOWN, true)
         );
     }
 
-    @Nullable
     @Override
-    public SecretQuadProvider getProvider(IBlockReader world, BlockPos pos, BlockState state) {
-        return OneWayGlassProvider.ONE_WAY_GLASS;
+    public StateContainer<Block, BlockState> getStateContainer() {
+        return this.oneWayGlassStateContainer != null ? this.oneWayGlassStateContainer : super.getStateContainer();
     }
 
     @Override
@@ -130,8 +126,6 @@ public class OneWayGlass extends SecretBaseBlock {
         return super.getStateForPlacement(context).with(SixWayBlock.FACING_TO_PROPERTY_MAP.get(context.getNearestLookingDirection().getOpposite()), false);
     }
 
-
-
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
         TileEntity tileEntity = worldIn.getTileEntity(currentPos);
@@ -142,29 +136,15 @@ public class OneWayGlass extends SecretBaseBlock {
     }
 
     @Override
-    public BlockState delegateState(BlockState mirroredState) {
-        return new OneWayGlassBlockstateDelegate(mirroredState);
-    }
-
-    @Override
     public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
-        return state.get(SOLID) ?
+        Optional<BlockState> mirror = getMirrorState(worldIn, pos);
+        return state.get(SOLID) && mirror.isPresent() ?
                 VoxelShapes.or(VoxelShapes.empty(),
                         Arrays.stream(Direction.values())
-                                .filter(value -> !state.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(value)))
+                                .filter(value -> !state.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(value)) && Block.hasSolidSide(mirror.get(), worldIn, pos.offset(value), value.getOpposite()))
                                 .map(FACING_TO_SHAPE_MAP::get)
                                 .toArray(VoxelShape[]::new)
                 )
                 : VoxelShapes.empty();
-    }
-
-
-    @Override
-    public void applyExtraModelData(IBlockReader world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
-        List<Direction> collect = Arrays.stream(Direction.values())
-                .filter(direction -> world.getBlockState(pos.offset(direction)).getBlock() != Blocks.GLASS)
-                .collect(Collectors.toList());
-        builder.withInitial(SecretModelData.SRM_ONE_WAY_GLASS_SIDES, collect);
-
     }
 }

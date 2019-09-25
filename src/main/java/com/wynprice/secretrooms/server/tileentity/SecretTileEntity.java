@@ -5,15 +5,23 @@ import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.data.SecretData;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class SecretTileEntity extends TileEntity {
 
     private final SecretData data = new SecretData(this);
+
+    public SecretTileEntity(TileEntityType<?> tileEntityType) {
+        super(tileEntityType);
+    }
 
     public SecretTileEntity() {
         super(SecretTileEntities.SECRET_TILE_ENTITY);
@@ -41,6 +49,18 @@ public class SecretTileEntity extends TileEntity {
         this.read(tag);
     }
 
+    @Nullable
+    @Override
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(this.pos, -1, this.data.writeNBT(new CompoundNBT()));
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+        this.data.readNBT(pkt.getNbtCompound());
+        this.requestModelDataUpdate();
+    }
+
     @Nonnull
     @Override
     public IModelData getModelData() {
@@ -48,11 +68,9 @@ public class SecretTileEntity extends TileEntity {
             return super.getModelData();
         }
         ModelDataMap.Builder builder = new ModelDataMap.Builder()
-                .withInitial(SecretModelData.SRM_BASESTATE, this.getWorld().getBlockState(this.getPos()))
-                .withInitial(SecretModelData.SRM_DO_RENDER, () -> !this.removed);
+                .withInitial(SecretModelData.SRM_BLOCKSTATE, this.data.getBlockState());
         BlockState state = this.world.getBlockState(this.pos);
         if(state.getBlock() instanceof SecretBaseBlock) {
-            builder.withInitial(SecretModelData.SRM_RENDER, ((SecretBaseBlock) state.getBlock()).getProvider(this.world, this.pos, state));
             ((SecretBaseBlock) state.getBlock()).applyExtraModelData(this.world, this.pos, state, builder);
         }
         return builder.build();

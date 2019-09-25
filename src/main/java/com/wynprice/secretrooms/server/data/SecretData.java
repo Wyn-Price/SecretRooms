@@ -2,15 +2,16 @@ package com.wynprice.secretrooms.server.data;
 
 import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
-import java.util.function.Supplier;
+import java.util.Objects;
 
 public class SecretData {
     private final TileEntity base;
@@ -51,7 +52,13 @@ public class SecretData {
         return this.tileEntityCache;
     }
 
+    public void setFrom(SecretData data) {
+        this.setBlockState(data.getBlockState());
+        this.setTileEntityNBT(data.getTileEntityNBT());
+    }
+
     public void setBlockState(BlockState blockState) {
+        this.checkDirty();
         this.blockState = blockState;
     }
 
@@ -63,10 +70,19 @@ public class SecretData {
     }
 
     public void setTileEntityNBT(@Nullable CompoundNBT tileEntityNBT) {
+        this.checkDirty();
         if(tileEntityNBT != null && tileEntityNBT.isEmpty()) {
             this.tileEntityNBT = null;
         } else {
             this.tileEntityNBT = tileEntityNBT;
+        }
+        this.tileEntityCache = null;
+    }
+
+    private void checkDirty() {
+        if(this.base.hasWorld() && !Objects.requireNonNull(this.base.getWorld()).isRemote) {
+            this.base.markDirty();
+            this.base.getWorld().notifyBlockUpdate(this.base.getPos(), this.base.getBlockState(), this.base.getBlockState(), 3);
         }
     }
 

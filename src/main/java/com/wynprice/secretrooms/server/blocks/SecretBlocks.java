@@ -6,7 +6,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ObjectHolder;
@@ -27,6 +26,15 @@ public class SecretBlocks {
     public static final Block SECRET_PLAYER_PRESSURE_PLATE = InjectedUtils.injected();
     public static final Block SECRET_DOOR = InjectedUtils.injected();
     public static final Block SECRET_IRON_DOOR = InjectedUtils.injected();
+    public static final Block SECRET_CHEST = InjectedUtils.injected();
+    public static final Block SECRET_TRAPDOOR = InjectedUtils.injected();
+    public static final Block SECRET_IRON_TRAPDOOR = InjectedUtils.injected();
+    public static final Block SECRET_TRAPPED_CHEST = InjectedUtils.injected();
+    public static final Block SECRET_GATE = InjectedUtils.injected();
+    public static final Block SECRET_DUMMY_BLOCK = InjectedUtils.injected();
+    public static final Block SECRET_DAYLIGHT_DETECTOR = InjectedUtils.injected();
+    public static final Block SECRET_OBSERVER = InjectedUtils.injected();
+    public static final Block SECRET_CLAMBER = InjectedUtils.injected();
 
     //TODO: add a non full stairs block, that uses the mapped model blockstates
 
@@ -45,7 +53,16 @@ public class SecretBlocks {
             new SecretPressurePlate(Block.Properties.create(Material.ROCK), entity -> true).setRegistryName("secret_pressure_plate"),
             new SecretPressurePlate(Block.Properties.create(Material.ROCK), entity -> entity instanceof PlayerEntity).setRegistryName("secret_player_pressure_plate"),
             new SecretDoor(Block.Properties.create(Material.WOOD)).setRegistryName("secret_door"),
-            new SecretDoor(Block.Properties.create(Material.IRON)).setRegistryName("secret_iron_door")
+            new SecretDoor(Block.Properties.create(Material.IRON)).setRegistryName("secret_iron_door"),
+            new SecretChest(Block.Properties.create(Material.ROCK)).setRegistryName("secret_chest"),
+            new SecretTrapdoor(Block.Properties.create(Material.WOOD)).setRegistryName("secret_trapdoor"),
+            new SecretTrapdoor(Block.Properties.create(Material.IRON)).setRegistryName("secret_iron_trapdoor"),
+            new SecretTrappedChest(Block.Properties.create(Material.IRON)).setRegistryName("secret_trapped_chest"),
+            new SecretGateBlock(Block.Properties.create(Material.IRON)).setRegistryName("secret_gate"),
+            new SecretBaseBlock(Block.Properties.create(Material.IRON)).setRegistryName("secret_dummy_block"),
+            new SecretDaylightDetector(Block.Properties.create(Material.IRON)).setRegistryName("secret_daylight_detector"),
+            new SecretObserver(Block.Properties.create(Material.IRON)).setRegistryName("secret_observer"),
+            new SecretClamber(Block.Properties.create(Material.IRON)).setRegistryName("secret_clamber")
         );
     }
 }

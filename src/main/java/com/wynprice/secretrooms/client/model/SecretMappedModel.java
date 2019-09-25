@@ -1,9 +1,7 @@
-package com.wynprice.secretrooms.client.model.providers;
+package com.wynprice.secretrooms.client.model;
 
 import com.google.common.math.DoubleMath;
 import com.wynprice.secretrooms.client.SecretModelData;
-import com.wynprice.secretrooms.client.model.MappedModelBlockstateDelegate;
-import com.wynprice.secretrooms.client.model.RemovedModelData;
 import com.wynprice.secretrooms.server.utils.ModelDataUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -23,30 +21,28 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
-public class MappedModelProvider extends SecretQuadProvider {
+public class SecretMappedModel extends SecretBlockModel {
+    public SecretMappedModel(IBakedModel model) {
+        super(model);
+    }
 
-    public static final MappedModelProvider MAPPED_MODEL_PROVIDER = new MappedModelProvider();
-
-    private static final BlockRendererDispatcher DISPATCHER = Minecraft.getInstance().getBlockRendererDispatcher();
+    private static final Supplier<BlockRendererDispatcher> DISPATCHER = () -> Minecraft.getInstance().getBlockRendererDispatcher();
 
     @Override
-    public List<BakedQuad> render(@Nullable BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-
-        BlockState actualMirrorState = mirrorState instanceof MappedModelBlockstateDelegate ? ((MappedModelBlockstateDelegate) mirrorState).getDelegate() : mirrorState;
-        IBakedModel actualModel = DISPATCHER.getModelForState(actualMirrorState);
-
+    public List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         Optional<BlockState> blockState = ModelDataUtils.getData(extraData, SecretModelData.MODEL_MAP_STATE);
         if(!blockState.isPresent()) {
-            return super.render(mirrorState, baseState, model, side, rand, new RemovedModelData(extraData).removeProperty(SecretModelData.MODEL_MAP_STATE));
+            return super.render(mirrorState, baseState, model, side, rand, extraData);
         }
-        List<BakedQuad> modelQuads = DISPATCHER.getModelForState(blockState.get()).getQuads(blockState.get(), side, rand, extraData);
+        List<BakedQuad> modelQuads = DISPATCHER.get().getModelForState(blockState.get()).getQuads(blockState.get(), side, rand, extraData);
         List<BakedQuad> outQuads = new ArrayList<>();
 
 
-        List<BakedQuad> allQuads = new ArrayList<>(actualModel.getQuads(actualMirrorState, null, rand, extraData));
+        List<BakedQuad> allQuads = new ArrayList<>(model.getQuads(mirrorState, null, rand, extraData));
         for (Direction value : Direction.values()) {
-            allQuads.addAll(actualModel.getQuads(actualMirrorState, value, rand, extraData));
+            allQuads.addAll(model.getQuads(mirrorState, value, rand, extraData));
         }
 
 

@@ -27,7 +27,16 @@ public class SecretItems {
             new SecretBlockItem(SecretBlocks.SECRET_PRESSURE_PLATE, new Item.Properties()).setRegistryName("secret_pressure_plate"),
             new SecretBlockItem(SecretBlocks.SECRET_PLAYER_PRESSURE_PLATE, new Item.Properties()).setRegistryName("secret_player_pressure_plate"),
             new SecretDoubleBlockItem(SecretBlocks.SECRET_DOOR, new Item.Properties()).setRegistryName("secret_door"),
-            new SecretDoubleBlockItem(SecretBlocks.SECRET_IRON_DOOR, new Item.Properties()).setRegistryName("secret_iron_door")
+            new SecretDoubleBlockItem(SecretBlocks.SECRET_IRON_DOOR, new Item.Properties()).setRegistryName("secret_iron_door"),
+            new SecretBlockItem(SecretBlocks.SECRET_CHEST, new Item.Properties()).setRegistryName("secret_chest"),
+            new SecretBlockItem(SecretBlocks.SECRET_TRAPDOOR, new Item.Properties()).setRegistryName("secret_trapdoor"),
+            new SecretBlockItem(SecretBlocks.SECRET_IRON_DOOR, new Item.Properties()).setRegistryName("secret_iron_trapdoor"),
+            new SecretBlockItem(SecretBlocks.SECRET_TRAPPED_CHEST, new Item.Properties()).setRegistryName("secret_trapped_chest"),
+            new SecretBlockItem(SecretBlocks.SECRET_GATE, new Item.Properties()).setRegistryName("secret_gate"),
+            new SecretBlockItem(SecretBlocks.SECRET_TRAPPED_CHEST, new Item.Properties()).setRegistryName("secret_dummy_gate"),
+            new SecretBlockItem(SecretBlocks.SECRET_DAYLIGHT_DETECTOR, new Item.Properties()).setRegistryName("secret_daylight_detector"),
+            new SecretBlockItem(SecretBlocks.SECRET_OBSERVER, new Item.Properties()).setRegistryName("secret_observer"),
+            new SecretBlockItem(SecretBlocks.SECRET_CLAMBER, new Item.Properties()).setRegistryName("secret_clamber")
         );
     }
 }
