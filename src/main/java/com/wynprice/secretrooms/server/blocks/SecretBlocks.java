@@ -6,7 +6,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ObjectHolder;
@@ -35,6 +34,7 @@ public class SecretBlocks {
     public static final Block SECRET_DUMMY_BLOCK = InjectedUtils.injected();
     public static final Block SECRET_DAYLIGHT_DETECTOR = InjectedUtils.injected();
     public static final Block SECRET_OBSERVER = InjectedUtils.injected();
+    public static final Block SECRET_CLAMBER = InjectedUtils.injected();
 
     //TODO: add a non full stairs block, that uses the mapped model blockstates
 
@@ -61,7 +61,8 @@ public class SecretBlocks {
             new SecretGateBlock(Block.Properties.create(Material.IRON)).setRegistryName("secret_gate"),
             new SecretBaseBlock(Block.Properties.create(Material.IRON)).setRegistryName("secret_dummy_block"),
             new SecretDaylightDetector(Block.Properties.create(Material.IRON)).setRegistryName("secret_daylight_detector"),
-            new SecretObserver(Block.Properties.create(Material.IRON)).setRegistryName("secret_observer")
+            new SecretObserver(Block.Properties.create(Material.IRON)).setRegistryName("secret_observer"),
+            new SecretClamber(Block.Properties.create(Material.IRON)).setRegistryName("secret_clamber")
         );
     }
 }

@@ -35,7 +35,8 @@ public class SecretItems {
             new SecretBlockItem(SecretBlocks.SECRET_GATE, new Item.Properties()).setRegistryName("secret_gate"),
             new SecretBlockItem(SecretBlocks.SECRET_TRAPPED_CHEST, new Item.Properties()).setRegistryName("secret_dummy_gate"),
             new SecretBlockItem(SecretBlocks.SECRET_DAYLIGHT_DETECTOR, new Item.Properties()).setRegistryName("secret_daylight_detector"),
-            new SecretBlockItem(SecretBlocks.SECRET_OBSERVER, new Item.Properties()).setRegistryName("secret_observer")
+            new SecretBlockItem(SecretBlocks.SECRET_OBSERVER, new Item.Properties()).setRegistryName("secret_observer"),
+            new SecretBlockItem(SecretBlocks.SECRET_CLAMBER, new Item.Properties()).setRegistryName("secret_clamber")
         );
     }
 }

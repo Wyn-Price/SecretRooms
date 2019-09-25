@@ -1,7 +1,6 @@
 package com.wynprice.secretrooms.client;
 
 import com.wynprice.secretrooms.SecretRooms6;
-import com.wynprice.secretrooms.client.model.GhostBlockModel;
 import com.wynprice.secretrooms.client.model.OneWayGlassModel;
 import com.wynprice.secretrooms.client.model.SecretBlockModel;
 import com.wynprice.secretrooms.client.model.SecretMappedModel;
@@ -33,7 +32,7 @@ public class SecretModelHandler {
             GHOST_BLOCK, SECRET_STAIRS, SECRET_LEVER, SECRET_REDSTONE, ONE_WAY_GLASS, SECRET_WOODEN_BUTTON,
             SECRET_STONE_BUTTON, SECRET_PRESSURE_PLATE, SECRET_PLAYER_PRESSURE_PLATE, SECRET_DOOR, SECRET_IRON_DOOR,
             SECRET_CHEST, SECRET_TRAPDOOR, SECRET_IRON_TRAPDOOR, SECRET_TRAPPED_CHEST, SECRET_GATE, SECRET_DUMMY_BLOCK,
-            SECRET_DAYLIGHT_DETECTOR, SECRET_OBSERVER
+            SECRET_DAYLIGHT_DETECTOR, SECRET_OBSERVER, SECRET_CLAMBER
         );
     }
 
@@ -42,14 +41,13 @@ public class SecretModelHandler {
         Map<ResourceLocation, IBakedModel> registry = event.getModelRegistry();
 
         put(registry, SecretBlockModel::new,
-            SECRET_STAIRS, SECRET_LEVER, SECRET_REDSTONE, SECRET_WOODEN_BUTTON, SECRET_STONE_BUTTON,
-            SECRET_PRESSURE_PLATE, SECRET_PLAYER_PRESSURE_PLATE, SECRET_CHEST, SECRET_TRAPPED_CHEST,
-            SECRET_GATE, SECRET_DUMMY_BLOCK, SECRET_DAYLIGHT_DETECTOR, SECRET_OBSERVER
+            GHOST_BLOCK, SECRET_STAIRS, SECRET_LEVER, SECRET_REDSTONE, SECRET_WOODEN_BUTTON, SECRET_STONE_BUTTON,
+            SECRET_PRESSURE_PLATE, SECRET_PLAYER_PRESSURE_PLATE, SECRET_CHEST, SECRET_TRAPPED_CHEST, SECRET_GATE,
+            SECRET_DUMMY_BLOCK, SECRET_DAYLIGHT_DETECTOR, SECRET_OBSERVER, SECRET_CLAMBER
         );
 
         put(registry, SecretMappedModel::new, SECRET_DOOR, SECRET_IRON_DOOR, SECRET_TRAPDOOR, SECRET_IRON_TRAPDOOR);
         put(registry, OneWayGlassModel::new, ONE_WAY_GLASS);
-        put(registry, GhostBlockModel::new, GHOST_BLOCK);
     }
 
     private static void put(Map<ResourceLocation, IBakedModel> registry, Function<IBakedModel, IBakedModel> creator, Block... blocks) {
