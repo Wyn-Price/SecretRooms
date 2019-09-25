@@ -16,6 +16,7 @@ public class SecretTileEntities {
 
     public static final TileEntityType<SecretTileEntity> SECRET_TILE_ENTITY = InjectedUtils.injected();
     public static final TileEntityType<SecretTileEntity> SECRET_CHEST_ENTITY = InjectedUtils.injected();
+    public static final TileEntityType<SecretTileEntity> SECRET_DAYLIGHT_DETECTOR_TILE_ENTITY = InjectedUtils.injected();
 
     @SubscribeEvent
     public static void onTileEntityRegister(RegistryEvent.Register<TileEntityType<?>> event) {
@@ -26,7 +27,9 @@ public class SecretTileEntities {
                     SECRET_TRAPDOOR, SECRET_IRON_TRAPDOOR
                 ).build(null).setRegistryName("secret_tile_entity"),
 
-                TileEntityType.Builder.create(SecretChestTileEntity::new, SECRET_CHEST, SECRET_TRAPPED_CHEST).build(null).setRegistryName("secret_chest_tile_entity")
+            TileEntityType.Builder.create(SecretChestTileEntity::new, SECRET_CHEST, SECRET_TRAPPED_CHEST).build(null).setRegistryName("secret_chest_tile_entity"),
+
+            TileEntityType.Builder.create(SecretDaylightDetectorTileEntity::new, SECRET_DAYLIGHT_DETECTOR).build(null).setRegistryName("secret_daylight_detector_tile_entity")
         );
     }
 
