@@ -34,6 +34,7 @@ public class SecretBlocks {
     public static final Block SECRET_GATE = InjectedUtils.injected();
     public static final Block SECRET_DUMMY_BLOCK = InjectedUtils.injected();
     public static final Block SECRET_DAYLIGHT_DETECTOR = InjectedUtils.injected();
+    public static final Block SECRET_OBSERVER = InjectedUtils.injected();
 
     //TODO: add a non full stairs block, that uses the mapped model blockstates
 
@@ -59,7 +60,8 @@ public class SecretBlocks {
             new SecretTrappedChest(Block.Properties.create(Material.IRON)).setRegistryName("secret_trapped_chest"),
             new SecretGateBlock(Block.Properties.create(Material.IRON)).setRegistryName("secret_gate"),
             new SecretBaseBlock(Block.Properties.create(Material.IRON)).setRegistryName("secret_dummy_block"),
-            new SecretDaylightDetector(Block.Properties.create(Material.IRON)).setRegistryName("secret_daylight_detector")
+            new SecretDaylightDetector(Block.Properties.create(Material.IRON)).setRegistryName("secret_daylight_detector"),
+            new SecretObserver(Block.Properties.create(Material.IRON)).setRegistryName("secret_observer")
         );
     }
 }

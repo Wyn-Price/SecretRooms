@@ -24,7 +24,7 @@ public class SecretTileEntities {
                 TileEntityType.Builder.create(SecretTileEntity::new,
                     GHOST_BLOCK, SECRET_STAIRS, SECRET_LEVER, SECRET_REDSTONE, ONE_WAY_GLASS, SECRET_WOODEN_BUTTON,
                     SECRET_STONE_BUTTON, SECRET_PRESSURE_PLATE, SECRET_PLAYER_PRESSURE_PLATE, SECRET_DOOR, SECRET_IRON_DOOR,
-                    SECRET_TRAPDOOR, SECRET_IRON_TRAPDOOR
+                    SECRET_TRAPDOOR, SECRET_IRON_TRAPDOOR, SECRET_OBSERVER
                 ).build(null).setRegistryName("secret_tile_entity"),
 
             TileEntityType.Builder.create(SecretChestTileEntity::new, SECRET_CHEST, SECRET_TRAPPED_CHEST).build(null).setRegistryName("secret_chest_tile_entity"),
