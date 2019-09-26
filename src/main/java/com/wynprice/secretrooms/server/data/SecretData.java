@@ -61,6 +61,31 @@ public class SecretData {
     public void setFrom(SecretData data) {
         this.setBlockState(data.getBlockState());
         this.setTileEntityNBT(data.getTileEntityNBT());
+    }
+
+    public void setBlockState(BlockState blockState) {
+        this.blockState = blockState;
+        this.onChanged();
+    }
+
+    public BlockState getBlockState() {
+        if(this.blockState.getBlock() instanceof SecretBaseBlock || (this.base != null && this.blockState.isAir(this.base.getWorld(), this.base.getPos()))) {
+            this.blockState = Blocks.STONE.getDefaultState();
+        }
+        return this.blockState;
+    }
+
+    public void setTileEntityNBT(@Nullable CompoundNBT tileEntityNBT) {
+        if(tileEntityNBT != null && tileEntityNBT.isEmpty()) {
+            this.tileEntityNBT = null;
+        } else {
+            this.tileEntityNBT = tileEntityNBT;
+        }
+        this.tileEntityCache = null;
+        this.onChanged();
+    }
+
+    private void onChanged() {
         if(this.base != null && this.base.getWorld() != null) {
             World world = this.base.getWorld();
             if(world.isRemote) {
@@ -74,35 +99,7 @@ public class SecretData {
                     }
                 }
             }
-        }
-    }
-
-    public void setBlockState(BlockState blockState) {
-        this.checkDirty();
-        this.blockState = blockState;
-    }
-
-    public BlockState getBlockState() {
-        if(this.blockState.getBlock() instanceof SecretBaseBlock || (this.base != null && this.blockState.isAir(this.base.getWorld(), this.base.getPos()))) {
-            this.blockState = Blocks.STONE.getDefaultState();
-        }
-        return this.blockState;
-    }
-
-    public void setTileEntityNBT(@Nullable CompoundNBT tileEntityNBT) {
-        this.checkDirty();
-        if(tileEntityNBT != null && tileEntityNBT.isEmpty()) {
-            this.tileEntityNBT = null;
-        } else {
-            this.tileEntityNBT = tileEntityNBT;
-        }
-        this.tileEntityCache = null;
-    }
-
-    private void checkDirty() {
-        if(this.base != null && this.base.hasWorld() && !Objects.requireNonNull(this.base.getWorld()).isRemote) {
-            this.base.markDirty();
-            this.base.getWorld().notifyBlockUpdate(this.base.getPos(), this.base.getBlockState(), this.base.getBlockState(), 3);
+            world.getChunkProvider().getLightManager().checkBlock(this.base.getPos());
         }
     }
 
