@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "one_way_glass_shapeless",
+  "ingredients": [
+    {
+      "item": "secretroomsmod:camouflage_paste"
+    },
+    {
+      "tag": "secretroomsmod:clear_glass"
+    }
+  ],
+  "result": {
+    "item": "secretroomsmod:one_way_glass"
+  }
+}

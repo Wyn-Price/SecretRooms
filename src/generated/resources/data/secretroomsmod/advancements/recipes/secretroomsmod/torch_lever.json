@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "secretroomsmod:torch_lever"
+    ]
+  },
+  "criteria": {
+    "has_torch_lever": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:lever"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "secretroomsmod:torch_lever"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_torch_lever",
+      "has_the_recipe"
+    ]
+  ]
+}
