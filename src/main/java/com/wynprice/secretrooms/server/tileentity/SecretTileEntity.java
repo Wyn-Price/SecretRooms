@@ -59,6 +59,9 @@ public class SecretTileEntity extends TileEntity {
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
         this.data.readNBT(pkt.getNbtCompound());
         this.requestModelDataUpdate();
+        if(this.world != null) {
+            this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), 11);
+        }
     }
 
     @Nonnull

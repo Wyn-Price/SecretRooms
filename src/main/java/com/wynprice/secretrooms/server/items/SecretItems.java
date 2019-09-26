@@ -42,7 +42,9 @@ public class SecretItems {
             new SecretBlockItem(SecretBlocks.SECRET_OBSERVER, prop()).setRegistryName("secret_observer"),
             new SecretBlockItem(SecretBlocks.SECRET_CLAMBER, prop()).setRegistryName("secret_clamber"),
 
-            new Item(prop()).setRegistryName("camouflage_paste")
+            new Item(prop()).setRegistryName("camouflage_paste"),
+
+            new SwitchProbe(prop()).setRegistryName("switch_probe")
         );
     }
 
