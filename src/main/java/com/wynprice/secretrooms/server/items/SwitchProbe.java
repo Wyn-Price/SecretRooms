@@ -4,6 +4,8 @@ import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.data.SecretData;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -17,8 +19,10 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.GuiScreenEvent;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -26,7 +30,7 @@ import java.util.Optional;
 
 public class SwitchProbe extends Item {
 
-    private static final String PROBE_HIT_DATA = "probe_hit_data";
+    public static final String PROBE_HIT_DATA = "probe_hit_data";
 
     public SwitchProbe(Properties properties) {
         super(properties);
@@ -63,13 +67,15 @@ public class SwitchProbe extends Item {
     @Override
     public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> text, ITooltipFlag flag) {
         CompoundNBT compound = stack.getOrCreateTag().getCompound(PROBE_HIT_DATA);
+        text.add(new StringTextComponent("§6Contained Block: "));
         if(compound.isEmpty()) {
             text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.noneset"));
-        } else {
+        } else if(Screen.hasShiftDown()){
             SecretData data = new SecretData(null);
             data.readNBT(compound);
 
             BlockState state = data.getBlockState();
+            text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.data"));
             text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.blockset", state.getBlock().getRegistryName()));
 
             for (IProperty<?> property : state.getProperties()) {

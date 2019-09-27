@@ -28,7 +28,9 @@ import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.fml.DistExecutor;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -92,7 +94,19 @@ public class SecretBaseBlock extends Block {
 
     @Override
     public int getLightValue(BlockState state, IEnviromentBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::getLightValue, () -> super.getLightValue(state, world, pos));
+        int result = getValue(world, pos, BlockState::getLightValue, () -> super.getLightValue(state, world, pos));
+        //This is needed so we can control AO. Try to remove this asap
+        if ("net.minecraft.client.renderer.BlockModelRenderer".equals(Thread.currentThread().getStackTrace()[3].getClassName())) {
+            Optional<BlockState> mirrorState = getMirrorState(world, pos);
+            if(mirrorState.isPresent()) {
+                Boolean isAoModel = DistExecutor.callWhenOn(Dist.CLIENT, () -> () ->
+                    Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(mirrorState.get()).isAmbientOcclusion());
+                if(isAoModel != null) {
+                    return result == 0 && isAoModel ? 0 : 1;
+                }
+            }
+        }
+        return result;
     }
 
     @Override
@@ -129,8 +143,8 @@ public class SecretBaseBlock extends Block {
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(SOLID);
     }
-    //Entity#createRunningParticles
 
+    //Entity#createRunningParticles
     @Override
     public boolean addRunningEffects(BlockState state, World world, BlockPos pos, Entity entity) {
         Optional<BlockState> mirrorState = getMirrorState(world, pos);
@@ -249,6 +263,10 @@ public class SecretBaseBlock extends Block {
     }
 
     public void applyExtraModelData(IBlockReader world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
+    }
+
+    public BlockState getPlaceState(IBlockReader wold, BlockPos placedOnPos, BlockState placedOn) {
+        return this.getDefaultState().with(SOLID, placedOn.isSolid());
     }
 
     public static <T, W extends IBlockReader> T getValue(W reader, BlockPos pos, StateFunction<T, W> function, Supplier<T> defaultValue) {

@@ -1,5 +1,5 @@
 {
   "secretroomsmod.probe.noneset": "No Data Set!",
-  "secretroomsmod.probe.blockset": "§1 Block: {0}",
-  "secretroomsmod.probe.blockproperty": "§9 {0}={1}"
+  "secretroomsmod.probe.blockset": "§bBlock: {0}",
+  "secretroomsmod.probe.blockproperty": "§3  {0}={1}"
 }

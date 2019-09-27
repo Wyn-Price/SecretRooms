@@ -20,7 +20,7 @@ public class SecretDoubleBlockItem extends SecretBlockItem {
     }
 
     @Override
-    protected boolean doSetBlock(World world, BlockPos pos, BlockState state, BlockState placedOnState, TileEntity placedOnTileEntity) {
-        return super.doSetBlock(world, pos, state, placedOnState, placedOnTileEntity) | super.doSetBlock(world, pos.up(), state, placedOnState, placedOnTileEntity);
+    protected boolean doSetBlock(World world, BlockPos pos, BlockPos placedOn, BlockState state, BlockState placedOnState, TileEntity placedOnTileEntity) {
+        return super.doSetBlock(world, pos, placedOn, state, placedOnState, placedOnTileEntity) | super.doSetBlock(world, pos.up(), placedOn, state, placedOnState, placedOnTileEntity);
     }
 }
