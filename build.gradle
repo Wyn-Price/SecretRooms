@@ -1,17 +1,20 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = "https://plugins.gradle.org/m2/" }
         jcenter()
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: "com.matthewprenger.cursegradle"
 
 version = '6.0.0'
 group = 'com.wynprice.secretrooms' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -90,6 +93,39 @@ dependencies {
     compile 'org.projectlombok:lombok:1.18.0'
 }
 
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
+}
+
+task devJar(type: Jar) {
+    classifier = "dev"
+    from sourceSets.main.output
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = "javadoc"
+    from javadoc.getDestinationDir()
+}
+
+curseforge {
+    apiKey = project.hasProperty("curseforge_api_key") ? curseforge_api_key : "###"//In the ~/.gradle/gradle.properties file
+    project {
+        id = '59652'
+        releaseType = 'beta'
+        mainArtifact jar
+        addArtifact sourcesJar
+        addArtifact devJar
+        addArtifact javadocJar
+    }
+}
+
+artifacts {
+    archives sourcesJar
+    archives devJar
+    archives javadocJar
+}
 
 //Add the generated the the source, to have the generated data be used
 sourceSets {
