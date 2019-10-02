@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "group": "torch_lever",
+  "group": "torch_lever.json",
   "pattern": [
     "T",
     "L"

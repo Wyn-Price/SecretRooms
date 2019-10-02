@@ -1,6 +1,7 @@
 package com.wynprice.secretrooms;
 
 import com.wynprice.secretrooms.server.data.SecretItemTagsProvider;
+import com.wynprice.secretrooms.server.data.SecretBlockLootTableProvider;
 import com.wynprice.secretrooms.server.data.SecretRecipeProvider;
 import com.wynprice.secretrooms.server.items.SecretItems;
 import net.minecraft.data.DataGenerator;
@@ -35,6 +36,7 @@ public class SecretRooms6 {
         if (event.includeServer()) {
             gen.addProvider(new SecretRecipeProvider(gen));
             gen.addProvider(new SecretItemTagsProvider(gen));
+            gen.addProvider(new SecretBlockLootTableProvider(gen));
         }
     }
 }

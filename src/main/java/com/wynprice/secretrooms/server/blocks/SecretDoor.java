@@ -162,11 +162,11 @@ public class SecretDoor extends SecretBaseBlock {
     }
 
     private int getCloseSound() {
-        return this.material == Material.IRON ? 1011 : 1012;
+        return this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON ? 1011 : 1012;
     }
 
     private int getOpenSound() {
-        return this.material == Material.IRON ? 1005 : 1006;
+        return this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON ? 1005 : 1006;
     }
 
     @Nullable
@@ -223,7 +223,7 @@ public class SecretDoor extends SecretBaseBlock {
 
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (this.material == Material.IRON) {
+        if (this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON) {
             return false;
         } else {
             state = state.cycle(OPEN);

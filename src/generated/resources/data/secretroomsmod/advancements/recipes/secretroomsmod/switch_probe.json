@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "secretroomsmod:switch_probe"
+    ]
+  },
+  "criteria": {
+    "has_camo": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "secretroomsmod:camouflage_paste"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "secretroomsmod:switch_probe"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_camo",
+      "has_the_recipe"
+    ]
+  ]
+}

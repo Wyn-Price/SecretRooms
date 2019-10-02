@@ -16,6 +16,7 @@ import net.minecraftforge.registries.ObjectHolder;
 public class SecretItems {
 
     public static final Item CAMOUFLAGE_PASTE = InjectedUtils.injected();
+    public static final Item SWITCH_PROBE = InjectedUtils.injected();
 
     @SubscribeEvent
     public static void onRegisterItems(RegistryEvent.Register<Item> event) {
@@ -37,7 +38,7 @@ public class SecretItems {
             new SecretBlockItem(SecretBlocks.SECRET_IRON_TRAPDOOR, prop()).setRegistryName("secret_iron_trapdoor"),
             new SecretBlockItem(SecretBlocks.SECRET_TRAPPED_CHEST, prop()).setRegistryName("secret_trapped_chest"),
             new SecretBlockItem(SecretBlocks.SECRET_GATE, prop()).setRegistryName("secret_gate"),
-            new SecretBlockItem(SecretBlocks.SECRET_TRAPPED_CHEST, prop()).setRegistryName("secret_dummy_gate"),
+            new SecretBlockItem(SecretBlocks.SECRET_DUMMY_BLOCK, prop()).setRegistryName("secret_dummy_block"),
             new SecretBlockItem(SecretBlocks.SECRET_DAYLIGHT_DETECTOR, prop()).setRegistryName("secret_daylight_detector"),
             new SecretBlockItem(SecretBlocks.SECRET_OBSERVER, prop()).setRegistryName("secret_observer"),
             new SecretBlockItem(SecretBlocks.SECRET_CLAMBER, prop()).setRegistryName("secret_clamber"),

@@ -118,7 +118,7 @@ public class SecretTrapdoor extends SecretBaseBlock {
 
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (this.material == Material.IRON) {
+        if (this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON) {
             return false;
         } else {
             state = state.cycle(OPEN);
@@ -132,10 +132,10 @@ public class SecretTrapdoor extends SecretBaseBlock {
 
     protected void playSound(@Nullable PlayerEntity player, World worldIn, BlockPos pos, boolean p_185731_4_) {
         if (p_185731_4_) {
-            int i = this.material == Material.IRON ? 1037 : 1007;
+            int i = this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON ? 1037 : 1007;
             worldIn.playEvent(player, i, pos, 0);
         } else {
-            int j = this.material == Material.IRON ? 1036 : 1013;
+            int j = this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON ? 1036 : 1013;
             worldIn.playEvent(player, j, pos, 0);
         }
 
