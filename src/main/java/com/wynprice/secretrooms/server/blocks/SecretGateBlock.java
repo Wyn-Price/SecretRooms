@@ -99,7 +99,7 @@ public class SecretGateBlock extends SecretBaseBlock {
                 }
             }
 
-            world.setBlockState(off, SecretBlocks.SECRET_DUMMY_BLOCK.getDefaultState());
+            world.setBlockState(off, SecretBlocks.SECRET_DUMMY_BLOCK.get().getDefaultState());
             data.ifPresent(sdata -> getMirrorData(world, off).ifPresent(d -> d.setFrom(sdata)));
             requestModelRefresh(world, off);
             world.getTileEntity(off).markDirty();

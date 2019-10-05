@@ -22,13 +22,13 @@ public class SecretTileEntities {
     public static void onTileEntityRegister(RegistryEvent.Register<TileEntityType<?>> event) {
         event.getRegistry().registerAll(
                 TileEntityType.Builder.create(SecretTileEntity::new,
-                    GHOST_BLOCK, SECRET_STAIRS, SECRET_LEVER, SECRET_REDSTONE, ONE_WAY_GLASS, SECRET_WOODEN_BUTTON,
-                    SECRET_STONE_BUTTON, SECRET_PRESSURE_PLATE, SECRET_PLAYER_PRESSURE_PLATE, SECRET_DOOR, SECRET_IRON_DOOR,
-                    SECRET_TRAPDOOR, SECRET_IRON_TRAPDOOR, SECRET_OBSERVER, SECRET_CLAMBER
+                    GHOST_BLOCK.get(), SECRET_STAIRS.get(), SECRET_LEVER.get(), SECRET_REDSTONE.get(), ONE_WAY_GLASS.get(), SECRET_WOODEN_BUTTON.get(),
+                    SECRET_STONE_BUTTON.get(), SECRET_PRESSURE_PLATE.get(), SECRET_PLAYER_PRESSURE_PLATE.get(), SECRET_DOOR.get(), SECRET_IRON_DOOR.get(),
+                    SECRET_TRAPDOOR.get(), SECRET_IRON_TRAPDOOR.get(), SECRET_OBSERVER.get(), SECRET_CLAMBER.get()
                 ).build(null).setRegistryName("secret_tile_entity"),
 
-            TileEntityType.Builder.create(SecretChestTileEntity::new, SECRET_CHEST, SECRET_TRAPPED_CHEST).build(null).setRegistryName("secret_chest_tile_entity"),
-            TileEntityType.Builder.create(SecretDaylightDetectorTileEntity::new, SECRET_DAYLIGHT_DETECTOR).build(null).setRegistryName("secret_daylight_detector_tile_entity")
+            TileEntityType.Builder.create(SecretChestTileEntity::new, SECRET_CHEST.get(), SECRET_TRAPPED_CHEST.get()).build(null).setRegistryName("secret_chest_tile_entity"),
+            TileEntityType.Builder.create(SecretDaylightDetectorTileEntity::new, SECRET_DAYLIGHT_DETECTOR.get()).build(null).setRegistryName("secret_daylight_detector_tile_entity")
         );
     }
 

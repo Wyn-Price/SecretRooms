@@ -1,5 +1,6 @@
 package com.wynprice.secretrooms;
 
+import com.wynprice.secretrooms.server.blocks.SecretBlocks;
 import com.wynprice.secretrooms.server.data.SecretItemTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretBlockLootTableProvider;
 import com.wynprice.secretrooms.server.data.SecretRecipeProvider;
@@ -7,6 +8,7 @@ import com.wynprice.secretrooms.server.items.SecretItems;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -19,14 +21,18 @@ public class SecretRooms6 {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     public SecretRooms6() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::gatherData);
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        bus.addListener(this::gatherData);
+
+        SecretBlocks.REGISTRY.register(bus);
+        SecretItems.REGISTRY.register(bus);
     }
 
 
     public static final ItemGroup TAB = new ItemGroup(-1, MODID) {
         @Override
         public ItemStack createIcon() {
-            return new ItemStack(SecretItems.CAMOUFLAGE_PASTE);
+            return new ItemStack(SecretItems.CAMOUFLAGE_PASTE.get());
         }
     };
 

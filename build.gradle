@@ -128,10 +128,4 @@ artifacts {
 }
 
 //Add the generated the the source, to have the generated data be used
-sourceSets {
-    main {
-        resources {
-            srcDir file('src/generated/resources/')
-        }
-    }
-}
+sourceSets.main.resources.srcDir 'src/generated/resources'

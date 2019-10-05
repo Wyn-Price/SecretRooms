@@ -13,10 +13,12 @@ import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.*;
 import net.minecraft.world.storage.loot.conditions.SurvivesExplosion;
+import net.minecraftforge.fml.RegistryObject;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static com.wynprice.secretrooms.server.blocks.SecretBlocks.*;
 
@@ -42,7 +44,7 @@ public class SecretBlockLootTableProvider implements IDataProvider {
         createBlockDrop(SECRET_WOODEN_BUTTON, loot);
         createBlockDrop(SECRET_STONE_BUTTON, loot);
         createBlockDrop(TORCH_LEVER, loot);
-        createBlockDrop(WALL_TORCH_LEVER, Items.AIR, loot);
+        createBlockDrop(WALL_TORCH_LEVER, () -> Items.AIR, loot);
         createBlockDrop(SECRET_PRESSURE_PLATE, loot);
         createBlockDrop(SECRET_PLAYER_PRESSURE_PLATE, loot);
         createBlockDrop(SECRET_DOOR, loot);
@@ -75,12 +77,12 @@ public class SecretBlockLootTableProvider implements IDataProvider {
         return "SecretRoomsBlockLootTable";
     }
 
-    private static void createBlockDrop(Block block, Map<ResourceLocation, LootTable> loot) {
+    private static void createBlockDrop(Supplier<Block> block, Map<ResourceLocation, LootTable> loot) {
         createBlockDrop(block, block, loot);
     }
 
-    private static void createBlockDrop(Block block, IItemProvider item, Map<ResourceLocation, LootTable> loot) {
-        loot.put(block.getLootTable(), createSingleItemTable(item));
+    private static void createBlockDrop(Supplier<Block> block, Supplier<? extends IItemProvider> item, Map<ResourceLocation, LootTable> loot) {
+        loot.put(block.get().getLootTable(), createSingleItemTable(item.get()));
     }
 
     private static LootTable createSingleItemTable(IItemProvider item) {
