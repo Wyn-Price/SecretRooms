@@ -113,7 +113,7 @@ curseforge {
     apiKey = project.hasProperty("curseforge_api_key") ? curseforge_api_key : "###"//In the ~/.gradle/gradle.properties file
     project {
         id = '59652'
-        releaseType = 'beta'
+        releaseType = 'release'
         mainArtifact jar
         addArtifact sourcesJar
         addArtifact devJar
