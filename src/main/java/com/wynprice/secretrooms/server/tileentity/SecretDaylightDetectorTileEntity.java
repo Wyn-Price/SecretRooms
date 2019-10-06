@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class SecretDaylightDetectorTileEntity extends SecretTileEntity implements ITickableTileEntity {
     public SecretDaylightDetectorTileEntity() {
-        super(SecretTileEntities.SECRET_DAYLIGHT_DETECTOR_TILE_ENTITY);
+        super(SecretTileEntities.SECRET_DAYLIGHT_DETECTOR_TILE_ENTITY.get());
     }
 
     @Override

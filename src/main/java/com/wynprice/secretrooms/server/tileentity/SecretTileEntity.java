@@ -24,7 +24,7 @@ public class SecretTileEntity extends TileEntity {
     }
 
     public SecretTileEntity() {
-        super(SecretTileEntities.SECRET_TILE_ENTITY);
+        super(SecretTileEntities.SECRET_TILE_ENTITY.get());
     }
 
     @Override

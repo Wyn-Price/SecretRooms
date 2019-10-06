@@ -19,7 +19,7 @@ public class SecretChestTileEntity extends SecretTileEntity implements IInventor
     private int numPlayersUsing;
 
     public SecretChestTileEntity() {
-        super(SecretTileEntities.SECRET_CHEST_TILE_ENTITY);
+        super(SecretTileEntities.SECRET_CHEST_TILE_ENTITY.get());
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.wynprice.secretrooms.server.data.SecretItemTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretBlockLootTableProvider;
 import com.wynprice.secretrooms.server.data.SecretRecipeProvider;
 import com.wynprice.secretrooms.server.items.SecretItems;
+import com.wynprice.secretrooms.server.tileentity.SecretTileEntities;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -26,6 +27,7 @@ public class SecretRooms6 {
 
         SecretBlocks.REGISTRY.register(bus);
         SecretItems.REGISTRY.register(bus);
+        SecretTileEntities.REGISTRY.register(bus);
     }
 
 

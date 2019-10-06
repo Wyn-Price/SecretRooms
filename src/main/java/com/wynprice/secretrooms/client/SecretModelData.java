@@ -11,6 +11,4 @@ public class SecretModelData {
     public static final ModelProperty<BlockState> SRM_BLOCKSTATE = new ModelProperty<>();
 
     public static final ModelProperty<BlockState> MODEL_MAP_STATE = new ModelProperty<>();
-
-    public static final ModelProperty<Set<Direction>> GHOST_BLOCK_NEIGHBOURS = new ModelProperty<>();
 }

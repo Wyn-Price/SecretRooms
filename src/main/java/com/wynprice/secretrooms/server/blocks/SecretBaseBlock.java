@@ -29,6 +29,7 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.fml.DistExecutor;
 
@@ -165,6 +166,7 @@ public class SecretBaseBlock extends Block {
     //ParticleManager#addBlockHitEffects
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public boolean addHitEffects(BlockState state, World world, RayTraceResult target, ParticleManager manager) {
         if(target instanceof BlockRayTraceResult) {
             BlockPos pos = ((BlockRayTraceResult) target).getPos();
@@ -203,6 +205,7 @@ public class SecretBaseBlock extends Block {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public boolean addDestroyEffects(BlockState stateIn, World world, BlockPos pos, ParticleManager manager) {
         Optional<BlockState> mirrorState = getMirrorState(world, pos);
         if (mirrorState.isPresent()) {

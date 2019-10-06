@@ -14,11 +14,12 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = SecretRooms6.MODID)
+@Mod.EventBusSubscriber(modid = SecretRooms6.MODID, value = Dist.CLIENT)
 public class SwitchProbeTooltipRenderer {
 
     @SubscribeEvent
