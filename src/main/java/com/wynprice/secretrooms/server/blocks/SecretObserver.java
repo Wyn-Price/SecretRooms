@@ -35,7 +35,7 @@ public class SecretObserver extends SecretBaseBlock {
 
     @Override
     public void tick(BlockState state, World worldIn, BlockPos pos, Random random) {
-        if (state.get(POWERED)) {
+        if(state.get(POWERED)) {
             worldIn.setBlockState(pos, state.with(POWERED, false), 2);
         } else {
             worldIn.setBlockState(pos, state.with(POWERED, true), 2);
@@ -47,14 +47,14 @@ public class SecretObserver extends SecretBaseBlock {
 
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (stateIn.get(FACING) == facing && !stateIn.get(POWERED)) {
+        if(stateIn.get(FACING) == facing && !stateIn.get(POWERED)) {
             this.startSignal(worldIn, currentPos);
         }
         return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     private void startSignal(IWorld worldIn, BlockPos pos) {
-        if (!worldIn.isRemote() && !worldIn.getPendingBlockTicks().isTickScheduled(pos, this)) {
+        if(!worldIn.isRemote() && !worldIn.getPendingBlockTicks().isTickScheduled(pos, this)) {
             worldIn.getPendingBlockTicks().scheduleTick(pos, this, 2);
         }
     }
@@ -93,8 +93,8 @@ public class SecretObserver extends SecretBaseBlock {
 
     @Override
     public void onBlockAdded(BlockState state, World worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
-        if (state.getBlock() != oldState.getBlock()) {
-            if (!worldIn.isRemote() && state.get(POWERED) && !worldIn.getPendingBlockTicks().isTickScheduled(pos, this)) {
+        if(state.getBlock() != oldState.getBlock()) {
+            if(!worldIn.isRemote() && state.get(POWERED) && !worldIn.getPendingBlockTicks().isTickScheduled(pos, this)) {
                 BlockState blockstate = state.with(POWERED, false);
                 worldIn.setBlockState(pos, blockstate, 18);
                 this.updateNeighborsInFront(worldIn, pos, blockstate);
@@ -105,8 +105,8 @@ public class SecretObserver extends SecretBaseBlock {
 
     @Override
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            if (!worldIn.isRemote && state.get(POWERED) && worldIn.getPendingBlockTicks().isTickScheduled(pos, this)) {
+        if(state.getBlock() != newState.getBlock()) {
+            if(!worldIn.isRemote && state.get(POWERED) && worldIn.getPendingBlockTicks().isTickScheduled(pos, this)) {
                 this.updateNeighborsInFront(worldIn, pos, state.with(POWERED, false));
             }
 

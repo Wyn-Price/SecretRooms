@@ -62,12 +62,12 @@ public class OneWayGlass extends SecretBaseBlock {
         this.oneWayGlassStateContainer = builder.create(OneWayGlassState::new);
 
         this.setDefaultState(this.oneWayGlassStateContainer.getBaseState()
-            .with(NORTH, true)
-            .with(EAST, true)
-            .with(SOUTH, true)
-            .with(WEST, true)
-            .with(UP, true)
-            .with(DOWN, true)
+                .with(NORTH, true)
+                .with(EAST, true)
+                .with(SOUTH, true)
+                .with(WEST, true)
+                .with(UP, true)
+                .with(DOWN, true)
         );
     }
 

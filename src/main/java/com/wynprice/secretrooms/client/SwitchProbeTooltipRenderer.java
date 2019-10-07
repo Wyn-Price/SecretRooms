@@ -36,7 +36,7 @@ public class SwitchProbeTooltipRenderer {
 
 
             String formattedText = new TranslationTextComponent(SecretRooms6.MODID + ".probe.containedblock").getFormattedText();
-            for (String line : event.getLines()) {
+            for(String line : event.getLines()) {
                 if(formattedText.equals(TextFormatting.getTextWithoutFormattingCodes(line))) {
                     GlStateManager.translated(event.getFontRenderer().getStringWidth(line) - 16D, -2, 0);
                     GlStateManager.scaled(0.75D, 0.75D, 0.75D);

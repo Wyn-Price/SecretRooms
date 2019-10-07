@@ -30,9 +30,9 @@ public abstract class AbstractSecretPressurePlateBase extends SecretBaseBlock {
 
     @Override
     public void tick(BlockState state, World worldIn, BlockPos pos, Random random) {
-        if (!worldIn.isRemote) {
+        if(!worldIn.isRemote) {
             int i = this.getRedstoneStrength(state);
-            if (i > 0) {
+            if(i > 0) {
                 this.updateState(worldIn, pos, state, i);
             }
         }
@@ -41,7 +41,7 @@ public abstract class AbstractSecretPressurePlateBase extends SecretBaseBlock {
     @Override
     public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn) {
         BlockState state = worldIn.getBlockState(pos);
-        if (!worldIn.isRemote) {
+        if(!worldIn.isRemote) {
             int i = this.getRedstoneStrength(state);
 //            if (i == 0) {
             this.updateState(worldIn, pos, state, i);
@@ -53,20 +53,20 @@ public abstract class AbstractSecretPressurePlateBase extends SecretBaseBlock {
         int i = this.computeRedstoneStrength(worldIn, pos);
         boolean flag = oldRedstoneStrength > 0;
         boolean flag1 = i > 0;
-        if (oldRedstoneStrength != i) {
+        if(oldRedstoneStrength != i) {
             BlockState blockstate = this.setRedstoneStrength(state, i);
             worldIn.setBlockState(pos, blockstate, 2);
             this.updateNeighbors(worldIn, pos);
             worldIn.func_225319_b(pos, state, blockstate);
         }
 
-        if (!flag1 && flag) {
+        if(!flag1 && flag) {
             this.playClickOffSound(worldIn, pos);
-        } else if (flag1 && !flag) {
+        } else if(flag1 && !flag) {
             this.playClickOnSound(worldIn, pos);
         }
 
-        if (flag1) {
+        if(flag1) {
             worldIn.getPendingBlockTicks().scheduleTick(new BlockPos(pos), this, this.tickRate(worldIn));
         }
 
@@ -79,8 +79,8 @@ public abstract class AbstractSecretPressurePlateBase extends SecretBaseBlock {
 
     @Override
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!isMoving && state.getBlock() != newState.getBlock()) {
-            if (this.getRedstoneStrength(state) > 0) {
+        if(!isMoving && state.getBlock() != newState.getBlock()) {
+            if(this.getRedstoneStrength(state) > 0) {
                 this.updateNeighbors(worldIn, pos);
             }
 

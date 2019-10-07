@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 
 public class SecretLever extends SecretBaseBlock {
     private static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+
     public SecretLever(Properties properties) {
         super(properties);
         this.setDefaultState(this.getDefaultState().with(POWERED, false));
@@ -27,7 +28,7 @@ public class SecretLever extends SecretBaseBlock {
     public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
         state = state.cycle(POWERED);
         boolean isPowered = state.get(POWERED);
-        if (world.isRemote) {
+        if(world.isRemote) {
             return true;
         } else {
             world.setBlockState(pos, state, 3);
@@ -40,7 +41,7 @@ public class SecretLever extends SecretBaseBlock {
 
     private void updateNeighbors(World world, BlockPos pos) {
         world.notifyNeighborsOfStateChange(pos, this);
-        for (Direction direction : Direction.values()) {
+        for(Direction direction : Direction.values()) {
             world.notifyNeighborsOfStateChange(pos.offset(direction), this);
         }
     }
@@ -62,8 +63,8 @@ public class SecretLever extends SecretBaseBlock {
 
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!isMoving && state.getBlock() != newState.getBlock()) {
-            if (state.get(POWERED)) {
+        if(!isMoving && state.getBlock() != newState.getBlock()) {
+            if(state.get(POWERED)) {
                 this.updateNeighbors(world, pos);
             }
 

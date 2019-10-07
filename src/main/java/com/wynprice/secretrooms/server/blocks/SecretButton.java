@@ -15,7 +15,6 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -45,7 +44,7 @@ public class SecretButton extends SecretBaseBlock {
 
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (state.get(POWERED)) {
+        if(state.get(POWERED)) {
             return true;
         } else {
             worldIn.setBlockState(pos, state.with(POWERED, Boolean.TRUE), 3);
@@ -64,8 +63,8 @@ public class SecretButton extends SecretBaseBlock {
 
     @Override
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!isMoving && state.getBlock() != newState.getBlock()) {
-            if (state.get(POWERED)) {
+        if(!isMoving && state.getBlock() != newState.getBlock()) {
+            if(state.get(POWERED)) {
                 this.updateNeighbors(worldIn, pos);
             }
 
@@ -90,12 +89,12 @@ public class SecretButton extends SecretBaseBlock {
 
     @Override
     public void tick(BlockState state, World worldIn, BlockPos pos, Random random) {
-        if (!worldIn.isRemote && state.get(POWERED)) {
-            if (this.wooden) {
+        if(!worldIn.isRemote && state.get(POWERED)) {
+            if(this.wooden) {
                 this.checkPressed(state, worldIn, pos);
             } else {
                 worldIn.setBlockState(pos, state.with(POWERED, Boolean.FALSE), 3);
-                this.updateNeighbors( worldIn, pos);
+                this.updateNeighbors(worldIn, pos);
                 this.playSound(null, worldIn, pos, false);
             }
         }
@@ -103,7 +102,7 @@ public class SecretButton extends SecretBaseBlock {
 
     @Override
     public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
-        if (!worldIn.isRemote && this.wooden && !state.get(POWERED)) {
+        if(!worldIn.isRemote && this.wooden && !state.get(POWERED)) {
             this.checkPressed(state, worldIn, pos);
         }
     }
@@ -112,20 +111,20 @@ public class SecretButton extends SecretBaseBlock {
         List<? extends Entity> list = worldIn.getEntitiesWithinAABB(AbstractArrowEntity.class, state.getShape(worldIn, pos).getBoundingBox().offset(pos));
         boolean flag = !list.isEmpty();
         boolean flag1 = state.get(POWERED);
-        if (flag != flag1) {
+        if(flag != flag1) {
             worldIn.setBlockState(pos, state.with(POWERED, flag), 3);
             this.updateNeighbors(worldIn, pos);
             this.playSound(null, worldIn, pos, flag);
         }
 
-        if (flag) {
+        if(flag) {
             worldIn.getPendingBlockTicks().scheduleTick(new BlockPos(pos), this, this.tickRate(worldIn));
         }
     }
 
     private void updateNeighbors(World world, BlockPos pos) {
         world.notifyNeighborsOfStateChange(pos, this);
-        for (Direction value : Direction.values()) {
+        for(Direction value : Direction.values()) {
             world.notifyNeighborsOfStateChange(pos.offset(value.getOpposite()), this);
         }
     }

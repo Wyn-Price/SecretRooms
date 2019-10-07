@@ -46,7 +46,7 @@ public class SecretGateBlock extends SecretBaseBlock {
 
     @Override
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
+        if(state.getBlock() != newState.getBlock()) {
             this.destroyGate(worldIn, pos, state, false);
         }
         super.onReplaced(state, worldIn, pos, newState, isMoving);
@@ -72,7 +72,7 @@ public class SecretGateBlock extends SecretBaseBlock {
         Optional<SecretData> data = getMirrorData(world, pos);
         Direction direction = gateState.get(FACING);
 
-        for (int i = 1; i <= MAX_LEVELS; i++) {
+        for(int i = 1; i <= MAX_LEVELS; i++) {
             BlockPos off = pos.offset(direction, i);
 
             BlockState state = world.getBlockState(off);
@@ -88,7 +88,7 @@ public class SecretGateBlock extends SecretBaseBlock {
                 return;
             }
 
-            for (Direction value : Direction.values()) {
+            for(Direction value : Direction.values()) {
                 if(value.getAxis() != direction.getAxis()) {
                     BlockPos offPos = off.offset(value);
                     BlockState offState = world.getBlockState(offPos);
@@ -108,7 +108,7 @@ public class SecretGateBlock extends SecretBaseBlock {
 
     private void destroyGate(World world, BlockPos pos, BlockState gateState, boolean recursive) {
         Direction direction = gateState.get(FACING);
-        for (int i = 1; i <= MAX_LEVELS; i++) {
+        for(int i = 1; i <= MAX_LEVELS; i++) {
             BlockPos off = pos.offset(direction, i);
 
             BlockState state = world.getBlockState(off);
@@ -125,7 +125,7 @@ public class SecretGateBlock extends SecretBaseBlock {
             }
 
             if(recursive) {
-                for (Direction value : Direction.values()) {
+                for(Direction value : Direction.values()) {
                     if(value.getAxis() != direction.getAxis()) {
                         BlockPos offPos = off.offset(value);
                         BlockState offState = world.getBlockState(offPos);

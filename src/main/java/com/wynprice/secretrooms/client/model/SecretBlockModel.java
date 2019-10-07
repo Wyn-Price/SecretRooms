@@ -37,9 +37,9 @@ public class SecretBlockModel implements IBakedModel {
     @Override
     public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand, IModelData extraData) {
         return ModelDataUtils.getData(extraData, SecretModelData.SRM_BLOCKSTATE)
-            .filter(this::canRenderInLater)
-            .map(mirrorState -> this.render(mirrorState, state, DISPATCHER.get().getModelForState(mirrorState), side, rand, extraData))
-            .orElse(new ArrayList<>());
+                .filter(this::canRenderInLater)
+                .map(mirrorState -> this.render(mirrorState, state, DISPATCHER.get().getModelForState(mirrorState), side, rand, extraData))
+                .orElse(new ArrayList<>());
     }
 
     protected boolean canRenderInLater(BlockState state) {

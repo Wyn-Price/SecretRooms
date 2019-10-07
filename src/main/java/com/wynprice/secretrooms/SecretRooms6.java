@@ -1,8 +1,8 @@
 package com.wynprice.secretrooms;
 
 import com.wynprice.secretrooms.server.blocks.SecretBlocks;
-import com.wynprice.secretrooms.server.data.SecretItemTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretBlockLootTableProvider;
+import com.wynprice.secretrooms.server.data.SecretItemTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretRecipeProvider;
 import com.wynprice.secretrooms.server.items.SecretItems;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntities;
@@ -41,7 +41,7 @@ public class SecretRooms6 {
     public void gatherData(GatherDataEvent event) {
         DataGenerator gen = event.getGenerator();
 
-        if (event.includeServer()) {
+        if(event.includeServer()) {
             gen.addProvider(new SecretRecipeProvider(gen));
             gen.addProvider(new SecretItemTagsProvider(gen));
             gen.addProvider(new SecretBlockLootTableProvider(gen));

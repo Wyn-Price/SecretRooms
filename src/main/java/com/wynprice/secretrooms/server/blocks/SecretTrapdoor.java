@@ -5,7 +5,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LadderBlock;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
@@ -49,15 +48,15 @@ public class SecretTrapdoor extends SecretBaseBlock {
     @Override
     public void applyExtraModelData(IBlockReader world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
         builder.withInitial(SecretModelData.MODEL_MAP_STATE, Blocks.OAK_TRAPDOOR.getDefaultState()
-            .with(HORIZONTAL_FACING, state.get(HORIZONTAL_FACING))
-            .with(OPEN, state.get(OPEN))
-            .with(HALF, state.get(HALF))
+                .with(HORIZONTAL_FACING, state.get(HORIZONTAL_FACING))
+                .with(OPEN, state.get(OPEN))
+                .with(HALF, state.get(HALF))
         );
     }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        if (!state.get(OPEN)) {
+        if(!state.get(OPEN)) {
             return state.get(HALF) == Half.TOP ? TOP_AABB : BOTTOM_AABB;
         } else {
             switch(state.get(HORIZONTAL_FACING)) {
@@ -118,7 +117,7 @@ public class SecretTrapdoor extends SecretBaseBlock {
 
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON) {
+        if(this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON) {
             return false;
         } else {
             state = state.cycle(OPEN);
@@ -131,7 +130,7 @@ public class SecretTrapdoor extends SecretBaseBlock {
 
 
     protected void playSound(@Nullable PlayerEntity player, World worldIn, BlockPos pos, boolean p_185731_4_) {
-        if (p_185731_4_) {
+        if(p_185731_4_) {
             int i = this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON ? 1037 : 1007;
             worldIn.playEvent(player, i, pos, 0);
         } else {
@@ -143,10 +142,10 @@ public class SecretTrapdoor extends SecretBaseBlock {
 
     @Override
     public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        if (!worldIn.isRemote) {
+        if(!worldIn.isRemote) {
             boolean flag = worldIn.isBlockPowered(pos);
-            if (flag != state.get(POWERED)) {
-                if (state.get(OPEN) != flag) {
+            if(flag != state.get(POWERED)) {
+                if(state.get(OPEN) != flag) {
                     state = state.with(OPEN, flag);
                     this.playSound(null, worldIn, pos, flag);
                 }
@@ -161,13 +160,13 @@ public class SecretTrapdoor extends SecretBaseBlock {
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         BlockState blockstate = this.getDefaultState();
         Direction direction = context.getFace();
-        if (!context.replacingClickedOnBlock() && direction.getAxis().isHorizontal()) {
-            blockstate = blockstate.with(HORIZONTAL_FACING, direction).with(HALF, context.getHitVec().y - (double)context.getPos().getY() > 0.5D ? Half.TOP : Half.BOTTOM);
+        if(!context.replacingClickedOnBlock() && direction.getAxis().isHorizontal()) {
+            blockstate = blockstate.with(HORIZONTAL_FACING, direction).with(HALF, context.getHitVec().y - (double) context.getPos().getY() > 0.5D ? Half.TOP : Half.BOTTOM);
         } else {
             blockstate = blockstate.with(HORIZONTAL_FACING, context.getPlacementHorizontalFacing().getOpposite()).with(HALF, direction == Direction.UP ? Half.BOTTOM : Half.TOP);
         }
 
-        if (context.getWorld().isBlockPowered(context.getPos())) {
+        if(context.getWorld().isBlockPowered(context.getPos())) {
             blockstate = blockstate.with(OPEN, Boolean.TRUE).with(POWERED, Boolean.TRUE);
         }
 
@@ -183,9 +182,9 @@ public class SecretTrapdoor extends SecretBaseBlock {
 
     @Override
     public boolean isLadder(BlockState state, net.minecraft.world.IWorldReader world, BlockPos pos, net.minecraft.entity.LivingEntity entity) {
-        if (state.get(OPEN)) {
+        if(state.get(OPEN)) {
             BlockState down = world.getBlockState(pos.down());
-            if (down.getBlock() == net.minecraft.block.Blocks.LADDER)
+            if(down.getBlock() == net.minecraft.block.Blocks.LADDER)
                 return down.get(LadderBlock.FACING) == state.get(HORIZONTAL_FACING);
         }
         return false;

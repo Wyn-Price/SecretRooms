@@ -2,26 +2,24 @@ package com.wynprice.secretrooms.server.data;
 
 import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 public class SecretData {
     private final TileEntity base;
 
     private BlockState blockState = Blocks.STONE.getDefaultState();
-    @Nullable private CompoundNBT tileEntityNBT = null;
+    @Nullable
+    private CompoundNBT tileEntityNBT = null;
 
     private TileEntity tileEntityCache;
 
@@ -44,7 +42,7 @@ public class SecretData {
 
     public TileEntity getTileEntityCache() {
         if(this.tileEntityNBT != null && this.tileEntityCache == null) {
-            if ((this.tileEntityCache = TileEntity.create(this.tileEntityNBT)) != null) {
+            if((this.tileEntityCache = TileEntity.create(this.tileEntityNBT)) != null) {
                 if(this.base != null) {
                     this.tileEntityCache.setPos(this.base.getPos());
                     this.tileEntityCache.setWorld(this.base.getWorld());
@@ -93,8 +91,8 @@ public class SecretData {
                 world.notifyBlockUpdate(this.base.getPos(), this.base.getBlockState(), this.base.getBlockState(), 11);
             } else {
                 SUpdateTileEntityPacket supdatetileentitypacket = this.base.getUpdatePacket();
-                for (ServerPlayerEntity player : ((ServerWorld) world).getPlayers()) {
-                    if (supdatetileentitypacket != null) {
+                for(ServerPlayerEntity player : ((ServerWorld) world).getPlayers()) {
+                    if(supdatetileentitypacket != null) {
                         player.connection.sendPacket(supdatetileentitypacket);
                     }
                 }

@@ -13,7 +13,7 @@ public class SecretDaylightDetectorTileEntity extends SecretTileEntity implement
 
     @Override
     public void tick() {
-        if (this.world != null && !this.world.isRemote && this.world.getGameTime() % 20L == 0L) {
+        if(this.world != null && !this.world.isRemote && this.world.getGameTime() % 20L == 0L) {
             BlockState state = this.getBlockState();
             if(state.getBlock() instanceof SecretDaylightDetector) {
                 SecretDaylightDetector.updatePower(state, Objects.requireNonNull(this.world), this.pos);

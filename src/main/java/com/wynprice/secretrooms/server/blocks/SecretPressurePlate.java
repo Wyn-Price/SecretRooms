@@ -10,7 +10,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
@@ -21,6 +20,7 @@ public class SecretPressurePlate extends AbstractSecretPressurePlateBase {
     private static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
     private final Predicate<Entity> entityPredicate;
+
     public SecretPressurePlate(Properties properties, Predicate<Entity> powerMapper) {
         super(properties);
         this.setDefaultState(this.getDefaultState().with(POWERED, false));

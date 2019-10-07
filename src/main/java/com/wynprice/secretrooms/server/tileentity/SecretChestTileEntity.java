@@ -47,8 +47,8 @@ public class SecretChestTileEntity extends SecretTileEntity implements IInventor
 
     @Override
     public void openInventory(PlayerEntity player) {
-        if (!player.isSpectator()) {
-            if (this.numPlayersUsing < 0) {
+        if(!player.isSpectator()) {
+            if(this.numPlayersUsing < 0) {
                 this.numPlayersUsing = 0;
             }
 
@@ -60,7 +60,7 @@ public class SecretChestTileEntity extends SecretTileEntity implements IInventor
 
     @Override
     public void closeInventory(PlayerEntity player) {
-        if (!player.isSpectator()) {
+        if(!player.isSpectator()) {
             --this.numPlayersUsing;
             this.onOpenOrClose();
         }
@@ -80,7 +80,7 @@ public class SecretChestTileEntity extends SecretTileEntity implements IInventor
     @Override
     public boolean isEmpty() {
         boolean value = true;
-        for (int i = 0; i < this.handler.getSlots(); i++) {
+        for(int i = 0; i < this.handler.getSlots(); i++) {
             value &= this.handler.getStackInSlot(i).isEmpty();
         }
         return value;
@@ -115,7 +115,7 @@ public class SecretChestTileEntity extends SecretTileEntity implements IInventor
 
     @Override
     public void clear() {
-        for (int i = 0; i < this.handler.getSlots(); i++) {
+        for(int i = 0; i < this.handler.getSlots(); i++) {
             this.handler.setStackInSlot(i, ItemStack.EMPTY);
         }
     }

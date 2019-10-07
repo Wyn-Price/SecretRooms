@@ -41,14 +41,14 @@ public class SecretMappedModel extends SecretBlockModel {
 
 
         List<BakedQuad> allQuads = new ArrayList<>(model.getQuads(mirrorState, null, rand, extraData));
-        for (Direction value : Direction.values()) {
+        for(Direction value : Direction.values()) {
             allQuads.addAll(model.getQuads(mirrorState, value, rand, extraData));
         }
 
 
-        for (BakedQuad modelQuad : modelQuads) {
+        for(BakedQuad modelQuad : modelQuads) {
             AxisAlignedBB bb = this.createQuadBorder(modelQuad);
-            for (BakedQuad texture : ((Iterable<BakedQuad>) () -> allQuads.stream().filter(q -> q.getFace() == modelQuad.getFace()).iterator())) {
+            for(BakedQuad texture : ((Iterable<BakedQuad>) () -> allQuads.stream().filter(q -> q.getFace() == modelQuad.getFace()).iterator())) {
                 outQuads.add(this.resizeQuad(texture, bb));
             }
         }
@@ -64,12 +64,12 @@ public class SecretMappedModel extends SecretBlockModel {
         int[] aint = new int[texture.getVertexData().length];
         System.arraycopy(texture.getVertexData(), 0, aint, 0, aint.length);
 
-        for (int v = 0; v < clamped.size(); v++) {
+        for(int v = 0; v < clamped.size(); v++) {
             Vector3d vec = clamped.get(v);
 
-            aint[v*size] = Float.floatToIntBits((float) vec.x);
-            aint[v*size+1] = Float.floatToIntBits((float) vec.y);
-            aint[v*size+2] = Float.floatToIntBits((float) vec.z);
+            aint[v * size] = Float.floatToIntBits((float) vec.x);
+            aint[v * size + 1] = Float.floatToIntBits((float) vec.y);
+            aint[v * size + 2] = Float.floatToIntBits((float) vec.z);
 
         }
 
@@ -79,9 +79,9 @@ public class SecretMappedModel extends SecretBlockModel {
     }
 
     private void resetUVPositions(int[] aint, int size, int uOff, List<Vector3d> vertices, List<Vector3d> clampedVertices) {
-        int[] mappedU = new int[]{ 3, 2, 1, 0 };
-        int[] mappedV = new int[]{ 1, 0, 3, 2 };
-        for (int v = 0; v < vertices.size(); v++) {
+        int[] mappedU = new int[]{3, 2, 1, 0};
+        int[] mappedV = new int[]{1, 0, 3, 2};
+        for(int v = 0; v < vertices.size(); v++) {
             if(vertices.get(v).equals(clampedVertices.get(v))) {
                 continue;
             }
@@ -97,8 +97,8 @@ public class SecretMappedModel extends SecretBlockModel {
             double uInterpolated = dist(clamped, from, uAxis) / dist(toU, from, uAxis);
             double vInterpolated = dist(clamped, from, vAxis) / dist(toV, from, vAxis);
 
-            aint[v*size + uOff] = Float.floatToIntBits((float) this.interpolate(Float.intBitsToFloat(aint[v*size + uOff]), Float.intBitsToFloat(aint[mappedU[v]*size + uOff]), uInterpolated));
-            aint[v*size + uOff+1] = Float.floatToIntBits((float) this.interpolate(Float.intBitsToFloat(aint[v*size + uOff+1]), Float.intBitsToFloat(aint[mappedV[v]*size + uOff+1]), vInterpolated));
+            aint[v * size + uOff] = Float.floatToIntBits((float) this.interpolate(Float.intBitsToFloat(aint[v * size + uOff]), Float.intBitsToFloat(aint[mappedU[v] * size + uOff]), uInterpolated));
+            aint[v * size + uOff + 1] = Float.floatToIntBits((float) this.interpolate(Float.intBitsToFloat(aint[v * size + uOff + 1]), Float.intBitsToFloat(aint[mappedV[v] * size + uOff + 1]), vInterpolated));
         }
     }
 
@@ -123,21 +123,24 @@ public class SecretMappedModel extends SecretBlockModel {
         if(axis == null) {
             return 1D;
         }
-        switch (axis) {
-            case X: return Math.abs(v1.x - v2.x);
-            case Y: return Math.abs(v1.y - v2.y);
-            case Z: return Math.abs(v1.z - v2.z);
+        switch(axis) {
+            case X:
+                return Math.abs(v1.x - v2.x);
+            case Y:
+                return Math.abs(v1.y - v2.y);
+            case Z:
+                return Math.abs(v1.z - v2.z);
         }
         return 1D; //Cannot be 0, as otherwise we divide by 0
     }
 
     private List<Vector3d> clampVertexPositions(AxisAlignedBB modelQuadRange, List<Vector3d> vertices) {
         List<Vector3d> out = new ArrayList<>();
-        for (Vector3d vertex : vertices) {
+        for(Vector3d vertex : vertices) {
             out.add(new Vector3d(
-                MathHelper.clamp(vertex.x, modelQuadRange.minX, modelQuadRange.maxX),
-                MathHelper.clamp(vertex.y, modelQuadRange.minY, modelQuadRange.maxY),
-                MathHelper.clamp(vertex.z, modelQuadRange.minZ, modelQuadRange.maxZ)
+                    MathHelper.clamp(vertex.x, modelQuadRange.minX, modelQuadRange.maxX),
+                    MathHelper.clamp(vertex.y, modelQuadRange.minY, modelQuadRange.maxY),
+                    MathHelper.clamp(vertex.z, modelQuadRange.minZ, modelQuadRange.maxZ)
             ));
         }
         return out;
@@ -148,8 +151,8 @@ public class SecretMappedModel extends SecretBlockModel {
         int[] aint = quad.getVertexData();
 
         List<Vector3d> out = new ArrayList<>();
-        for (int v = 0; v < 4; v++) {
-            out.add(new Vector3d(Float.intBitsToFloat(aint[v*size]), Float.intBitsToFloat(aint[v*size+1]), Float.intBitsToFloat(aint[v*size+2])));
+        for(int v = 0; v < 4; v++) {
+            out.add(new Vector3d(Float.intBitsToFloat(aint[v * size]), Float.intBitsToFloat(aint[v * size + 1]), Float.intBitsToFloat(aint[v * size + 2])));
         }
         return out;
     }
@@ -158,7 +161,7 @@ public class SecretMappedModel extends SecretBlockModel {
         Vector3d min = new Vector3d(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
         Vector3d max = new Vector3d(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 
-        for (Vector3d vertexPos : this.getVertexPositions(quad)) {
+        for(Vector3d vertexPos : this.getVertexPositions(quad)) {
             setVec(min, vertexPos, Math::min);
             setVec(max, vertexPos, Math::max);
         }

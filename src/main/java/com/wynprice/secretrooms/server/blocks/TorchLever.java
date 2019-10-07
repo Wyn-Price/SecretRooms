@@ -14,7 +14,6 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 public class TorchLever extends TorchBlock {
@@ -30,7 +29,7 @@ public class TorchLever extends TorchBlock {
     public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
         state = state.cycle(POWERED);
         boolean isPowered = state.get(POWERED);
-        if (world.isRemote) {
+        if(world.isRemote) {
             return true;
         } else {
             world.setBlockState(pos, state, 3);
@@ -43,7 +42,7 @@ public class TorchLever extends TorchBlock {
 
     private void updateNeighbors(World world, BlockPos pos) {
         world.notifyNeighborsOfStateChange(pos, this);
-        for (Direction direction : Direction.values()) {
+        for(Direction direction : Direction.values()) {
             world.notifyNeighborsOfStateChange(pos.offset(direction), this);
         }
     }
@@ -65,8 +64,8 @@ public class TorchLever extends TorchBlock {
 
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!isMoving && state.getBlock() != newState.getBlock()) {
-            if (state.get(POWERED)) {
+        if(!isMoving && state.getBlock() != newState.getBlock()) {
+            if(state.get(POWERED)) {
                 this.updateNeighbors(world, pos);
             }
 

@@ -50,7 +50,7 @@ public class SecretStairs extends SecretBaseBlock {
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         Direction direction = context.getFace();
         BlockPos pos = context.getPos();
-        BlockState state = this.getDefaultState().with(FACING, context.getPlacementHorizontalFacing()).with(HALF, direction != Direction.DOWN && (direction == Direction.UP || context.getHitVec().y - (double)pos.getY() <= 0.5D) ? Half.BOTTOM : Half.TOP);
+        BlockState state = this.getDefaultState().with(FACING, context.getPlacementHorizontalFacing()).with(HALF, direction != Direction.DOWN && (direction == Direction.UP || context.getHitVec().y - (double) pos.getY() <= 0.5D) ? Half.BOTTOM : Half.TOP);
         return state.with(SHAPE, getShapeProperty(state, context.getWorld(), pos));
     }
 
@@ -62,10 +62,10 @@ public class SecretStairs extends SecretBaseBlock {
     private static StairsShape getShapeProperty(BlockState state, IBlockReader world, BlockPos position) {
         Direction direction = state.get(FACING);
         BlockState oppositeState = world.getBlockState(position.offset(direction));
-        if (isBlockStairs(oppositeState) && state.get(HALF) == oppositeState.get(HALF)) {
+        if(isBlockStairs(oppositeState) && state.get(HALF) == oppositeState.get(HALF)) {
             Direction oppositeDirection = oppositeState.get(FACING);
-            if (oppositeDirection.getAxis() != state.get(FACING).getAxis() && isDifferentStairs(state, world, position, oppositeDirection.getOpposite())) {
-                if (oppositeDirection == direction.rotateYCCW()) {
+            if(oppositeDirection.getAxis() != state.get(FACING).getAxis() && isDifferentStairs(state, world, position, oppositeDirection.getOpposite())) {
+                if(oppositeDirection == direction.rotateYCCW()) {
                     return StairsShape.OUTER_LEFT;
                 }
 
@@ -74,10 +74,10 @@ public class SecretStairs extends SecretBaseBlock {
         }
 
         BlockState othersideState = world.getBlockState(position.offset(direction.getOpposite()));
-        if (isBlockStairs(othersideState) && state.get(HALF) == othersideState.get(HALF)) {
+        if(isBlockStairs(othersideState) && state.get(HALF) == othersideState.get(HALF)) {
             Direction othersideDirection = othersideState.get(FACING);
-            if (othersideDirection.getAxis() != state.get(FACING).getAxis() && isDifferentStairs(state, world, position, othersideDirection)) {
-                if (othersideDirection == direction.rotateYCCW()) {
+            if(othersideDirection.getAxis() != state.get(FACING).getAxis() && isDifferentStairs(state, world, position, othersideDirection)) {
+                if(othersideDirection == direction.rotateYCCW()) {
                     return StairsShape.INNER_LEFT;
                 }
 

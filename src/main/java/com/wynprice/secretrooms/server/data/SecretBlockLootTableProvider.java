@@ -13,7 +13,6 @@ import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.*;
 import net.minecraft.world.storage.loot.conditions.SurvivesExplosion;
-import net.minecraftforge.fml.RegistryObject;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -64,7 +63,7 @@ public class SecretBlockLootTableProvider implements IDataProvider {
             Path path = folder.resolve("data/" + location.getNamespace() + "/loot_tables/" + location.getPath() + ".json");
             try {
                 IDataProvider.save(GSON, directoryCache, LootTableManager.toJson(table), path);
-            } catch (IOException var6) {
+            } catch(IOException var6) {
                 SecretRooms6.LOGGER.error("Couldn't save loot table {}", path, var6);
             }
 

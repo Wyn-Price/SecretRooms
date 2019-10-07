@@ -5,7 +5,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalBlock;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -116,7 +115,7 @@ public class SecretDoor extends SecretBaseBlock {
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
         DoubleBlockHalf doubleblockhalf = stateIn.get(HALF);
-        if (facing.getAxis() == Direction.Axis.Y && doubleblockhalf == DoubleBlockHalf.LOWER == (facing == Direction.UP)) {
+        if(facing.getAxis() == Direction.Axis.Y && doubleblockhalf == DoubleBlockHalf.LOWER == (facing == Direction.UP)) {
             return facingState.getBlock() == this && facingState.get(HALF) != doubleblockhalf ? stateIn.with(FACING, facingState.get(FACING)).with(OPEN, facingState.get(OPEN)).with(HINGE, facingState.get(HINGE)).with(POWERED, facingState.get(POWERED)) : Blocks.AIR.getDefaultState();
         } else {
             return doubleblockhalf == DoubleBlockHalf.LOWER && facing == Direction.DOWN && !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
@@ -134,13 +133,13 @@ public class SecretDoor extends SecretBaseBlock {
         BlockPos blockpos = doubleblockhalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
         BlockState blockstate = worldIn.getBlockState(blockpos);
         Optional<BlockState> mirror = getMirrorState(worldIn, pos);
-        if (blockstate.getBlock() == this && blockstate.get(HALF) != doubleblockhalf) {
+        if(blockstate.getBlock() == this && blockstate.get(HALF) != doubleblockhalf) {
             worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 35);
             mirror.ifPresent(blockState -> worldIn.playEvent(player, 2001, blockpos, Block.getStateId(blockState)));
             ItemStack itemstack = player.getHeldItemMainhand();
-            if (!worldIn.isRemote && !player.isCreative()) {
-                Block.spawnDrops(state, worldIn, pos, (TileEntity)null, player, itemstack);
-                Block.spawnDrops(blockstate, worldIn, blockpos, (TileEntity)null, player, itemstack);
+            if(!worldIn.isRemote && !player.isCreative()) {
+                Block.spawnDrops(state, worldIn, pos, (TileEntity) null, player, itemstack);
+                Block.spawnDrops(blockstate, worldIn, blockpos, (TileEntity) null, player, itemstack);
             }
         }
 
@@ -173,7 +172,7 @@ public class SecretDoor extends SecretBaseBlock {
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         BlockPos blockpos = context.getPos();
-        if (blockpos.getY() < 255 && context.getWorld().getBlockState(blockpos.up()).isReplaceable(context)) {
+        if(blockpos.getY() < 255 && context.getWorld().getBlockState(blockpos.up()).isReplaceable(context)) {
             World world = context.getWorld();
             boolean flag = world.isBlockPowered(blockpos) || world.isBlockPowered(blockpos.up());
             return this.getDefaultState().with(FACING, context.getPlacementHorizontalFacing()).with(HINGE, this.getHingeSide(context)).with(POWERED, Boolean.valueOf(flag)).with(OPEN, Boolean.valueOf(flag)).with(HALF, DoubleBlockHalf.LOWER);
@@ -205,13 +204,13 @@ public class SecretDoor extends SecretBaseBlock {
         int i = (blockstate.func_224756_o(iblockreader, blockpos2) ? -1 : 0) + (blockstate1.func_224756_o(iblockreader, blockpos3) ? -1 : 0) + (blockstate2.func_224756_o(iblockreader, blockpos4) ? 1 : 0) + (blockstate3.func_224756_o(iblockreader, blockpos5) ? 1 : 0);
         boolean flag = blockstate.getBlock() == this && blockstate.get(HALF) == DoubleBlockHalf.LOWER;
         boolean flag1 = blockstate2.getBlock() == this && blockstate2.get(HALF) == DoubleBlockHalf.LOWER;
-        if ((!flag || flag1) && i <= 0) {
-            if ((!flag1 || flag) && i >= 0) {
+        if((!flag || flag1) && i <= 0) {
+            if((!flag1 || flag) && i >= 0) {
                 int j = direction.getXOffset();
                 int k = direction.getZOffset();
                 Vec3d vec3d = p_208073_1_.getHitVec();
-                double d0 = vec3d.x - (double)blockpos.getX();
-                double d1 = vec3d.z - (double)blockpos.getZ();
+                double d0 = vec3d.x - (double) blockpos.getX();
+                double d1 = vec3d.z - (double) blockpos.getZ();
                 return (j >= 0 || !(d1 < 0.5D)) && (j <= 0 || !(d1 > 0.5D)) && (k >= 0 || !(d0 > 0.5D)) && (k <= 0 || !(d0 < 0.5D)) ? DoorHingeSide.LEFT : DoorHingeSide.RIGHT;
             } else {
                 return DoorHingeSide.LEFT;
@@ -223,7 +222,7 @@ public class SecretDoor extends SecretBaseBlock {
 
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON) {
+        if(this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON) {
             return false;
         } else {
             state = state.cycle(OPEN);
@@ -240,8 +239,8 @@ public class SecretDoor extends SecretBaseBlock {
     @Override
     public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
         boolean flag = worldIn.isBlockPowered(pos) || worldIn.isBlockPowered(pos.offset(state.get(HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN));
-        if (blockIn != this && flag != state.get(POWERED)) {
-            if (flag != state.get(OPEN)) {
+        if(blockIn != this && flag != state.get(POWERED)) {
+            if(flag != state.get(OPEN)) {
                 this.playSound(worldIn, pos, flag);
                 requestModelRefresh(worldIn, pos);
                 requestModelRefresh(worldIn, state.get(HALF) == DoubleBlockHalf.LOWER ? pos.up() : pos.down());
@@ -255,7 +254,7 @@ public class SecretDoor extends SecretBaseBlock {
     public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
         BlockPos blockpos = pos.down();
         BlockState blockstate = worldIn.getBlockState(blockpos);
-        if (state.get(HALF) == DoubleBlockHalf.LOWER) {
+        if(state.get(HALF) == DoubleBlockHalf.LOWER) {
             return blockstate.func_224755_d(worldIn, blockpos, Direction.UP);
         } else {
             return blockstate.getBlock() == this;

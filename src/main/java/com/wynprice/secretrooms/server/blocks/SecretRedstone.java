@@ -53,20 +53,20 @@ public class SecretRedstone extends SecretBaseBlock {
         int neighborPower = world.getRedstonePowerFromNeighbors(pos);
         this.blockedPower = false;
         int maxPower = 0;
-        if (neighborPower < 15) {
+        if(neighborPower < 15) {
             for(Direction direction : Direction.values()) {
                 maxPower = this.maxSignal(maxPower, world.getBlockState(pos.offset(direction)));
             }
         }
 
         int stateMaxPower = maxPower - 1;
-        if (neighborPower > stateMaxPower) {
+        if(neighborPower > stateMaxPower) {
             stateMaxPower = neighborPower;
         }
 
-        if (power != stateMaxPower) {
+        if(power != stateMaxPower) {
             state = state.with(POWER, stateMaxPower);
-            if (world.getBlockState(pos) == blockstate) {
+            if(world.getBlockState(pos) == blockstate) {
                 world.setBlockState(pos, state, 2);
             }
 
@@ -81,7 +81,7 @@ public class SecretRedstone extends SecretBaseBlock {
     }
 
     private void notifyWireNeighborsOfStateChange(World worldIn, BlockPos pos) {
-        if (worldIn.getBlockState(pos).getBlock() == this) {
+        if(worldIn.getBlockState(pos).getBlock() == this) {
             worldIn.notifyNeighborsOfStateChange(pos, this);
 
             for(Direction direction : Direction.values()) {
@@ -93,7 +93,7 @@ public class SecretRedstone extends SecretBaseBlock {
 
     @Override
     public void onBlockAdded(BlockState state, World worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
-        if (oldState.getBlock() != state.getBlock() && !worldIn.isRemote) {
+        if(oldState.getBlock() != state.getBlock() && !worldIn.isRemote) {
             this.updateSurroundingRedstone(worldIn, pos, state);
 
             for(Direction direction : Direction.Plane.VERTICAL) {
@@ -106,7 +106,7 @@ public class SecretRedstone extends SecretBaseBlock {
 
             for(Direction direction2 : Direction.Plane.HORIZONTAL) {
                 BlockPos blockpos = pos.offset(direction2);
-                if (worldIn.getBlockState(blockpos).isNormalCube(worldIn, blockpos)) {
+                if(worldIn.getBlockState(blockpos).isNormalCube(worldIn, blockpos)) {
                     this.notifyWireNeighborsOfStateChange(worldIn, blockpos.up());
                 } else {
                     this.notifyWireNeighborsOfStateChange(worldIn, blockpos.down());
@@ -118,9 +118,9 @@ public class SecretRedstone extends SecretBaseBlock {
 
     @Override
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!isMoving && state.getBlock() != newState.getBlock()) {
+        if(!isMoving && state.getBlock() != newState.getBlock()) {
             super.onReplaced(state, worldIn, pos, newState, false);
-            if (!worldIn.isRemote) {
+            if(!worldIn.isRemote) {
                 for(Direction direction : Direction.values()) {
                     worldIn.notifyNeighborsOfStateChange(pos.offset(direction), this);
                 }
@@ -135,7 +135,7 @@ public class SecretRedstone extends SecretBaseBlock {
     }
 
     private int maxSignal(int existingSignal, BlockState neighbor) {
-        if (neighbor.getBlock() != this && neighbor.getBlock() != Blocks.REDSTONE_WIRE) {
+        if(neighbor.getBlock() != this && neighbor.getBlock() != Blocks.REDSTONE_WIRE) {
             return existingSignal;
         } else {
             int i = neighbor.get(POWER);
@@ -145,8 +145,8 @@ public class SecretRedstone extends SecretBaseBlock {
 
     @Override
     public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        if (!worldIn.isRemote) {
-            if (state.isValidPosition(worldIn, pos)) {
+        if(!worldIn.isRemote) {
+            if(state.isValidPosition(worldIn, pos)) {
                 this.updateSurroundingRedstone(worldIn, pos, state);
             } else {
                 spawnDrops(state, worldIn, pos);
@@ -163,24 +163,24 @@ public class SecretRedstone extends SecretBaseBlock {
 
     @Override
     public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        if (this.blockedPower) {
+        if(this.blockedPower) {
             return 0;
         } else {
             int power = blockState.get(POWER);
-            if (power == 0) {
+            if(power == 0) {
                 return 0;
             } else {
                 EnumSet<Direction> enumset = EnumSet.noneOf(Direction.class);
 
                 for(Direction direction : Direction.values()) {
-                    if (this.isPowerSourceAt(blockAccess, pos, direction)) {
+                    if(this.isPowerSourceAt(blockAccess, pos, direction)) {
                         enumset.add(direction);
                     }
                 }
 
-                if (side.getAxis().isHorizontal() && enumset.isEmpty()) {
+                if(side.getAxis().isHorizontal() && enumset.isEmpty()) {
                     return power;
-                } else if (enumset.contains(side) && !enumset.contains(side.rotateYCCW()) && !enumset.contains(side.rotateY())) {
+                } else if(enumset.contains(side) && !enumset.contains(side.rotateYCCW()) && !enumset.contains(side.rotateY())) {
                     return power;
                 } else {
                     return 0;
@@ -192,7 +192,7 @@ public class SecretRedstone extends SecretBaseBlock {
     private boolean isPowerSourceAt(IBlockReader worldIn, BlockPos pos, Direction side) {
         BlockPos offsetPos = pos.offset(side);
         BlockState state = worldIn.getBlockState(offsetPos);
-        if (canConnectTo(state, worldIn, offsetPos, side)) {
+        if(canConnectTo(state, worldIn, offsetPos, side)) {
             return true;
         } else {
             return state.getBlock() == Blocks.REPEATER && state.get(RedstoneDiodeBlock.POWERED) && state.get(RedstoneDiodeBlock.HORIZONTAL_FACING) == side;
@@ -201,12 +201,12 @@ public class SecretRedstone extends SecretBaseBlock {
 
     protected static boolean canConnectTo(BlockState blockState, IBlockReader world, BlockPos pos, @Nullable Direction side) {
         Block block = blockState.getBlock();
-        if (block == Blocks.REDSTONE_WIRE || block == SecretBlocks.SECRET_REDSTONE) {
+        if(block == Blocks.REDSTONE_WIRE || block == SecretBlocks.SECRET_REDSTONE) {
             return true;
-        } else if (blockState.getBlock() == Blocks.REPEATER) {
+        } else if(blockState.getBlock() == Blocks.REPEATER) {
             Direction direction = blockState.get(RepeaterBlock.HORIZONTAL_FACING);
             return direction == side || direction.getOpposite() == side;
-        } else if (Blocks.OBSERVER == blockState.getBlock()) {
+        } else if(Blocks.OBSERVER == blockState.getBlock()) {
             return side == blockState.get(ObserverBlock.FACING);
         } else {
             return blockState.canConnectRedstone(world, pos, side) && side != null;

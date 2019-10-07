@@ -97,11 +97,11 @@ public class SecretBaseBlock extends Block {
     public int getLightValue(BlockState state, IEnviromentBlockReader world, BlockPos pos) {
         int result = getValue(world, pos, BlockState::getLightValue, () -> super.getLightValue(state, world, pos));
         //This is needed so we can control AO. Try to remove this asap
-        if ("net.minecraft.client.renderer.BlockModelRenderer".equals(Thread.currentThread().getStackTrace()[3].getClassName())) {
+        if("net.minecraft.client.renderer.BlockModelRenderer".equals(Thread.currentThread().getStackTrace()[3].getClassName())) {
             Optional<BlockState> mirrorState = getMirrorState(world, pos);
             if(mirrorState.isPresent()) {
                 Boolean isAoModel = DistExecutor.callWhenOn(Dist.CLIENT, () -> () ->
-                    Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(mirrorState.get()).isAmbientOcclusion());
+                        Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(mirrorState.get()).isAmbientOcclusion());
                 if(isAoModel != null) {
                     return result == 0 && isAoModel ? 0 : 1;
                 }
@@ -151,7 +151,7 @@ public class SecretBaseBlock extends Block {
         Optional<BlockState> mirrorState = getMirrorState(world, pos);
         if(mirrorState.isPresent()) {
             BlockState blockstate = mirrorState.get();
-            if (blockstate.getRenderType() != BlockRenderType.INVISIBLE) {
+            if(blockstate.getRenderType() != BlockRenderType.INVISIBLE) {
                 Vec3d vec3d = entity.getMotion();
                 world.addParticle(new BlockParticleData(ParticleTypes.BLOCK, blockstate),
                         entity.posX + (world.rand.nextFloat() - 0.5D) * entity.getWidth(),
@@ -174,7 +174,7 @@ public class SecretBaseBlock extends Block {
             if(mirrorState.isPresent()) {
                 BlockState blockstate = mirrorState.get();
                 Direction side = ((BlockRayTraceResult) target).getFace();
-                if (blockstate.getRenderType() != BlockRenderType.INVISIBLE) {
+                if(blockstate.getRenderType() != BlockRenderType.INVISIBLE) {
                     int x = pos.getX();
                     int y = pos.getY();
                     int z = pos.getZ();
@@ -183,13 +183,25 @@ public class SecretBaseBlock extends Block {
                     double yPos = y + world.rand.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.2F) + 0.1F + axisalignedbb.minY;
                     double zPos = z + world.rand.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.2F) + 0.1F + axisalignedbb.minZ;
 
-                    switch (side) {
-                        case UP: yPos = y + axisalignedbb.maxY + 0.1F; break;
-                        case DOWN: yPos = y + axisalignedbb.minY - 0.1F; break;
-                        case NORTH: zPos = z + axisalignedbb.minZ - 0.1F; break;
-                        case SOUTH: zPos = z + axisalignedbb.maxZ + 0.1F; break;
-                        case WEST: xPos = x + axisalignedbb.minX - 0.1F; break;
-                        case EAST: xPos = x + axisalignedbb.maxX + 0.1F; break;
+                    switch(side) {
+                        case UP:
+                            yPos = y + axisalignedbb.maxY + 0.1F;
+                            break;
+                        case DOWN:
+                            yPos = y + axisalignedbb.minY - 0.1F;
+                            break;
+                        case NORTH:
+                            zPos = z + axisalignedbb.minZ - 0.1F;
+                            break;
+                        case SOUTH:
+                            zPos = z + axisalignedbb.maxZ + 0.1F;
+                            break;
+                        case WEST:
+                            xPos = x + axisalignedbb.minX - 0.1F;
+                            break;
+                        case EAST:
+                            xPos = x + axisalignedbb.maxX + 0.1F;
+                            break;
                     }
 
                     Minecraft.getInstance().particles.addEffect(
@@ -208,7 +220,7 @@ public class SecretBaseBlock extends Block {
     @OnlyIn(Dist.CLIENT)
     public boolean addDestroyEffects(BlockState stateIn, World world, BlockPos pos, ParticleManager manager) {
         Optional<BlockState> mirrorState = getMirrorState(world, pos);
-        if (mirrorState.isPresent()) {
+        if(mirrorState.isPresent()) {
             if(mirrorState.get().isAir(world, pos)) {
                 return false;
             }
@@ -218,9 +230,9 @@ public class SecretBaseBlock extends Block {
                 double xDelta = Math.min(1.0D, x2 - x1);
                 double yDelta = Math.min(1.0D, y2 - y1);
                 double zDelta = Math.min(1.0D, z2 - z1);
-                int xAmount = Math.max(2, MathHelper.ceil( xDelta / 0.25D));
-                int yAmount = Math.max(2, MathHelper.ceil( yDelta / 0.25D));
-                int zAmount = Math.max(2, MathHelper.ceil( zDelta / 0.25D));
+                int xAmount = Math.max(2, MathHelper.ceil(xDelta / 0.25D));
+                int yAmount = Math.max(2, MathHelper.ceil(yDelta / 0.25D));
+                int zAmount = Math.max(2, MathHelper.ceil(zDelta / 0.25D));
 
                 for(int x = 0; x < xAmount; ++x) {
                     for(int y = 0; y < yAmount; ++y) {
@@ -233,8 +245,8 @@ public class SecretBaseBlock extends Block {
                             double zPos = dz * zDelta + z1;
                             Minecraft.getInstance().particles.addEffect(
                                     new DiggingParticle(world,
-                                            pos.getX() + xPos,pos.getY() + yPos, pos.getZ() + zPos,
-                                            dx - 0.5D, dy - 0.5D,dz - 0.5D, state)
+                                            pos.getX() + xPos, pos.getY() + yPos, pos.getZ() + zPos,
+                                            dx - 0.5D, dy - 0.5D, dz - 0.5D, state)
                                             .setBlockPos(pos)
                             );
                         }
@@ -286,7 +298,7 @@ public class SecretBaseBlock extends Block {
         }
         TileEntity te = world.getTileEntity(pos);
         return world.getBlockState(pos).getBlock() instanceof SecretBaseBlock && te instanceof SecretTileEntity ?
-            Optional.of(((SecretTileEntity) te).getData()) : Optional.empty();
+                Optional.of(((SecretTileEntity) te).getData()) : Optional.empty();
     }
 
     public static void requestModelRefresh(IBlockReader world, BlockPos pos) {

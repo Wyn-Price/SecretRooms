@@ -56,7 +56,7 @@ public class SecretRecipeProvider extends RecipeProvider {
 
     private InventoryChangeTrigger.Instance hasItems(IItemProvider... itemIn) {
         ItemPredicate.Builder builder = ItemPredicate.Builder.create();
-        for (IItemProvider provider : itemIn) {
+        for(IItemProvider provider : itemIn) {
             builder.item(provider);
         }
         return this.hasItem(builder.build());

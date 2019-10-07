@@ -4,7 +4,6 @@ import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.server.blocks.SecretBlocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.WallOrFloorItem;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 

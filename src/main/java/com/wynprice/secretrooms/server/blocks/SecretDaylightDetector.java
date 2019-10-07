@@ -2,14 +2,12 @@ package com.wynprice.secretrooms.server.blocks;
 
 import com.wynprice.secretrooms.server.tileentity.SecretDaylightDetectorTileEntity;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.DaylightDetectorTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -39,24 +37,24 @@ public class SecretDaylightDetector extends SecretBaseBlock {
     }
 
     public static void updatePower(BlockState state, World world, BlockPos pos) {
-        if (world.dimension.hasSkyLight()) {
+        if(world.dimension.hasSkyLight()) {
 
             int light = world.getLightFor(LightType.SKY, pos) - world.getSkylightSubtracted();
-            for (Direction value : Direction.values()) {
+            for(Direction value : Direction.values()) {
                 light = Math.max(light, world.getLightFor(LightType.SKY, pos.offset(value)) - world.getSkylightSubtracted());
             }
             float sunAngle = world.getCelestialAngleRadians(1.0F);
             boolean flag = state.get(INVERTED);
-            if (flag) {
+            if(flag) {
                 light = 15 - light;
-            } else if (light > 0) {
-                float f1 = sunAngle < (float)Math.PI ? 0.0F : ((float)Math.PI * 2F);
+            } else if(light > 0) {
+                float f1 = sunAngle < (float) Math.PI ? 0.0F : ((float) Math.PI * 2F);
                 sunAngle = sunAngle + (f1 - sunAngle) * 0.2F;
-                light = Math.round((float)light * MathHelper.cos(sunAngle));
+                light = Math.round((float) light * MathHelper.cos(sunAngle));
             }
 
             light = MathHelper.clamp(light, 0, 15);
-            if (state.get(POWER) != light) {
+            if(state.get(POWER) != light) {
                 world.setBlockState(pos, state.with(POWER, light), 3);
             }
 
@@ -65,8 +63,8 @@ public class SecretDaylightDetector extends SecretBaseBlock {
 
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (player.isAllowEdit()) {
-            if (worldIn.isRemote) {
+        if(player.isAllowEdit()) {
+            if(worldIn.isRemote) {
                 return true;
             } else {
                 BlockState blockstate = state.cycle(INVERTED);
