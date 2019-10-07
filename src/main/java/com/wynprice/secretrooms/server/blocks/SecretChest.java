@@ -22,15 +22,13 @@ public class SecretChest extends SecretBaseBlock {
 
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if(worldIn.isRemote) {
-            return true;
-        } else {
+        if(!worldIn.isRemote) {
             TileEntity tileentity = worldIn.getTileEntity(pos);
             if(tileentity instanceof SecretChestTileEntity) {
                 player.openContainer((SecretChestTileEntity) tileentity);
             }
-            return true;
         }
+        return true;
     }
 
     @Override
