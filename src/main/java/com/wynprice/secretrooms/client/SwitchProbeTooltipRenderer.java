@@ -3,6 +3,7 @@ package com.wynprice.secretrooms.client;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.server.data.SecretData;
+import com.wynprice.secretrooms.server.items.SecretItems;
 import com.wynprice.secretrooms.server.items.SwitchProbe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -14,26 +15,23 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderTooltipEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = SecretRooms6.MODID, value = Dist.CLIENT)
 public class SwitchProbeTooltipRenderer {
 
-    @SubscribeEvent
     public static void onTooltip(RenderTooltipEvent.PostBackground event) {
         ItemStack stack = event.getStack();
-        CompoundNBT compound = stack.getOrCreateTag().getCompound(SwitchProbe.PROBE_HIT_DATA);
-        if(!compound.isEmpty()) {
+        if(SecretItems.SWITCH_PROBE.map(i -> i == stack.getItem()).orElse(true)) {
+            return;
+        }
+        CompoundNBT compound = stack.getChildTag(SwitchProbe.PROBE_HIT_DATA);
+        if(compound != null && !compound.isEmpty()) {
             SecretData data = new SecretData(null);
             data.readNBT(compound);
             Item item = data.getBlockState().getBlock().asItem();
 
             GlStateManager.pushMatrix();
             GlStateManager.translated(event.getX(), event.getY(), 0);
-
 
             String formattedText = new TranslationTextComponent(SecretRooms6.MODID + ".probe.containedblock").getFormattedText();
             for (String line : event.getLines()) {

@@ -1,6 +1,5 @@
 package com.wynprice.secretrooms.client.model;
 
-import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.client.model.quads.NoTintBakedQuadRetextured;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -11,14 +10,12 @@ import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@Mod.EventBusSubscriber(modid = SecretRooms6.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class OneWayGlassModel extends SecretBlockModel {
     public OneWayGlassModel(IBakedModel model) {
         super(model);

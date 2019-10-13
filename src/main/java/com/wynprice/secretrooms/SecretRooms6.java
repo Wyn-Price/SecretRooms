@@ -1,5 +1,8 @@
 package com.wynprice.secretrooms;
 
+import com.wynprice.secretrooms.client.SecretModelHandler;
+import com.wynprice.secretrooms.client.SwitchProbeTooltipRenderer;
+import com.wynprice.secretrooms.client.model.OneWayGlassModel;
 import com.wynprice.secretrooms.server.blocks.SecretBlocks;
 import com.wynprice.secretrooms.server.data.SecretItemTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretBlockLootTableProvider;
@@ -9,6 +12,8 @@ import com.wynprice.secretrooms.server.tileentity.SecretTileEntities;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
@@ -23,11 +28,19 @@ public class SecretRooms6 {
 
     public SecretRooms6() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+
+        bus.addListener(SecretModelHandler::onBlockColors);
+        bus.addListener(SecretModelHandler::onModelBaked);
+
+        bus.addListener(OneWayGlassModel::onModelsReady);
         bus.addListener(this::gatherData);
 
         SecretBlocks.REGISTRY.register(bus);
         SecretItems.REGISTRY.register(bus);
         SecretTileEntities.REGISTRY.register(bus);
+
+        forgeBus.addListener(SwitchProbeTooltipRenderer::onTooltip);
     }
 
 

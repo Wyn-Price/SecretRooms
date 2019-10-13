@@ -38,7 +38,7 @@ public class SecretItems {
     public static final Supplier<Item> SECRET_CLAMBER = REGISTRY.register("secret_clamber", () -> new SecretBlockItem(SecretBlocks.SECRET_CLAMBER.get(), prop()));
 
     public static final Supplier<Item> CAMOUFLAGE_PASTE = REGISTRY.register("camouflage_paste", () -> new Item(prop()));
-    public static final Supplier<Item> SWITCH_PROBE = REGISTRY.register("switch_probe", () -> new SwitchProbe(prop()));
+    public static final RegistryObject<Item> SWITCH_PROBE = REGISTRY.register("switch_probe", () -> new SwitchProbe(prop()));
 
     private static Item.Properties prop() {
         return new Item.Properties().group(SecretRooms6.TAB);

@@ -1,6 +1,5 @@
 package com.wynprice.secretrooms.client;
 
-import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.client.model.OneWayGlassModel;
 import com.wynprice.secretrooms.client.model.SecretBlockModel;
 import com.wynprice.secretrooms.client.model.SecretMappedModel;
@@ -12,21 +11,16 @@ import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 import java.util.Map;
 import java.util.function.Function;
 
 import static com.wynprice.secretrooms.server.blocks.SecretBlocks.*;
 
-@Mod.EventBusSubscriber(modid = SecretRooms6.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class SecretModelHandler {
 
-    @SubscribeEvent
     public static void onBlockColors(ColorHandlerEvent.Block event) {
         BlockColors colors = event.getBlockColors();
         colors.register((state, world, pos, index) -> SecretBaseBlock.getMirrorState(world, pos).map(mirror -> colors.getColor(mirror, new DelegateWorld(world), pos, index)).orElse(-1),
@@ -37,7 +31,6 @@ public class SecretModelHandler {
         );
     }
 
-    @SubscribeEvent
     public static void onModelBaked(ModelBakeEvent event) {
         Map<ResourceLocation, IBakedModel> registry = event.getModelRegistry();
 
