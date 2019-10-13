@@ -104,7 +104,6 @@ jar {
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.14.4-28.1.22'
-    compile 'org.projectlombok:lombok:1.18.0'
 }
 
 
