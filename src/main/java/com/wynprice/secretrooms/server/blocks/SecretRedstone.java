@@ -9,7 +9,9 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -157,60 +159,17 @@ public class SecretRedstone extends SecretBaseBlock {
     }
 
     @Override
-    public int getStrongPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        return this.blockedPower ? 0 : blockState.getWeakPower(blockAccess, pos, side);
-    }
-
-    @Override
     public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
         if (this.blockedPower) {
             return 0;
         } else {
-            int power = blockState.get(POWER);
-            if (power == 0) {
-                return 0;
-            } else {
-                EnumSet<Direction> enumset = EnumSet.noneOf(Direction.class);
-
-                for(Direction direction : Direction.values()) {
-                    if (this.isPowerSourceAt(blockAccess, pos, direction)) {
-                        enumset.add(direction);
-                    }
-                }
-
-                if (side.getAxis().isHorizontal() && enumset.isEmpty()) {
-                    return power;
-                } else if (enumset.contains(side) && !enumset.contains(side.rotateYCCW()) && !enumset.contains(side.rotateY())) {
-                    return power;
-                } else {
-                    return 0;
-                }
-            }
+            return blockState.get(POWER);
         }
     }
 
-    private boolean isPowerSourceAt(IBlockReader worldIn, BlockPos pos, Direction side) {
-        BlockPos offsetPos = pos.offset(side);
-        BlockState state = worldIn.getBlockState(offsetPos);
-        if (canConnectTo(state, worldIn, offsetPos, side)) {
-            return true;
-        } else {
-            return state.getBlock() == Blocks.REPEATER && state.get(RedstoneDiodeBlock.POWERED) && state.get(RedstoneDiodeBlock.HORIZONTAL_FACING) == side;
-        }
-    }
-
-    protected static boolean canConnectTo(BlockState blockState, IBlockReader world, BlockPos pos, @Nullable Direction side) {
-        Block block = blockState.getBlock();
-        if (block == Blocks.REDSTONE_WIRE || block == SecretBlocks.SECRET_REDSTONE) {
-            return true;
-        } else if (blockState.getBlock() == Blocks.REPEATER) {
-            Direction direction = blockState.get(RepeaterBlock.HORIZONTAL_FACING);
-            return direction == side || direction.getOpposite() == side;
-        } else if (Blocks.OBSERVER == blockState.getBlock()) {
-            return side == blockState.get(ObserverBlock.FACING);
-        } else {
-            return blockState.canConnectRedstone(world, pos, side) && side != null;
-        }
+    @Override
+    public boolean shouldCheckWeakPower(BlockState state, IWorldReader world, BlockPos pos, Direction side) {
+        return false;
     }
 
     @Override
