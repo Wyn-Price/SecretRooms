@@ -25,8 +25,8 @@ public class SecretBlocks {
     public static final Supplier<Block> ONE_WAY_GLASS = REGISTRY.register("one_way_glass", () -> new OneWayGlass(Block.Properties.create(Materials.SRM_MATERIAL)));
     public static final Supplier<Block> SECRET_WOODEN_BUTTON = REGISTRY.register("secret_wooden_button", () -> new SecretButton(Block.Properties.create(Materials.SRM_MATERIAL), true));
     public static final Supplier<Block> SECRET_STONE_BUTTON = REGISTRY.register("secret_stone_button", () -> new SecretButton(Block.Properties.create(Materials.SRM_MATERIAL), false));
-    public static final Supplier<Block> TORCH_LEVER = REGISTRY.register("torch_lever", () -> new TorchLever(Block.Properties.create(Material.WOOD)));
-    public static final Supplier<Block> WALL_TORCH_LEVER = REGISTRY.register("wall_torch_lever", () -> new WallTorchLever(Block.Properties.create(Material.WOOD)));
+    public static final Supplier<Block> TORCH_LEVER = REGISTRY.register("torch_lever", () -> new TorchLever(Block.Properties.create(Material.WOOD).lightValue(14)));
+    public static final Supplier<Block> WALL_TORCH_LEVER = REGISTRY.register("wall_torch_lever", () -> new WallTorchLever(Block.Properties.create(Material.WOOD).lightValue(14)));
     public static final Supplier<Block> SECRET_PRESSURE_PLATE = REGISTRY.register("secret_pressure_plate", () -> new SecretPressurePlate(Block.Properties.create(Materials.SRM_MATERIAL), entity -> true));
     public static final Supplier<Block> SECRET_PLAYER_PRESSURE_PLATE = REGISTRY.register("secret_player_pressure_plate", () -> new SecretPressurePlate(Block.Properties.create(Materials.SRM_MATERIAL), entity -> entity instanceof PlayerEntity));
     public static final Supplier<Block> SECRET_DOOR = REGISTRY.register("secret_door", () -> new SecretDoor(Block.Properties.create(Materials.SRM_MATERIAL)));
