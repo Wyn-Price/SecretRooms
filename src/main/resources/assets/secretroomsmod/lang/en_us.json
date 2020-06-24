@@ -4,6 +4,7 @@
   "secretroomsmod.probe.data": "Data set inside probe:",
   "secretroomsmod.probe.blockset": "Block: {0}",
   "secretroomsmod.probe.blockproperty": "  {0}={1}",
+  "secretroomsmod.container.secretchest.name": "Secret Chest",
 
 
   "itemGroup.secretroomsmod": "Secret Rooms Mod",
@@ -12,7 +13,7 @@
   "block.secretroomsmod.secret_stairs": "Secret Stairs",
   "block.secretroomsmod.secret_lever": "Secret Lever",
   "block.secretroomsmod.secret_redstone": "Secret Redstone",
-  "block.secretroomsmod.secret_one_way_glass": "One Way Glass",
+  "block.secretroomsmod.one_way_glass": "One Way Glass",
   "block.secretroomsmod.secret_wooden_button": "Secret Wooden Button",
   "block.secretroomsmod.secret_stone_button": "Secret Stone Button",
   "block.secretroomsmod.secret_pressure_plate": "Secret Pressure Plate",
