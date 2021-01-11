@@ -17,16 +17,12 @@ public class OneWayGlassState extends BlockState {
         super(blockIn, properties);
     }
 
-    //This is needed as func_215702_a doesn't allow for directional sensitive calls on the Block.
-    //I need this to make sure glass blocks are culled correctly.
-
-    //TODO: in the future, maybe make it so it checks for a glass tag?
     @Override
-    public VoxelShape func_215702_a(IBlockReader worldIn, BlockPos pos, Direction directionIn) {
+    public VoxelShape getFaceOcclusionShape(IBlockReader worldIn, BlockPos pos, Direction directionIn) {
         BlockState blockState = worldIn.getBlockState(pos.offset(directionIn));
         if(blockState.getBlock() == Blocks.GLASS) {
             return VoxelShapes.fullCube();
         }
-        return super.func_215702_a(worldIn, pos, directionIn);
+        return super.getFaceOcclusionShape(worldIn, pos, directionIn);
     }
 }

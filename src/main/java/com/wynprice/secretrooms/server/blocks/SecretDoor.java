@@ -5,7 +5,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalBlock;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,10 +19,7 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.DoorHingeSide;
 import net.minecraft.state.properties.DoubleBlockHalf;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
@@ -66,7 +62,7 @@ public class SecretDoor extends SecretBaseBlock {
     }
 
     @Override
-    public boolean func_220074_n(BlockState state) {
+    public boolean isTransparent(BlockState state) {
         return this.isSolid(state);
     }
 
@@ -202,7 +198,7 @@ public class SecretDoor extends SecretBaseBlock {
         BlockState blockstate2 = iblockreader.getBlockState(blockpos4);
         BlockPos blockpos5 = blockpos1.offset(direction2);
         BlockState blockstate3 = iblockreader.getBlockState(blockpos5);
-        int i = (blockstate.func_224756_o(iblockreader, blockpos2) ? -1 : 0) + (blockstate1.func_224756_o(iblockreader, blockpos3) ? -1 : 0) + (blockstate2.func_224756_o(iblockreader, blockpos4) ? 1 : 0) + (blockstate3.func_224756_o(iblockreader, blockpos5) ? 1 : 0);
+        int i = (blockstate.blockNeedsPostProcessing(iblockreader, blockpos2) ? -1 : 0) + (blockstate1.blockNeedsPostProcessing(iblockreader, blockpos3) ? -1 : 0) + (blockstate2.blockNeedsPostProcessing(iblockreader, blockpos4) ? 1 : 0) + (blockstate3.blockNeedsPostProcessing(iblockreader, blockpos5) ? 1 : 0);
         boolean flag = blockstate.getBlock() == this && blockstate.get(HALF) == DoubleBlockHalf.LOWER;
         boolean flag1 = blockstate2.getBlock() == this && blockstate2.get(HALF) == DoubleBlockHalf.LOWER;
         if ((!flag || flag1) && i <= 0) {
@@ -222,9 +218,9 @@ public class SecretDoor extends SecretBaseBlock {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON) {
-            return false;
+            return ActionResultType.FAIL;
         } else {
             state = state.cycle(OPEN);
             worldIn.setBlockState(pos, state, 10);
@@ -233,7 +229,7 @@ public class SecretDoor extends SecretBaseBlock {
             requestModelRefresh(worldIn, pos);
             requestModelRefresh(worldIn, state.get(HALF) == DoubleBlockHalf.LOWER ? pos.up() : pos.down());
 
-            return true;
+            return ActionResultType.SUCCESS;
         }
     }
 
@@ -256,7 +252,7 @@ public class SecretDoor extends SecretBaseBlock {
         BlockPos blockpos = pos.down();
         BlockState blockstate = worldIn.getBlockState(blockpos);
         if (state.get(HALF) == DoubleBlockHalf.LOWER) {
-            return blockstate.func_224755_d(worldIn, blockpos, Direction.UP);
+            return blockstate.isSolidSide(worldIn, blockpos, Direction.UP);
         } else {
             return blockstate.getBlock() == this;
         }

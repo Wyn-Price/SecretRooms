@@ -3,30 +3,22 @@ package com.wynprice.secretrooms.client.world;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.data.SecretData;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IEnviromentBlockReader;
-import net.minecraft.world.LightType;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.ILightReader;
+import net.minecraft.world.level.ColorResolver;
+import net.minecraft.world.lighting.WorldLightManager;
 
 import javax.annotation.Nullable;
 
-public class DelegateWorld implements IEnviromentBlockReader {
-    private final IEnviromentBlockReader world;
+public class DelegateWorld implements ILightReader {
+    private final IBlockReader world;
 
-    public DelegateWorld(IEnviromentBlockReader world) {
+    public DelegateWorld(IBlockReader world) {
         this.world = world;
-    }
-
-    @Override
-    public Biome getBiome(BlockPos pos) {
-        return this.world.getBiome(pos);
-    }
-
-    @Override
-    public int getLightFor(LightType type, BlockPos pos) {
-        return this.world.getLightFor(type, pos);
     }
 
     @Nullable
@@ -44,5 +36,16 @@ public class DelegateWorld implements IEnviromentBlockReader {
     @Override
     public IFluidState getFluidState(BlockPos pos) {
         return this.world.getFluidState(pos);
+    }
+
+    @Override
+    public WorldLightManager getLightManager() {
+        return null;
+    }
+
+    @Override
+    public int getBlockColor(BlockPos blockPosIn, ColorResolver colorResolverIn) {
+        System.out.println(Minecraft.getInstance().world.getBlockColor(blockPosIn, colorResolverIn));
+        return Minecraft.getInstance().world.getBlockColor(blockPosIn, colorResolverIn);
     }
 }

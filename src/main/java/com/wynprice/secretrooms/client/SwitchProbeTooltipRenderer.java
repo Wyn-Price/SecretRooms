@@ -43,7 +43,7 @@ public class SwitchProbeTooltipRenderer {
                         AbstractGui.blit(0, 0, 1000, 16, 16, Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getTexture(data.getBlockState()));
                     } else {
                         GlStateManager.enableRescaleNormal();
-                        RenderHelper.enableGUIStandardItemLighting();
+                        RenderHelper.enableStandardItemLighting();
                         Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(new ItemStack(item), 0, 0);
                         RenderHelper.disableStandardItemLighting();
                         GlStateManager.disableRescaleNormal();

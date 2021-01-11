@@ -10,6 +10,7 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
@@ -81,10 +82,10 @@ public class OneWayGlass extends SecretBaseBlock {
         return true;
     }
 
-    @Override
+    /*@Override
     public boolean func_220074_n(BlockState state) {
         return true;
-    }
+    }*/
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
@@ -93,14 +94,14 @@ public class OneWayGlass extends SecretBaseBlock {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if(player.getHeldItem(handIn).isEmpty()) {
             worldIn.setBlockState(pos, state.cycle(SixWayBlock.FACING_TO_PROPERTY_MAP.get(hit.getFace())), 3);
             TileEntity tileEntity = worldIn.getTileEntity(pos);
             if(tileEntity != null) {
                 tileEntity.requestModelDataUpdate();
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
         return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
     }

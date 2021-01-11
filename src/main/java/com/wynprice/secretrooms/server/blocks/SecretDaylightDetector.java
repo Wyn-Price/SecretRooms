@@ -2,15 +2,14 @@ package com.wynprice.secretrooms.server.blocks;
 
 import com.wynprice.secretrooms.server.tileentity.SecretDaylightDetectorTileEntity;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.DaylightDetectorTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -64,15 +63,15 @@ public class SecretDaylightDetector extends SecretBaseBlock {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (player.isAllowEdit()) {
             if (worldIn.isRemote) {
-                return true;
+                return ActionResultType.SUCCESS;
             } else {
                 BlockState blockstate = state.cycle(INVERTED);
                 worldIn.setBlockState(pos, blockstate, 4);
                 updatePower(blockstate, worldIn, pos);
-                return true;
+                return ActionResultType.SUCCESS;
             }
         } else {
             return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);

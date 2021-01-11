@@ -18,13 +18,11 @@ import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -49,11 +47,6 @@ public class SecretBaseBlock extends Block {
     @Override
     public SoundType getSoundType(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
         return getValue(world, pos, (mirror, reader, pos1) -> mirror.getSoundType(reader, pos1, entity), () -> super.getSoundType(state, world, pos, entity));
-    }
-
-    @Override
-    public int getPackedLightmapCoords(BlockState state, IEnviromentBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::getPackedLightmapCoords, () -> super.getPackedLightmapCoords(state, world, pos));
     }
 
     @Nullable
@@ -93,15 +86,16 @@ public class SecretBaseBlock extends Block {
         return getValue(world, pos, BlockState::getBlockHardness, () -> super.getBlockHardness(state, world, pos));
     }
 
+
     @Override
-    public int getLightValue(BlockState state, IEnviromentBlockReader world, BlockPos pos) {
+    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
         int result = getValue(world, pos, BlockState::getLightValue, () -> super.getLightValue(state, world, pos));
         //This is needed so we can control AO. Try to remove this asap
         if ("net.minecraft.client.renderer.BlockModelRenderer".equals(Thread.currentThread().getStackTrace()[3].getClassName())) {
             Optional<BlockState> mirrorState = getMirrorState(world, pos);
             if(mirrorState.isPresent()) {
                 Boolean isAoModel = DistExecutor.callWhenOn(Dist.CLIENT, () -> () ->
-                    Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(mirrorState.get()).isAmbientOcclusion());
+                        Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(mirrorState.get()).isAmbientOcclusion());
                 if(isAoModel != null) {
                     return result == 0 && isAoModel ? 0 : 1;
                 }
@@ -116,11 +110,6 @@ public class SecretBaseBlock extends Block {
     }
 
     @Override
-    public float func_220080_a(BlockState state, IBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::func_215703_d, () -> super.func_220080_a(state, world, pos));
-    }
-
-    @Override
     public boolean propagatesSkylightDown(BlockState state, IBlockReader world, BlockPos pos) {
         return getValue(world, pos, BlockState::propagatesSkylightDown, () -> super.propagatesSkylightDown(state, world, pos));
     }
@@ -130,15 +119,17 @@ public class SecretBaseBlock extends Block {
         return getValue(world, pos, BlockState::isNormalCube, () -> super.isNormalCube(state, world, pos));
     }
 
-    @Override
+    /*@Override
     public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
         return true;
-    }
+    }*/
 
     @Override
     public boolean isSolid(BlockState state) {
         return state.get(SOLID);
     }
+
+
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
@@ -154,9 +145,9 @@ public class SecretBaseBlock extends Block {
             if (blockstate.getRenderType() != BlockRenderType.INVISIBLE) {
                 Vec3d vec3d = entity.getMotion();
                 world.addParticle(new BlockParticleData(ParticleTypes.BLOCK, blockstate),
-                        entity.posX + (world.rand.nextFloat() - 0.5D) * entity.getWidth(),
-                        entity.posY + 0.1D,
-                        entity.posZ + (world.rand.nextFloat() - 0.5D) * entity.getWidth(),
+                        entity.getPosX()+ (world.rand.nextFloat() - 0.5D) * entity.getWidth(),
+                        entity.getPosY() + 0.1D,
+                        entity.getPosZ() + (world.rand.nextFloat() - 0.5D) * entity.getWidth(),
 
                         vec3d.x * -4.0D, 1.5D, vec3d.z * -4.0D);
             }
@@ -249,7 +240,7 @@ public class SecretBaseBlock extends Block {
     public boolean addLandingEffects(BlockState state1, ServerWorld worldserver, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
         Optional<BlockState> mirrorState = getMirrorState(worldserver, pos);
         if(mirrorState.isPresent()) {
-            worldserver.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, mirrorState.get()), entity.posX, entity.posY, entity.posZ, numberOfParticles, 0.0D, 0.0D, 0.0D, 0.15F);
+            worldserver.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, mirrorState.get()), entity.getPosX(), entity.getPosY(), entity.getPosZ(), numberOfParticles, 0.0D, 0.0D, 0.0D, 0.15F);
         }
         return true;
     }
