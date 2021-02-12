@@ -44,10 +44,10 @@ public class SecretData {
 
     public TileEntity getTileEntityCache() {
         if(this.tileEntityNBT != null && this.tileEntityCache == null) {
-            if ((this.tileEntityCache = TileEntity.create(this.tileEntityNBT)) != null) {
+            if ((this.tileEntityCache = TileEntity.readTileEntity(this.blockState, this.tileEntityNBT)) != null) {
                 if(this.base != null) {
                     this.tileEntityCache.setPos(this.base.getPos());
-                    this.tileEntityCache.setWorld(this.base.getWorld());
+                    this.tileEntityCache.setWorldAndPos(this.base.getWorld(), this.base.getPos());
                 }
                 this.tileEntityCache.cachedBlockState = this.blockState;
             } else {

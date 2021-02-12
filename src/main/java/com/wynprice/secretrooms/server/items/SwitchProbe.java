@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
@@ -69,7 +69,7 @@ public class SwitchProbe extends Item {
     @Override
     public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> text, ITooltipFlag flag) {
         CompoundNBT compound = stack.getOrCreateTag().getCompound(PROBE_HIT_DATA);
-        text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.containedblock").applyTextStyle(TextFormatting.GOLD));
+        text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.containedblock").mergeStyle(TextFormatting.GOLD));
         if(compound.isEmpty()) {
             text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.noneset"));
         } else if(Screen.hasShiftDown()){
@@ -77,16 +77,16 @@ public class SwitchProbe extends Item {
             data.readNBT(compound);
 
             BlockState state = data.getBlockState();
-            text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.data").applyTextStyles(TextFormatting.BLUE));
-            text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.blockset", state.getBlock().getRegistryName()).applyTextStyles(TextFormatting.AQUA));
+            text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.data").mergeStyle(TextFormatting.BLUE));
+            text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.blockset", state.getBlock().getRegistryName()).mergeStyle(TextFormatting.AQUA));
 
-            for (IProperty<?> property : state.getProperties()) {
-                text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.blockproperty", property.getName(), propertyString(property, state.get(property))).applyTextStyles(TextFormatting.DARK_AQUA));
+            for (Property<?> property : state.getProperties()) {
+                text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.blockproperty", property.getName(), propertyString(property, state.get(property))).mergeStyle(TextFormatting.DARK_AQUA));
             }
         }
     }
 
-    private static <T extends Comparable<T>> String propertyString(IProperty<T> property, Comparable<?> value) {
+    private static <T extends Comparable<T>> String propertyString(Property<T> property, Comparable<?> value) {
         return property.getName((T)value);
     }
 }

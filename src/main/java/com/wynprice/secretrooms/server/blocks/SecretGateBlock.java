@@ -13,6 +13,7 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -59,13 +60,13 @@ public class SecretGateBlock extends SecretBaseBlock {
     }
 
     @Override
-    public void tick(BlockState state, World worldIn, BlockPos pos, Random random) {
+    public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
         if(state.get(OPEN)) {
             tryBuildGate(worldIn, pos, state);
         } else {
             destroyGate(worldIn, pos, state, true);
         }
-        super.tick(state, worldIn, pos, random);
+        super.tick(state, worldIn, pos, rand);
     }
 
     private void tryBuildGate(World world, BlockPos pos, BlockState gateState) {

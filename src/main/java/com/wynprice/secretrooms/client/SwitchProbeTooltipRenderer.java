@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.RenderTooltipEvent;
@@ -33,17 +34,17 @@ public class SwitchProbeTooltipRenderer {
             GlStateManager.pushMatrix();
             GlStateManager.translated(event.getX(), event.getY(), 0);
 
-            String formattedText = new TranslationTextComponent(SecretRooms6.MODID + ".probe.containedblock").getFormattedText();
-            for (String line : event.getLines()) {
-                if(formattedText.equals(TextFormatting.getTextWithoutFormattingCodes(line))) {
-                    GlStateManager.translated(event.getFontRenderer().getStringWidth(line) - 16D, -2, 0);
+            String formattedText = new TranslationTextComponent(SecretRooms6.MODID + ".probe.containedblock").getUnformattedComponentText();
+            for (ITextProperties line : event.getLines()) {
+                if(formattedText.equals(TextFormatting.getTextWithoutFormattingCodes(line.getString()))) {
+                    GlStateManager.translated(event.getFontRenderer().getStringWidth(line.getString()) - 16D, -2, 0);
                     GlStateManager.scaled(0.75D, 0.75D, 0.75D);
                     if(item == Items.AIR) {
                         Minecraft.getInstance().textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-                        AbstractGui.blit(0, 0, 1000, 16, 16, Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getTexture(data.getBlockState()));
+                        //AbstractGui.blit(0, 0, 1000, 16, 16, Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getTexture(data.getBlockState()));
                     } else {
                         GlStateManager.enableRescaleNormal();
-                        RenderHelper.enableGUIStandardItemLighting();
+                        RenderHelper.enableStandardItemLighting();
                         Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(new ItemStack(item), 0, 0);
                         RenderHelper.disableStandardItemLighting();
                         GlStateManager.disableRescaleNormal();

@@ -14,6 +14,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -34,7 +35,7 @@ public class SecretObserver extends SecretBaseBlock {
     }
 
     @Override
-    public void tick(BlockState state, World worldIn, BlockPos pos, Random random) {
+    public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
         if (state.get(POWERED)) {
             worldIn.setBlockState(pos, state.with(POWERED, false), 2);
         } else {
@@ -44,6 +45,8 @@ public class SecretObserver extends SecretBaseBlock {
 
         this.updateNeighborsInFront(worldIn, pos, state);
     }
+
+
 
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {

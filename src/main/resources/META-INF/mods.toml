@@ -1,5 +1,6 @@
 modLoader="javafml"
 loaderVersion="[28,)"
+license="All right reserved"
 [[mods]]
 modId="secretroomsmod"
 version="${file.jarVersion}"

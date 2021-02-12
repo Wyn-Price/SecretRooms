@@ -1,5 +1,6 @@
 package com.wynprice.secretrooms.server.tileentity;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
@@ -23,9 +24,9 @@ public class SecretChestTileEntity extends SecretTileEntity implements IInventor
     }
 
     @Override
-    public void read(CompoundNBT compound) {
-        this.handler.deserializeNBT(compound.getCompound("Items"));
-        super.read(compound);
+    public void read(BlockState state, CompoundNBT nbt) {
+        this.handler.deserializeNBT(nbt.getCompound("Items"));
+        super.read(state, nbt);
     }
 
     @Override

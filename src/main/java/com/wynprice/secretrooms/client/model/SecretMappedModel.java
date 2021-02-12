@@ -6,12 +6,13 @@ import com.wynprice.secretrooms.server.utils.ModelDataUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.Vector3d;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.client.model.data.IModelData;
 
 import javax.annotation.Nonnull;
@@ -60,7 +61,7 @@ public class SecretMappedModel extends SecretBlockModel {
         List<Vector3d> vertices = this.getVertexPositions(texture);
         List<Vector3d> clamped = this.clampVertexPositions(modelRange, vertices);
 
-        int size = texture.getFormat().getIntegerSize();
+        int size = DefaultVertexFormats.BLOCK.getIntegerSize();
         int[] aint = new int[texture.getVertexData().length];
         System.arraycopy(texture.getVertexData(), 0, aint, 0, aint.length);
 
@@ -73,9 +74,9 @@ public class SecretMappedModel extends SecretBlockModel {
 
         }
 
-        this.resetUVPositions(aint, size, texture.getFormat().getUvOffsetById(0) / 4, vertices, clamped);
+        this.resetUVPositions(aint, size, DefaultVertexFormats.BLOCK.getOffset(0) / 4, vertices, clamped);
 
-        return new BakedQuad(aint, texture.getTintIndex(), texture.getFace(), texture.getSprite(), texture.shouldApplyDiffuseLighting(), texture.getFormat());
+        return new BakedQuad(aint, texture.getTintIndex(), texture.getFace(), texture.getSprite(), texture.applyDiffuseLighting());
     }
 
     private void resetUVPositions(int[] aint, int size, int uOff, List<Vector3d> vertices, List<Vector3d> clampedVertices) {
@@ -144,7 +145,7 @@ public class SecretMappedModel extends SecretBlockModel {
     }
 
     private List<Vector3d> getVertexPositions(BakedQuad quad) {
-        int size = quad.getFormat().getIntegerSize();
+        int size = DefaultVertexFormats.BLOCK.getIntegerSize();
         int[] aint = quad.getVertexData();
 
         List<Vector3d> out = new ArrayList<>();

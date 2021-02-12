@@ -34,9 +34,9 @@ public class SecretTileEntity extends TileEntity {
     }
 
     @Override
-    public void read(CompoundNBT compound) {
-        super.read(compound);
-        this.data.readNBT(compound.getCompound("secret_data"));
+    public void read(BlockState state, CompoundNBT nbt) {
+        super.read(state, nbt);
+        this.data.readNBT(nbt.getCompound("secret_data"));
     }
 
     @Override
@@ -44,9 +44,10 @@ public class SecretTileEntity extends TileEntity {
         return this.write(new CompoundNBT());
     }
 
+
     @Override
-    public void handleUpdateTag(CompoundNBT tag) {
-        this.read(tag);
+    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
+        this.read(state, tag);
     }
 
     @Nullable

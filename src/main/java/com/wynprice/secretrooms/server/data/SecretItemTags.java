@@ -13,6 +13,6 @@ public class SecretItemTags {
     public static final Tag<Item> CLEAR_GLASS = tag("clear_glass");
 
     private static Tag<Item> tag(String id) {
-        return new ItemTags.Wrapper(new ResourceLocation(SecretRooms6.MODID, id));
+        return (Tag<Item>) ItemTags.createOptional(new ResourceLocation(SecretRooms6.MODID, id));
     }
 }

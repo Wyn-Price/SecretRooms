@@ -4,17 +4,17 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TorchBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particles.BlockParticleData;
+import net.minecraft.particles.IParticleData;
+import net.minecraft.particles.ItemParticleData;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 public class TorchLever extends TorchBlock {
@@ -22,22 +22,22 @@ public class TorchLever extends TorchBlock {
     private static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
     protected TorchLever(Properties properties) {
-        super(properties);
+        super(properties, ParticleTypes.SOUL_FIRE_FLAME);
         this.setDefaultState(this.getDefaultState().with(POWERED, false));
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
-        state = state.cycle(POWERED);
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
+        state = state.func_235896_a_(POWERED);
         boolean isPowered = state.get(POWERED);
         if (world.isRemote) {
-            return true;
+            return ActionResultType.SUCCESS;
         } else {
             world.setBlockState(pos, state, 3);
             float pitch = isPowered ? 0.6F : 0.5F;
             world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, pitch);
             this.updateNeighbors(world, pos);
-            return true;
+            return ActionResultType.SUCCESS;
         }
     }
 
