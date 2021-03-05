@@ -32,7 +32,7 @@ public class SecretStairs extends SecretBaseBlock {
     private static final int[] idsToShape = new int[]{12, 5, 3, 10, 14, 13, 7, 11, 13, 7, 11, 14, 8, 4, 1, 2, 4, 1, 2, 8};
 
     @Override
-    public boolean func_220074_n(BlockState state) {
+    public boolean isTransparent(BlockState state) {
         return true;
     }
 

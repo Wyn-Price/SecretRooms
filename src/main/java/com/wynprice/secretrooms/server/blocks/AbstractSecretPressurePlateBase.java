@@ -10,6 +10,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.Random;
 
@@ -23,13 +24,15 @@ public abstract class AbstractSecretPressurePlateBase extends SecretBaseBlock {
         return super.getCollisionShape(state, worldIn, pos, context);
     }
 
-    @Override
     public int tickRate(IWorldReader worldIn) {
         return 20;
     }
 
+
+
+
     @Override
-    public void tick(BlockState state, World worldIn, BlockPos pos, Random random) {
+    public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
         if (!worldIn.isRemote) {
             int i = this.getRedstoneStrength(state);
             if (i > 0) {
@@ -57,7 +60,7 @@ public abstract class AbstractSecretPressurePlateBase extends SecretBaseBlock {
             BlockState blockstate = this.setRedstoneStrength(state, i);
             worldIn.setBlockState(pos, blockstate, 2);
             this.updateNeighbors(worldIn, pos);
-            worldIn.func_225319_b(pos, state, blockstate);
+            worldIn.markBlockRangeForRenderUpdate(pos, state, blockstate);
         }
 
         if (!flag1 && flag) {

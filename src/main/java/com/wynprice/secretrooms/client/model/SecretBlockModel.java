@@ -1,5 +1,6 @@
 package com.wynprice.secretrooms.client.model;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.wynprice.secretrooms.client.SecretModelData;
 import com.wynprice.secretrooms.server.utils.ModelDataUtils;
 import net.minecraft.block.BlockState;
@@ -12,14 +13,11 @@ import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IEnviromentBlockReader;
-import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.client.model.data.IModelData;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.vecmath.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -43,7 +41,8 @@ public class SecretBlockModel implements IBakedModel {
     }
 
     protected boolean canRenderInLater(BlockState state) {
-        return state.canRenderInLayer(MinecraftForgeClient.getRenderLayer());
+        //System.out.println("CanRenderInLater : " +MinecraftForgeClient.getRenderLayer() + " / BlockState " + state.getRenderType());
+        return true;
     }
 
     protected List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
@@ -55,14 +54,20 @@ public class SecretBlockModel implements IBakedModel {
         return ModelDataUtils.getData(data, SecretModelData.SRM_BLOCKSTATE).map(DISPATCHER.get()::getModelForState).orElse(this.model).getParticleTexture(data);
     }
 
+    @Nonnull
     @Override
-    public IModelData getModelData(IEnviromentBlockReader world, BlockPos pos, BlockState state, IModelData tileData) {
+    public IModelData getModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
         return this.model.getModelData(world, pos, state, tileData);
     }
 
     @Override
     public boolean isGui3d() {
         return this.model.isGui3d();
+    }
+
+    @Override
+    public boolean isSideLit() {
+        return false;
     }
 
     @Override
@@ -101,7 +106,7 @@ public class SecretBlockModel implements IBakedModel {
     }
 
     @Override
-    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
-        return this.model.handlePerspective(cameraTransformType);
+    public IBakedModel handlePerspective(ItemCameraTransforms.TransformType cameraTransformType, MatrixStack mat) {
+        return this.model.handlePerspective(cameraTransformType, mat);
     }
 }

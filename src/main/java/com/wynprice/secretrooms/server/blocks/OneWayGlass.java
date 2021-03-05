@@ -10,6 +10,7 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
@@ -59,16 +60,17 @@ public class OneWayGlass extends SecretBaseBlock {
 
         StateContainer.Builder<Block, BlockState> builder = new StateContainer.Builder<>(this);
         this.fillStateContainer(builder);
-        this.oneWayGlassStateContainer = builder.create(OneWayGlassState::new);
+        //this.oneWayGlassStateContainer = builder.func_235882_a_(OneWayGlassState::new, OneWayGlassState::new);
+        this.oneWayGlassStateContainer = null;
 
-        this.setDefaultState(this.oneWayGlassStateContainer.getBaseState()
+        /*this.setDefaultState(this.oneWayGlassStateContainer.getBaseState()
             .with(NORTH, true)
             .with(EAST, true)
             .with(SOUTH, true)
             .with(WEST, true)
             .with(UP, true)
             .with(DOWN, true)
-        );
+        );*/
     }
 
     @Override
@@ -81,10 +83,10 @@ public class OneWayGlass extends SecretBaseBlock {
         return true;
     }
 
-    @Override
+    /*@Override
     public boolean func_220074_n(BlockState state) {
         return true;
-    }
+    }*/
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
@@ -93,14 +95,14 @@ public class OneWayGlass extends SecretBaseBlock {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if(player.getHeldItem(handIn).isEmpty()) {
-            worldIn.setBlockState(pos, state.cycle(SixWayBlock.FACING_TO_PROPERTY_MAP.get(hit.getFace())), 3);
+            worldIn.setBlockState(pos, state.func_235896_a_(SixWayBlock.FACING_TO_PROPERTY_MAP.get(hit.getFace())), 3);
             TileEntity tileEntity = worldIn.getTileEntity(pos);
             if(tileEntity != null) {
                 tileEntity.requestModelDataUpdate();
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
         return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
     }
@@ -141,7 +143,7 @@ public class OneWayGlass extends SecretBaseBlock {
         return state.get(SOLID) && mirror.isPresent() ?
                 VoxelShapes.or(VoxelShapes.empty(),
                         Arrays.stream(Direction.values())
-                                .filter(value -> !state.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(value)) && Block.hasSolidSide(mirror.get(), worldIn, pos.offset(value), value.getOpposite()))
+                                .filter(value -> !state.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(value)) && Block.hasSolidSideOnTop(worldIn, pos.offset(value)))
                                 .map(FACING_TO_SHAPE_MAP::get)
                                 .toArray(VoxelShape[]::new)
                 )

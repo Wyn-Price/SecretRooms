@@ -9,6 +9,8 @@ import com.wynprice.secretrooms.server.data.SecretBlockLootTableProvider;
 import com.wynprice.secretrooms.server.data.SecretRecipeProvider;
 import com.wynprice.secretrooms.server.items.SecretItems;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntities;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -18,6 +20,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
@@ -42,6 +45,8 @@ public class SecretRooms6 {
             bus.addListener(SecretModelHandler::onModelBaked);
             bus.addListener(OneWayGlassModel::onModelsReady);
 
+            bus.addListener(this::clientSetup);
+
             forgeBus.addListener(SwitchProbeTooltipRenderer::onTooltip);
         });
     }
@@ -62,5 +67,29 @@ public class SecretRooms6 {
             gen.addProvider(new SecretItemTagsProvider(gen));
             gen.addProvider(new SecretBlockLootTableProvider(gen));
         }
+    }
+
+    public void clientSetup(FMLClientSetupEvent clientSetupEvent) {
+        RenderTypeLookup.setRenderLayer(SecretBlocks.GHOST_BLOCK.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_STAIRS.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_LEVER.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_REDSTONE.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_WOODEN_BUTTON.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_STONE_BUTTON.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_PRESSURE_PLATE.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_PLAYER_PRESSURE_PLATE.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_CHEST.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_TRAPPED_CHEST.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_GATE.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_DUMMY_BLOCK.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_DAYLIGHT_DETECTOR.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_OBSERVER.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_CLAMBER.get(), RenderType.getCutout());
+
+
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_DOOR.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_IRON_DOOR.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_TRAPDOOR.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(SecretBlocks.SECRET_IRON_TRAPDOOR.get(), RenderType.getCutout());
     }
 }

@@ -15,7 +15,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -38,21 +38,20 @@ public class SecretButton extends SecretBaseBlock {
         builder.add(POWERED);
     }
 
-    @Override
     public int tickRate(IWorldReader worldIn) {
         return this.wooden ? 30 : 20;
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (state.get(POWERED)) {
-            return true;
+            return ActionResultType.SUCCESS;
         } else {
             worldIn.setBlockState(pos, state.with(POWERED, Boolean.TRUE), 3);
             this.playSound(player, worldIn, pos, true);
             this.updateNeighbors(worldIn, pos);
             worldIn.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(worldIn));
-            return true;
+            return ActionResultType.SUCCESS;
         }
     }
 
@@ -89,7 +88,7 @@ public class SecretButton extends SecretBaseBlock {
     }
 
     @Override
-    public void tick(BlockState state, World worldIn, BlockPos pos, Random random) {
+    public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
         if (!worldIn.isRemote && state.get(POWERED)) {
             if (this.wooden) {
                 this.checkPressed(state, worldIn, pos);

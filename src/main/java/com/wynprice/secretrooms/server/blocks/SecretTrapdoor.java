@@ -5,7 +5,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LadderBlock;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
@@ -16,6 +15,7 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.Half;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -90,7 +90,7 @@ public class SecretTrapdoor extends SecretBaseBlock {
     }
 
     @Override
-    public boolean func_220074_n(BlockState state) {
+    public boolean isTransparent(BlockState state) {
         return this.isSolid(state);
     }
 
@@ -117,15 +117,15 @@ public class SecretTrapdoor extends SecretBaseBlock {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON) {
-            return false;
+            return ActionResultType.FAIL;
         } else {
-            state = state.cycle(OPEN);
+            state = state.func_235896_a_(OPEN);
             worldIn.setBlockState(pos, state, 2);
             requestModelRefresh(worldIn, pos);
             this.playSound(player, worldIn, pos, state.get(OPEN));
-            return true;
+            return ActionResultType.SUCCESS;
         }
     }
 

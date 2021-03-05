@@ -11,7 +11,7 @@ import static com.wynprice.secretrooms.server.blocks.SecretBlocks.*;
 
 public class SecretTileEntities {
 
-    public static final DeferredRegister<TileEntityType<?>> REGISTRY = new DeferredRegister<>(ForgeRegistries.TILE_ENTITIES, SecretRooms6.MODID);
+    public static final DeferredRegister<TileEntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, SecretRooms6.MODID);
 
     public static final Supplier<TileEntityType<SecretTileEntity>> SECRET_TILE_ENTITY = REGISTRY.register("secret_tile_entity", () ->
         TileEntityType.Builder.create(SecretTileEntity::new,
