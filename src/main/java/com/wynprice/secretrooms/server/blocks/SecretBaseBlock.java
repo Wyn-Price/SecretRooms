@@ -1,6 +1,5 @@
 package com.wynprice.secretrooms.server.blocks;
 
-import com.sun.javafx.geom.Vec3d;
 import com.wynprice.secretrooms.server.data.SecretData;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
 import net.minecraft.block.Block;
