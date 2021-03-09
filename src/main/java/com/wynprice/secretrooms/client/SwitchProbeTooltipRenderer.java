@@ -1,5 +1,6 @@
 package com.wynprice.secretrooms.client;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.server.data.SecretData;
@@ -9,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -31,29 +33,28 @@ public class SwitchProbeTooltipRenderer {
             data.readNBT(compound);
             Item item = data.getBlockState().getBlock().asItem();
 
-            GlStateManager.pushMatrix();
-            GlStateManager.translated(event.getX(), event.getY(), 0);
+            MatrixStack matrixStack = event.getMatrixStack();
+            matrixStack.push();
+            matrixStack.translate(event.getX(), event.getY(), 0);
 
             String formattedText = new TranslationTextComponent(SecretRooms6.MODID + ".probe.containedblock").getUnformattedComponentText();
             for (ITextProperties line : event.getLines()) {
                 if(formattedText.equals(TextFormatting.getTextWithoutFormattingCodes(line.getString()))) {
-                    GlStateManager.translated(event.getFontRenderer().getStringWidth(line.getString()) - 16D, -2, 0);
-                    GlStateManager.scaled(0.75D, 0.75D, 0.75D);
+                    matrixStack.translate(event.getFontRenderer().getStringWidth(line.getString()) - 16D, -2, 0);
+                    matrixStack.scale(0.75F, 0.75F, 0.75F);
                     if(item == Items.AIR) {
-                        Minecraft.getInstance().textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-                        //AbstractGui.blit(0, 0, 1000, 16, 16, Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getTexture(data.getBlockState()));
+                        TextureAtlasSprite texture = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getTexture(data.getBlockState());
+                        AbstractGui.blit(matrixStack, 0, 0, 100, 16, 16, texture);
                     } else {
-                        GlStateManager.enableRescaleNormal();
                         RenderHelper.enableStandardItemLighting();
                         Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(new ItemStack(item), 0, 0);
                         RenderHelper.disableStandardItemLighting();
-                        GlStateManager.disableRescaleNormal();
                     }
                     break;
                 }
-                GlStateManager.translated(0, 10, 0);
+                matrixStack.translate(0, 10, 0);
             }
-            GlStateManager.popMatrix();
+            matrixStack.pop();
         }
     }
 }

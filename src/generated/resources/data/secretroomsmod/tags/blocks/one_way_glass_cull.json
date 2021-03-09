@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "secretroomsmod:one_way_glass",
+    "#forge:glass"
+  ]
+}

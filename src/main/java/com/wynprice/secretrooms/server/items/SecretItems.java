@@ -19,7 +19,7 @@ public class SecretItems {
     public static final Supplier<Item> SECRET_STAIRS = REGISTRY.register("secret_stairs", () -> new SecretBlockItem(SecretBlocks.SECRET_STAIRS.get(), prop()));
     public static final Supplier<Item> SECRET_LEVER = REGISTRY.register("secret_lever", () -> new SecretBlockItem(SecretBlocks.SECRET_LEVER.get(), prop()));
     public static final Supplier<Item> SECRET_REDSTONE = REGISTRY.register("secret_redstone", () -> new SecretBlockItem(SecretBlocks.SECRET_REDSTONE.get(), prop()));
-    public static final Supplier<Item> ONE_WAY_GLASS = REGISTRY.register("one_way_glass", () -> new SecretBlockItem(SecretBlocks.ONE_WAY_GLASS.get(), new Item.Properties()));
+    public static final Supplier<Item> ONE_WAY_GLASS = REGISTRY.register("one_way_glass", () -> new SecretBlockItem(SecretBlocks.ONE_WAY_GLASS.get(), prop()));
     public static final Supplier<Item> SECRET_WOODEN_BUTTON = REGISTRY.register("secret_wooden_button", () -> new SecretBlockItem(SecretBlocks.SECRET_WOODEN_BUTTON.get(), prop()));
     public static final Supplier<Item> SECRET_STONE_BUTTON = REGISTRY.register("secret_stone_button", () -> new SecretBlockItem(SecretBlocks.SECRET_STONE_BUTTON.get(), prop()));
     public static final Supplier<Item> TORCH_LEVER = REGISTRY.register("torch_lever", () -> new WallOrFloorItem(Objects.requireNonNull(SecretBlocks.TORCH_LEVER.get()), Objects.requireNonNull(SecretBlocks.WALL_TORCH_LEVER.get()), prop()));

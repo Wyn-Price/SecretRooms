@@ -263,7 +263,7 @@ public class SecretBaseBlock extends Block {
     public void applyExtraModelData(IBlockReader world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
     }
 
-    public BlockState getPlaceState(IBlockReader wold, BlockPos placedOnPos, BlockState placedOn) {
+    public BlockState getPlaceState(IBlockReader wold, BlockPos placedOnPos, BlockState placedOn, BlockState fallback) {
         return this.getDefaultState().with(SOLID, placedOn.isSolid());
     }
 

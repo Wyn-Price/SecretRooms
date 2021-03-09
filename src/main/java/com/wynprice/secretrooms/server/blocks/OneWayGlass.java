@@ -2,6 +2,7 @@ package com.wynprice.secretrooms.server.blocks;
 
 import com.google.common.collect.Maps;
 import com.wynprice.secretrooms.server.blocks.states.OneWayGlassState;
+import com.wynprice.secretrooms.server.data.SecretBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SixWayBlock;
@@ -83,10 +84,10 @@ public class OneWayGlass extends SecretBaseBlock {
         return true;
     }
 
-    /*@Override
-    public boolean func_220074_n(BlockState state) {
+    @Override
+    public boolean isTransparent(BlockState state) {
         return true;
-    }*/
+    }
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
@@ -115,6 +116,19 @@ public class OneWayGlass extends SecretBaseBlock {
     @Override
     public boolean propagatesSkylightDown(BlockState state, IBlockReader world, BlockPos pos) {
         return false;
+    }
+    
+    @Override
+    public BlockState getPlaceState(IBlockReader wold, BlockPos placedOnPos, BlockState placedOn, BlockState fallback) {
+        return fallback;
+    }
+
+    @Override
+    public boolean isSideInvisible(BlockState state, BlockState adjacentBlockState, Direction side) {
+        boolean isGlass = state.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(side));
+        boolean isInCullTag = adjacentBlockState.isIn(SecretBlockTags.ONE_WAY_GLASS_CULL);
+
+        return super.isSideInvisible(state, adjacentBlockState, side) || (isGlass && isInCullTag);
     }
 
     @Nullable

@@ -35,7 +35,7 @@ public class SecretBlockItem extends BlockItem {
     }
 
     protected boolean doSetBlock(World world, BlockPos pos, BlockPos placedOn, BlockState state, BlockState placedOnState, TileEntity placedOnTileEntity) {
-        if(world.setBlockState(pos, this.getBlock() instanceof SecretBaseBlock ? ((SecretBaseBlock) this.getBlock()).getPlaceState(world, placedOn, placedOnState) : state, 11)) {
+        if(world.setBlockState(pos, this.getBlock() instanceof SecretBaseBlock ? ((SecretBaseBlock) this.getBlock()).getPlaceState(world, placedOn, placedOnState, state) : state, 11)) {
             this.setData(world, pos, placedOnState, placedOnTileEntity);
             world.getChunkProvider().getLightManager().checkBlock(pos);
             return true;

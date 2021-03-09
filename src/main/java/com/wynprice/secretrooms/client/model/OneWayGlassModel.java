@@ -7,6 +7,7 @@ import net.minecraft.block.SixWayBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.util.Direction;
@@ -22,6 +23,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 public class OneWayGlassModel extends SecretBlockModel {
     public OneWayGlassModel(IBakedModel model) {
@@ -40,7 +42,7 @@ public class OneWayGlassModel extends SecretBlockModel {
     public List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         RenderType startLayer = MinecraftForgeClient.getRenderLayer();
 
-        LazyOptional<List<BakedQuad>> superQuads = LazyOptional.of(() -> getQuadsForSide(mirrorState, baseState, side, rand, extraData));
+        Supplier<List<BakedQuad>> superQuads = () -> getQuadsForSide(mirrorState, baseState, side, rand, extraData);
         List<BakedQuad> out = this.getQuadsNotSolid(baseState, mirrorState, superQuads, extraData);
 
         ForgeHooksClient.setRenderLayer(startLayer);
@@ -48,7 +50,7 @@ public class OneWayGlassModel extends SecretBlockModel {
         return out;
     }
 
-    private List<BakedQuad> getQuadsNotSolid(BlockState baseState, BlockState delegate, LazyOptional<List<BakedQuad>> superQuads, IModelData extraData) {
+    private List<BakedQuad> getQuadsNotSolid(BlockState baseState, BlockState delegate, Supplier<List<BakedQuad>> superQuads, IModelData extraData) {
         List<BakedQuad> quads = new ArrayList<>();
 
         if(MinecraftForgeClient.getRenderLayer() == RenderType.getCutout()) {
@@ -60,29 +62,29 @@ public class OneWayGlassModel extends SecretBlockModel {
         return quads;
     }
 
-    private List<BakedQuad> getGlassQuadsNotSolid(BlockState baseState, BlockState delegate, LazyOptional<List<BakedQuad>> superQuads, IModelData extraData) {
+    private List<BakedQuad> getGlassQuadsNotSolid(BlockState baseState, BlockState delegate, Supplier<List<BakedQuad>> superQuads, IModelData extraData) {
         List<BakedQuad> quads = new ArrayList<>();
 
         //Go through the render layers to get all the quads. As they are remapped to the glass texture, it doesn't matter.
         for (RenderType value : RenderType.getBlockRenderTypes()) {
             ForgeHooksClient.setRenderLayer(value);
 
-            //if(delegate.getRenderType().equals(value) || MinecraftForgeClient.getRenderLayer() == RenderType.getCutout()) {
-                for (BakedQuad bakedQuad : superQuads.orElseThrow(NullPointerException::new)) {
+            if(RenderTypeLookup.canRenderInLayer(delegate, value) || MinecraftForgeClient.getRenderLayer() == RenderType.getCutout()) {
+                for (BakedQuad bakedQuad : superQuads.get()) {
                     //If the quads facing direction is set to glass in the one way glass state
                     if (baseState.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(bakedQuad.getFace())) && MinecraftForgeClient.getRenderLayer() == RenderType.getCutout()) {
                         quads.add(new NoTintBakedQuadRetextured(bakedQuad, glassModel.getParticleTexture(extraData)));
                     }
                 }
-            //}
+            }
         }
         return quads;
     }
 
-    private List<BakedQuad> getDelegateQuadsNotSolid(BlockState baseState, BlockState delegate, LazyOptional<List<BakedQuad>> superQuads) {
+    private List<BakedQuad> getDelegateQuadsNotSolid(BlockState baseState, BlockState delegate, Supplier<List<BakedQuad>> superQuads) {
         List<BakedQuad> quads = new ArrayList<>();
         //if(delegate.getRenderType().equals(MinecraftForgeClient.getRenderLayer())) {
-            for (BakedQuad bakedQuad : superQuads.orElseThrow(NullPointerException::new)) {
+            for (BakedQuad bakedQuad : superQuads.get()) {
                 //If the quads facing direction isn't set to glass in the one way glass state
                 if (!baseState.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(bakedQuad.getFace()))) {
                     quads.add(bakedQuad);

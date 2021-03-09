@@ -20,8 +20,8 @@ public class GhostBlock extends SecretBaseBlock {
     }
 
     @Override
-    public BlockState getPlaceState(IBlockReader wold, BlockPos placedOnPos, BlockState placedOn) {
-        return super.getPlaceState(wold, placedOnPos, placedOn).with(NORMAL_CUBE, placedOn.isNormalCube(wold, placedOnPos));
+    public BlockState getPlaceState(IBlockReader wold, BlockPos placedOnPos, BlockState placedOn, BlockState fallback) {
+        return super.getPlaceState(wold, placedOnPos, placedOn, fallback).with(NORMAL_CUBE, placedOn.isNormalCube(wold, placedOnPos));
     }
 
     @Override
