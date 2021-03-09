@@ -37,7 +37,7 @@ public class SecretChestTileEntity extends SecretTileEntity implements IInventor
 
     @Override
     public ITextComponent getDisplayName() {
-        return new TranslationTextComponent("secretroomsmod.container.secretchest.name");
+        return new TranslationTextComponent("secretroomsmod.container.secretchest");
     }
 
     @Nullable

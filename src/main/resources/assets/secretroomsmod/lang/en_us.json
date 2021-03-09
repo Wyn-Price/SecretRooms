@@ -31,5 +31,7 @@
   "block.secretroomsmod.torch_lever": "Torch Lever",
 
   "item.secretroomsmod.camouflage_paste": "Camouflage Paste",
-  "item.secretroomsmod.switch_probe": "Switch Probe"
+  "item.secretroomsmod.switch_probe": "Switch Probe",
+
+  "block.secretroomsmod.container.secret_chest": "Secret Chest"
 }
