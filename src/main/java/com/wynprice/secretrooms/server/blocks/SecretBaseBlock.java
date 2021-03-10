@@ -77,18 +77,6 @@ public class SecretBaseBlock extends Block implements IWaterLoggable {
         return state.get(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
     }
 
-    protected boolean keepFluidState() {
-        return true;
-    }
-
-    @Override
-    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        super.onReplaced(state, worldIn, pos, newState, isMoving);
-        if(!keepFluidState() && newState.isAir(worldIn, pos)) {
-            worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
-        }
-    }
-
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
         getMirrorData(worldIn, currentPos).ifPresent(data -> {
@@ -102,17 +90,6 @@ public class SecretBaseBlock extends Block implements IWaterLoggable {
             }
         });
         return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
-    }
-
-    //We don't want to be able to edit the waterlogged state.
-    @Override
-    public boolean receiveFluid(IWorld worldIn, BlockPos pos, BlockState state, FluidState fluidStateIn) {
-        return !keepFluidState() && IWaterLoggable.super.receiveFluid(worldIn, pos, state, fluidStateIn);
-    }
-
-    @Override
-    public Fluid pickupFluid(IWorld worldIn, BlockPos pos, BlockState state) {
-        return keepFluidState() ? Fluids.EMPTY : IWaterLoggable.super.pickupFluid(worldIn, pos, state);
     }
 
     @Override

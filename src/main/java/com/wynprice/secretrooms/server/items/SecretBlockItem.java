@@ -41,8 +41,8 @@ public class SecretBlockItem extends BlockItem {
         if(placedOnState == null) {
             placedOnState = placedOnStateRaw;
         }
-        if(placedOnStateRaw.hasProperty(WATERLOGGED)) {
-            placedOnState = placedOnState.with(WATERLOGGED, placedOnStateRaw.get(WATERLOGGED));
+        if(placedOnState.hasProperty(WATERLOGGED)) {
+            placedOnState = placedOnState.with(WATERLOGGED, false);
         }
 
         return this.doSetBlock(context.getWorld(), context.getPos(), offFace, state, placedOnState, placedOnTileEntity);

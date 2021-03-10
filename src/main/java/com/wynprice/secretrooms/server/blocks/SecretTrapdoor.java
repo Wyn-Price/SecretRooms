@@ -50,7 +50,6 @@ public class SecretTrapdoor extends SecretBaseBlock {
             .with(OPEN, false)
             .with(HALF, Half.BOTTOM)
             .with(POWERED, false)
-            .with(BlockStateProperties.WATERLOGGED, false)
         );
     }
 
@@ -61,11 +60,6 @@ public class SecretTrapdoor extends SecretBaseBlock {
             .with(OPEN, state.get(OPEN))
             .with(HALF, state.get(HALF))
         );
-    }
-
-    @Override
-    protected boolean keepFluidState() {
-        return false;
     }
 
     @Override
@@ -105,6 +99,11 @@ public class SecretTrapdoor extends SecretBaseBlock {
     @Override
     public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
         return this.getShape(state, worldIn, pos, ISelectionContext.dummy());
+    }
+
+    @Override
+    public Boolean getSolidValue() {
+        return false;
     }
 
     @Override

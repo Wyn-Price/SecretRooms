@@ -56,13 +56,6 @@ public class SwitchProbe extends Item {
                 SecretData d = new SecretData(null);
                 d.readNBT(compound);
                 data.get().setFrom(d);
-
-                BlockState placedOn = d.getBlockState();
-                boolean waterlogged = placedOn.hasProperty(BlockStateProperties.WATERLOGGED) && placedOn.get(BlockStateProperties.WATERLOGGED);
-                BlockState blockState = context.getWorld().getBlockState(context.getPos());
-                if(blockState.getBlock() instanceof SecretBaseBlock) {
-                    context.getWorld().setBlockState(context.getPos(), blockState.with(BlockStateProperties.WATERLOGGED, waterlogged));
-                }
             }
         } else {
             SecretData d = new SecretData(null);

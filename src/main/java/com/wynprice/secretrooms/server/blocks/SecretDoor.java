@@ -53,14 +53,14 @@ public class SecretDoor extends SecretBaseBlock {
     }
 
     @Override
-    protected boolean keepFluidState() {
-        return true;
-    }
-
-    @Override
     public void applyExtraModelData(IBlockReader world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
         builder.withInitial(SecretModelData.MODEL_MAP_STATE, Blocks.OAK_DOOR.getDefaultState().with(FACING, state.get(FACING)).with(OPEN, state.get(OPEN)).with(HINGE, state.get(HINGE)).with(POWERED, state.get(POWERED)).with(HALF, state.get(HALF)));
         super.applyExtraModelData(world, pos, state, builder);
+    }
+
+    @Override
+    public Boolean getSolidValue() {
+        return false;
     }
 
     @Override
