@@ -32,6 +32,8 @@ import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 
+import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
+
 public class SwitchProbe extends Item {
 
     public static final String PROBE_HIT_DATA = "probe_hit_data";
@@ -56,6 +58,11 @@ public class SwitchProbe extends Item {
                 SecretData d = new SecretData(null);
                 d.readNBT(compound);
                 data.get().setFrom(d);
+
+                BlockState blockState = context.getWorld().getBlockState(context.getPos());
+                if(blockState.hasProperty(WATERLOGGED) && d.getBlockState().hasProperty(WATERLOGGED)) {
+                    d.setBlockState(d.getBlockState().with(WATERLOGGED, blockState.get(WATERLOGGED)));
+                }
             }
         } else {
             SecretData d = new SecretData(null);

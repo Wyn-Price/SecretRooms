@@ -68,6 +68,43 @@ public class SecretBaseBlock extends Block implements IWaterLoggable {
     }
 
     @Override
+    public boolean receiveFluid(IWorld worldIn, BlockPos pos, BlockState state, FluidState fluidStateIn) {
+        boolean value = getValue(worldIn, pos,
+            (m, reader, p) -> m.getBlock() instanceof IWaterLoggable && ((IWaterLoggable) m.getBlock()).canContainFluid(reader, pos, m, fluidStateIn.getFluid()),
+            () -> false
+        );
+        if(value) {
+            boolean fluid = IWaterLoggable.super.receiveFluid(worldIn, pos, state, fluidStateIn);
+            if(fluid) {
+                getMirrorData(worldIn, pos).ifPresent(d -> {
+                    BlockState mirror = d.getBlockState();
+                    if(mirror.hasProperty(BlockStateProperties.WATERLOGGED)) {
+                        d.setBlockState(mirror.with(BlockStateProperties.WATERLOGGED, true));
+                    }
+                });
+            }
+            return fluid;
+        } else {
+            return false;
+        }
+
+    }
+
+    @Override
+    public Fluid pickupFluid(IWorld worldIn, BlockPos pos, BlockState state) {
+        Fluid fluid = IWaterLoggable.super.pickupFluid(worldIn, pos, state);
+        if(fluid != Fluids.EMPTY) {
+            getMirrorData(worldIn, pos).ifPresent(d -> {
+                BlockState mirror = d.getBlockState();
+                if(mirror.hasProperty(BlockStateProperties.WATERLOGGED)) {
+                    d.setBlockState(mirror.with(BlockStateProperties.WATERLOGGED, false));
+                }
+            });
+        }
+        return fluid;
+    }
+
+    @Override
     public StateContainer<Block, BlockState> getStateContainer() {
         return this.stateContainerOverride;
     }
