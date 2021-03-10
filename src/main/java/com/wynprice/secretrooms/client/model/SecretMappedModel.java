@@ -74,15 +74,20 @@ public class SecretMappedModel extends SecretBlockModel {
 
         }
 
-        this.resetUVPositions(aint, size, DefaultVertexFormats.BLOCK.getOffset(0) / 4, vertices, clamped);
+        this.resetUVPositions(aint, size, 4, vertices, clamped);
 
         return new BakedQuad(aint, texture.getTintIndex(), texture.getFace(), texture.getSprite(), texture.applyDiffuseLighting());
     }
 
     private void resetUVPositions(int[] aint, int size, int uOff, List<Vector3d> vertices, List<Vector3d> clampedVertices) {
-        int[] mappedU = new int[]{ 3, 2, 1, 0 };
-        int[] mappedV = new int[]{ 1, 0, 3, 2 };
-        for (int v = 0; v < vertices.size(); v++) {
+        boolean uvRot = aint[uOff] != aint[size+uOff];
+
+        int[] t = new int[]{ 1, 0, 3, 2 };
+        int[] a = new int[]{ 3, 2, 1, 0 };
+        int[] mappedU = uvRot ? a : t;
+        int[] mappedV = uvRot ? t : a;
+
+        for (int v = 0; v < 4; v++) {
             if(vertices.get(v).equals(clampedVertices.get(v))) {
                 continue;
             }
