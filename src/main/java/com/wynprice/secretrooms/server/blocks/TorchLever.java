@@ -22,7 +22,7 @@ public class TorchLever extends TorchBlock {
     private static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
     protected TorchLever(Properties properties) {
-        super(properties, ParticleTypes.SOUL_FIRE_FLAME);
+        super(properties, ParticleTypes.FLAME);
         this.setDefaultState(this.getDefaultState().with(POWERED, false));
     }
 

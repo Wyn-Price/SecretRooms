@@ -1,10 +1,7 @@
 package com.wynprice.secretrooms.server.blocks;
 
 import com.wynprice.secretrooms.client.SecretModelData;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.HorizontalBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -68,7 +65,7 @@ public class SecretDoor extends SecretBaseBlock {
 
     @Override
     public boolean isTransparent(BlockState state) {
-        return this.isSolid(state);
+        return true;
     }
 
     @Override
@@ -129,22 +126,19 @@ public class SecretDoor extends SecretBaseBlock {
         }
     }
 
+
     @Override
     public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
-        DoubleBlockHalf doubleblockhalf = state.get(HALF);
-        BlockPos blockpos = doubleblockhalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
-        BlockState blockstate = worldIn.getBlockState(blockpos);
-        Optional<BlockState> mirror = getMirrorState(worldIn, pos);
-        if (blockstate.getBlock() == this && blockstate.get(HALF) != doubleblockhalf) {
-            worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 35);
-            mirror.ifPresent(blockState -> worldIn.playEvent(player, 2001, blockpos, Block.getStateId(blockState)));
-//            ItemStack itemstack = player.getHeldItemMainhand();
-//            if (!worldIn.isRemote && !player.isCreative()) {
-//                Block.spawnDrops(state, worldIn, pos, (TileEntity)null, player, itemstack);
-//                Block.spawnDrops(blockstate, worldIn, blockpos, (TileEntity)null, player, itemstack);
-//            }
+        if (!worldIn.isRemote && player.isCreative()) {
+            DoubleBlockHalf doubleblockhalf = state.get(HALF);
+            BlockPos blockpos = doubleblockhalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
+            BlockState blockstate = worldIn.getBlockState(blockpos);
+            Optional<BlockState> mirror = getMirrorState(worldIn, pos);
+            if (blockstate.getBlock() == this && blockstate.get(HALF) != doubleblockhalf) {
+                worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 35);
+                mirror.ifPresent(blockState -> worldIn.playEvent(player, 2001, blockpos, Block.getStateId(blockState)));
+            }
         }
-
         super.onBlockHarvested(worldIn, pos, state, player);
     }
 

@@ -26,6 +26,17 @@ public class OneWayGlassState extends SecretBaseState {
     }
 
     @Override
+    public boolean isSolid() {
+        //We don't want the glass to cull out other blocks, so we need to ensure that if this is from the
+        //'shouldSideBeRendered' call, we act like a non solid block.
+        StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+        if("net.minecraft.block.Block".equals(trace[2].getClassName()) && "shouldSideBeRendered".equals(trace[2].getMethodName())) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public VoxelShape getFaceOcclusionShape(IBlockReader worldIn, BlockPos pos, Direction directionIn) {
         Optional<BlockState> mirror = SecretBaseBlock.getMirrorState(worldIn, pos);
         DelegateWorld world = DelegateWorld.getPooled(worldIn);

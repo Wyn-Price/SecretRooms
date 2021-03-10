@@ -7,6 +7,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.BooleanProperty;
@@ -44,6 +45,13 @@ public class SecretTrapdoor extends SecretBaseBlock {
 
     public SecretTrapdoor(Properties properties) {
         super(properties);
+        this.setDefaultState(this.getDefaultState()
+            .with(HORIZONTAL_FACING, Direction.NORTH)
+            .with(OPEN, false)
+            .with(HALF, Half.BOTTOM)
+            .with(POWERED, false)
+            .with(BlockStateProperties.WATERLOGGED, false)
+        );
     }
 
     @Override
@@ -101,7 +109,7 @@ public class SecretTrapdoor extends SecretBaseBlock {
 
     @Override
     public boolean isTransparent(BlockState state) {
-        return this.isSolid(state);
+        return true;
     }
 
     @Override
@@ -128,7 +136,7 @@ public class SecretTrapdoor extends SecretBaseBlock {
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON) {
-            return ActionResultType.FAIL;
+            return ActionResultType.PASS;
         } else {
             state = state.func_235896_a_(OPEN);
             worldIn.setBlockState(pos, state, 2);
@@ -161,6 +169,9 @@ public class SecretTrapdoor extends SecretBaseBlock {
                 }
                 worldIn.setBlockState(pos, state.with(POWERED, flag), 2);
                 requestModelRefresh(worldIn, pos);
+                if (state.get(BlockStateProperties.WATERLOGGED)) {
+                    worldIn.getPendingFluidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
+                }
             }
 
         }

@@ -61,7 +61,7 @@ public class OneWayGlass extends SecretBaseBlock {
     }
 
     @Override
-    public boolean isSolid(BlockState state) {
+    public Boolean getSolidValue() {
         return true;
     }
 

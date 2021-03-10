@@ -9,6 +9,7 @@ import net.minecraft.state.Property;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.gen.feature.BlockBlobFeature;
 
@@ -21,6 +22,13 @@ public class SecretBaseState extends BlockState {
 
     @Override
     public boolean isSolid() {
+        Block block = this.getBlock();
+        if(block instanceof SecretBaseBlock) {
+            Boolean value = ((SecretBaseBlock) block).getSolidValue();
+            if(value != null) {
+                return value;
+            }
+        }
         return this.get(SecretBaseBlock.SOLID);
     }
 
@@ -35,6 +43,11 @@ public class SecretBaseState extends BlockState {
         } else {
             return value;
         }
+    }
+
+    @Override
+    public VoxelShape getFaceOcclusionShape(IBlockReader worldIn, BlockPos p, Direction directionIn) {
+        return SecretBaseBlock.getValue(worldIn, p, (mirror, reader, pos1) -> mirror.getFaceOcclusionShape(reader, p, directionIn), () ->super.getFaceOcclusionShape(worldIn, p, directionIn));
     }
 
     @Override

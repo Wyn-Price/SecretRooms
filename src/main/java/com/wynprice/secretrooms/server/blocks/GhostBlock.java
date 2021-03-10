@@ -25,7 +25,7 @@ public class GhostBlock extends SecretBaseBlock {
     }
 
     @Override
-    public boolean isSolid(BlockState state) {
+    public Boolean getSolidValue() {
         return false;
     }
 

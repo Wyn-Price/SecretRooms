@@ -77,7 +77,7 @@ public class SecretGateBlock extends SecretBaseBlock {
             BlockPos off = pos.offset(direction, i);
 
             BlockState state = world.getBlockState(off);
-            if(!state.getMaterial().isReplaceable() && state.getBlock() != SecretBlocks.SECRET_DUMMY_BLOCK) { //TODO: move to BlockState#isReplaceable
+            if(!state.getMaterial().isReplaceable() && state.getBlock() != SecretBlocks.SECRET_DUMMY_BLOCK.get()) { //TODO: move to BlockState#isReplaceable
                 if(state.getBlock() == this) {
                     world.setBlockState(off, state.with(OPEN, true));
                     world.getPendingBlockTicks().scheduleTick(off, this, 3);
@@ -113,7 +113,7 @@ public class SecretGateBlock extends SecretBaseBlock {
             BlockPos off = pos.offset(direction, i);
 
             BlockState state = world.getBlockState(off);
-            if(state.getBlock() != SecretBlocks.SECRET_DUMMY_BLOCK) {
+            if(state.getBlock() != SecretBlocks.SECRET_DUMMY_BLOCK.get()) {
                 if(state.getBlock() == this && recursive) {
                     world.setBlockState(off, state.with(OPEN, false));
                     world.getPendingBlockTicks().scheduleTick(off, this, 3);

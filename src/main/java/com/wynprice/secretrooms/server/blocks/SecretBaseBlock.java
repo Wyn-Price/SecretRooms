@@ -183,10 +183,6 @@ public class SecretBaseBlock extends Block implements IWaterLoggable {
         return getValue(world, pos, BlockState::propagatesSkylightDown, () -> super.propagatesSkylightDown(state, world, pos));
     }
 
-    public boolean isSolid(BlockState state) {
-        return state.get(SOLID);
-    }
-
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(SOLID, BlockStateProperties.WATERLOGGED);
@@ -310,6 +306,10 @@ public class SecretBaseBlock extends Block implements IWaterLoggable {
     }
 
     public void applyExtraModelData(IBlockReader world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
+    }
+
+    public Boolean getSolidValue() {
+        return null;
     }
 
     public BlockState getPlaceState(IBlockReader wold, BlockPos placedOnPos, BlockState placedOn, BlockState fallback) {

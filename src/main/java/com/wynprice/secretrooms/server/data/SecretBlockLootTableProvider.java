@@ -4,12 +4,17 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wynprice.secretrooms.SecretRooms6;
+import com.wynprice.secretrooms.server.items.SecretItems;
+import net.minecraft.advancements.criterion.StatePropertiesPredicate;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DirectoryCache;
 import net.minecraft.data.IDataProvider;
+import net.minecraft.data.loot.BlockLootTables;
 import net.minecraft.item.Items;
 import net.minecraft.loot.*;
+import net.minecraft.loot.conditions.BlockStateProperty;
+import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.loot.conditions.SurvivesExplosion;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
@@ -43,17 +48,17 @@ public class SecretBlockLootTableProvider implements IDataProvider {
         createBlockDrop(SECRET_WOODEN_BUTTON, loot);
         createBlockDrop(SECRET_STONE_BUTTON, loot);
         createBlockDrop(TORCH_LEVER, loot);
-        createBlockDrop(WALL_TORCH_LEVER, () -> Items.AIR, loot);
+        createBlockDrop(WALL_TORCH_LEVER, SecretItems.TORCH_LEVER, loot);
         createBlockDrop(SECRET_PRESSURE_PLATE, loot);
         createBlockDrop(SECRET_PLAYER_PRESSURE_PLATE, loot);
-        createBlockDrop(SECRET_DOOR, loot);
-        createBlockDrop(SECRET_IRON_DOOR, loot);
+        createDoorItemTable(SECRET_DOOR, loot);
+        createDoorItemTable(SECRET_IRON_DOOR, loot);
         createBlockDrop(SECRET_CHEST, loot);
         createBlockDrop(SECRET_TRAPDOOR, loot);
         createBlockDrop(SECRET_IRON_TRAPDOOR, loot);
         createBlockDrop(SECRET_TRAPPED_CHEST, loot);
         createBlockDrop(SECRET_GATE, loot);
-        createBlockDrop(SECRET_DUMMY_BLOCK, loot);
+//        createBlockDrop(SECRET_DUMMY_BLOCK, loot);
         createBlockDrop(SECRET_DAYLIGHT_DETECTOR, loot);
         createBlockDrop(SECRET_OBSERVER, loot);
         createBlockDrop(SECRET_CLAMBER, loot);
@@ -85,6 +90,17 @@ public class SecretBlockLootTableProvider implements IDataProvider {
     }
 
     private static LootTable createSingleItemTable(IItemProvider item) {
-        return LootTable.builder().addLootPool(LootPool.builder().rolls(ConstantRange.of(1)).addEntry(ItemLootEntry.builder(item)).acceptCondition(SurvivesExplosion.builder())).build();
+        return LootTable.builder()
+            .addLootPool(
+                LootPool.builder()
+                    .rolls(ConstantRange.of(1))
+                    .addEntry(ItemLootEntry.builder(item))
+                    .acceptCondition(SurvivesExplosion.builder())
+            ).build();
     }
+
+    private static void createDoorItemTable(Supplier<Block> block, Map<ResourceLocation, LootTable> loot) {
+        loot.put(block.get().getLootTable(), BlockLootTables.registerDoor(block.get()).build());
+    }
+
 }
