@@ -25,7 +25,7 @@ public class SecretObserver extends SecretBaseBlock {
 
     public SecretObserver(Properties properties) {
         super(properties);
-        this.setDefaultState(this.stateContainer.getBaseState().with(FACING, Direction.SOUTH).with(POWERED, Boolean.FALSE));
+        this.setDefaultState(this.getDefaultState().with(FACING, Direction.SOUTH).with(POWERED, Boolean.FALSE));
     }
 
     @Override

@@ -52,7 +52,12 @@ public class SecretDoor extends SecretBaseBlock {
 
     public SecretDoor(Properties properties) {
         super(properties);
-        this.setDefaultState(this.stateContainer.getBaseState().with(FACING, Direction.NORTH).with(OPEN, false).with(HINGE, DoorHingeSide.LEFT).with(POWERED, false).with(HALF, DoubleBlockHalf.LOWER));
+        this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH).with(OPEN, false).with(HINGE, DoorHingeSide.LEFT).with(POWERED, false).with(HALF, DoubleBlockHalf.LOWER));
+    }
+
+    @Override
+    protected boolean keepFluidState() {
+        return true;
     }
 
     @Override
@@ -78,8 +83,7 @@ public class SecretDoor extends SecretBaseBlock {
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        //return this.blocksMovement ? state.getShape(worldIn, pos) : VoxelShapes.empty();
-        return VoxelShapes.empty();
+        return state.getShape(worldIn, pos);
     }
 
     @Override
@@ -89,7 +93,12 @@ public class SecretDoor extends SecretBaseBlock {
 
     @Override
     public VoxelShape getRaytraceShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
-        return VoxelShapes.empty();
+        return state.getShape(worldIn, pos);
+    }
+
+    @Override
+    public VoxelShape getRayTraceShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+        return state.getShape(reader, pos);
     }
 
     @Override
@@ -121,11 +130,6 @@ public class SecretDoor extends SecretBaseBlock {
     }
 
     @Override
-    public void harvestBlock(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
-        super.harvestBlock(worldIn, player, pos, Blocks.AIR.getDefaultState(), te, stack);
-    }
-
-    @Override
     public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
         DoubleBlockHalf doubleblockhalf = state.get(HALF);
         BlockPos blockpos = doubleblockhalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
@@ -134,11 +138,11 @@ public class SecretDoor extends SecretBaseBlock {
         if (blockstate.getBlock() == this && blockstate.get(HALF) != doubleblockhalf) {
             worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 35);
             mirror.ifPresent(blockState -> worldIn.playEvent(player, 2001, blockpos, Block.getStateId(blockState)));
-            ItemStack itemstack = player.getHeldItemMainhand();
-            if (!worldIn.isRemote && !player.isCreative()) {
-                Block.spawnDrops(state, worldIn, pos, (TileEntity)null, player, itemstack);
-                Block.spawnDrops(blockstate, worldIn, blockpos, (TileEntity)null, player, itemstack);
-            }
+//            ItemStack itemstack = player.getHeldItemMainhand();
+//            if (!worldIn.isRemote && !player.isCreative()) {
+//                Block.spawnDrops(state, worldIn, pos, (TileEntity)null, player, itemstack);
+//                Block.spawnDrops(blockstate, worldIn, blockpos, (TileEntity)null, player, itemstack);
+//            }
         }
 
         super.onBlockHarvested(worldIn, pos, state, player);
@@ -148,9 +152,6 @@ public class SecretDoor extends SecretBaseBlock {
     public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
         switch(type) {
             case LAND:
-                return state.get(OPEN);
-            case WATER:
-                return false;
             case AIR:
                 return state.get(OPEN);
             default:
@@ -223,7 +224,7 @@ public class SecretDoor extends SecretBaseBlock {
         if (this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON) {
             return ActionResultType.FAIL;
         } else {
-            //state = state.cycle(OPEN);
+            state = state.func_235896_a_(OPEN);
             worldIn.setBlockState(pos, state, 10);
             worldIn.playEvent(player, state.get(OPEN) ? this.getOpenSound() : this.getCloseSound(), pos, 0);
 

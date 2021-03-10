@@ -2,6 +2,7 @@ package com.wynprice.secretrooms.server.items;
 
 import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
+import com.wynprice.secretrooms.server.blocks.states.SecretBaseState;
 import com.wynprice.secretrooms.server.data.SecretData;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -14,6 +15,7 @@ import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.state.Property;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
@@ -54,6 +56,13 @@ public class SwitchProbe extends Item {
                 SecretData d = new SecretData(null);
                 d.readNBT(compound);
                 data.get().setFrom(d);
+
+                BlockState placedOn = d.getBlockState();
+                boolean waterlogged = placedOn.hasProperty(BlockStateProperties.WATERLOGGED) && placedOn.get(BlockStateProperties.WATERLOGGED);
+                BlockState blockState = context.getWorld().getBlockState(context.getPos());
+                if(blockState.getBlock() instanceof SecretBaseBlock) {
+                    context.getWorld().setBlockState(context.getPos(), blockState.with(BlockStateProperties.WATERLOGGED, waterlogged));
+                }
             }
         } else {
             SecretData d = new SecretData(null);

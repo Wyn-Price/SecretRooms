@@ -56,6 +56,11 @@ public class SecretTrapdoor extends SecretBaseBlock {
     }
 
     @Override
+    protected boolean keepFluidState() {
+        return false;
+    }
+
+    @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         if (!state.get(OPEN)) {
             return state.get(HALF) == Half.TOP ? TOP_AABB : BOTTOM_AABB;
@@ -85,6 +90,11 @@ public class SecretTrapdoor extends SecretBaseBlock {
     }
 
     @Override
+    public VoxelShape getRayTraceShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+        return state.getShape(reader, pos);
+    }
+
+    @Override
     public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
         return this.getShape(state, worldIn, pos, ISelectionContext.dummy());
     }
@@ -108,7 +118,6 @@ public class SecretTrapdoor extends SecretBaseBlock {
     public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
         switch(type) {
             case LAND:
-                return state.get(OPEN);
             case AIR:
                 return state.get(OPEN);
             default:

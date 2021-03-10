@@ -1,11 +1,13 @@
 package com.wynprice.secretrooms.server.blocks;
 
+import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.MapCodec;
+import com.wynprice.secretrooms.client.world.DelegateWorld;
+import com.wynprice.secretrooms.client.world.DummyIWorld;
+import com.wynprice.secretrooms.server.blocks.states.SecretBaseState;
 import com.wynprice.secretrooms.server.data.SecretData;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.DiggingParticle;
 import net.minecraft.client.particle.ParticleManager;
@@ -13,11 +15,16 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
@@ -26,6 +33,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -38,18 +46,78 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class SecretBaseBlock extends Block {
+public class SecretBaseBlock extends Block implements IWaterLoggable {
 
     public static final BooleanProperty SOLID = BooleanProperty.create("solid");
 
+    private final StateContainer<Block, BlockState> stateContainerOverride;
+
     public SecretBaseBlock(Properties properties) {
         super(properties.variableOpacity());
-        this.setDefaultState(this.getStateContainer().getBaseState().with(SOLID, false));
+        StateContainer.Builder<Block, BlockState> builder = new StateContainer.Builder<>(this);
+        this.fillStateContainer(builder);
+        this.stateContainerOverride = builder.func_235882_a_(Block::getDefaultState, this::createNewState);
+        this.setDefaultState(this.getStateContainer().getBaseState()
+            .with(SOLID, false)
+            .with(BlockStateProperties.WATERLOGGED, false)
+        );
+    }
+
+    protected BlockState createNewState(Block block, ImmutableMap<Property<?>, Comparable<?>> propertiesToValueMap, MapCodec<BlockState> codec) {
+        return new SecretBaseState(block, propertiesToValueMap, codec);
+    }
+
+    @Override
+    public StateContainer<Block, BlockState> getStateContainer() {
+        return this.stateContainerOverride;
+    }
+
+    @Override
+    public FluidState getFluidState(BlockState state) {
+        return state.get(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+    }
+
+    protected boolean keepFluidState() {
+        return true;
+    }
+
+    @Override
+    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        super.onReplaced(state, worldIn, pos, newState, isMoving);
+        if(!keepFluidState() && newState.isAir(worldIn, pos)) {
+            worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+        }
+    }
+
+    @Override
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        getMirrorData(worldIn, currentPos).ifPresent(data -> {
+            BlockState mirror = data.getBlockState();
+            DummyIWorld world = new DummyIWorld(worldIn);
+            BlockState newState = mirror.updatePostPlacement(facing, world.getBlockState(facingPos), world, currentPos, facingPos);
+            if(newState != mirror) {
+                data.setBlockState(newState);
+                TileEntity tileEntity = world.getTileEntity(currentPos);
+                data.setTileEntityNBT(tileEntity != null ? tileEntity.serializeNBT() : null);
+            }
+        });
+        return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+    }
+
+    //We don't want to be able to edit the waterlogged state.
+    @Override
+    public boolean receiveFluid(IWorld worldIn, BlockPos pos, BlockState state, FluidState fluidStateIn) {
+        return !keepFluidState() && IWaterLoggable.super.receiveFluid(worldIn, pos, state, fluidStateIn);
+    }
+
+    @Override
+    public Fluid pickupFluid(IWorld worldIn, BlockPos pos, BlockState state) {
+        return keepFluidState() ? Fluids.EMPTY : IWaterLoggable.super.pickupFluid(worldIn, pos, state);
     }
 
     @Override
     public SoundType getSoundType(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
-        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getSoundType(reader, pos1, entity), () -> super.getSoundType(state, world, pos, entity));
+        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getSoundType(world, pos1, entity), () -> super.getSoundType(state, world, pos, entity));
     }
 
     @Nullable
@@ -73,22 +141,20 @@ public class SecretBaseBlock extends Block {
         return getValue(worldIn, pos, BlockState::getRenderShape, () -> super.getRenderShape(state, worldIn, pos));
     }
 
-    /*@Override
-    public VoxelShape getRaytraceShape(BlockState state, IBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::getRaytraceShape, () -> super.getRaytraceShape(state, world, pos));
-    }*/
-
-    /*@Nullable
     @Override
-    public RayTraceResult getRayTraceResult(BlockState state, World world, BlockPos pos, Vec3d start, Vec3d end, RayTraceResult original) {
-        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getBlock().getRayTraceResult(mirror, world, pos, start, end, original), () -> super.getRayTraceResult(state, world, pos, start, end, original));
+    public VoxelShape getRayTraceShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+        return getValue(reader, pos, (m, w, p) -> m.getRaytraceShape(w, p, context), () -> super.getRayTraceShape(state, reader, pos, context));
     }
 
     @Override
-    public float getBlockHardness(BlockState state, IBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::getBlockHardness, () -> super.getBlockHardness(state, world, pos));
-    }*/
+    public VoxelShape getRaytraceShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
+        return getValue(worldIn, pos, BlockState::getRayTraceShape, () -> super.getRaytraceShape(state, worldIn, pos));
+    }
 
+    @Override
+    public float getSlipperiness(BlockState state, IWorldReader world, BlockPos pos, Entity entity) {
+        return getValue(world, pos, (m, w, p) -> m.getSlipperiness(world, p, entity), () -> super.getSlipperiness(state, world, pos, entity));
+    }
 
     @Override
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
@@ -117,27 +183,13 @@ public class SecretBaseBlock extends Block {
         return getValue(world, pos, BlockState::propagatesSkylightDown, () -> super.propagatesSkylightDown(state, world, pos));
     }
 
-    /*@Override
-    public boolean isNormalCube(IBlockReader world, BlockPos pos) {
-        return getValue(world, pos, BlockState::isNormalCube, () -> super.getDefaultState().isNormalCube(world, pos));
-    }*/
-
-
-
-    /*@Override
-    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
-        return true;
-    }*/
-
     public boolean isSolid(BlockState state) {
         return state.get(SOLID);
     }
 
-
-
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(SOLID);
+        builder.add(SOLID, BlockStateProperties.WATERLOGGED);
     }
 
     //Entity#createRunningParticles
@@ -158,8 +210,8 @@ public class SecretBaseBlock extends Block {
         }
         return true;
     }
-    //ParticleManager#addBlockHitEffects
 
+    //ParticleManager#addBlockHitEffects
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean addHitEffects(BlockState state, World world, RayTraceResult target, ParticleManager manager) {
@@ -242,10 +294,7 @@ public class SecretBaseBlock extends Block {
 
     @Override
     public boolean addLandingEffects(BlockState state1, ServerWorld worldserver, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
-        Optional<BlockState> mirrorState = getMirrorState(worldserver, pos);
-        if(mirrorState.isPresent()) {
-            worldserver.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, mirrorState.get()), entity.getPosX(), entity.getPosY(), entity.getPosZ(), numberOfParticles, 0.0D, 0.0D, 0.0D, 0.15F);
-        }
+        getMirrorState(worldserver, pos).ifPresent(blockState -> worldserver.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, blockState), entity.getPosX(), entity.getPosY(), entity.getPosZ(), numberOfParticles, 0.0D, 0.0D, 0.0D, 0.15F));
         return true;
     }
 
@@ -264,11 +313,17 @@ public class SecretBaseBlock extends Block {
     }
 
     public BlockState getPlaceState(IBlockReader wold, BlockPos placedOnPos, BlockState placedOn, BlockState fallback) {
-        return this.getDefaultState().with(SOLID, placedOn.isSolid());
+        boolean waterlogged = placedOn.hasProperty(BlockStateProperties.WATERLOGGED) && placedOn.get(BlockStateProperties.WATERLOGGED);
+        return fallback
+            .with(SOLID, placedOn.isSolid())
+            .with(BlockStateProperties.WATERLOGGED, waterlogged);
     }
 
-    public static <T, W extends IBlockReader> T getValue(W reader, BlockPos pos, StateFunction<T, W> function, Supplier<T> defaultValue) {
-        return getMirrorState(reader, pos).map(mirror -> function.getValue(mirror, reader, pos)).orElseGet(defaultValue);
+    public static <T> T getValue(IBlockReader world, BlockPos pos, StateFunction<T> function, Supplier<T> defaultValue) {
+        return getMirrorState(world, pos)
+            .map(DelegateWorld.createFunction(world,
+                (reader, mirror) -> function.getValue(mirror, world, pos)
+            )).orElseGet(defaultValue);
     }
 
     public static Optional<BlockState> getMirrorState(IBlockReader world, BlockPos pos) {
@@ -291,8 +346,8 @@ public class SecretBaseBlock extends Block {
         }
     }
 
-    private interface StateFunction<T, W extends IBlockReader> {
-        T getValue(BlockState mirror, W reader, BlockPos pos);
+    public interface StateFunction<T> {
+        T getValue(BlockState mirror, IBlockReader reader, BlockPos pos);
     }
 
 }

@@ -23,7 +23,7 @@ public class SecretModelHandler {
 
     public static void onBlockColors(ColorHandlerEvent.Block event) {
         BlockColors colors = event.getBlockColors();
-        colors.register((state, world, pos, index) -> SecretBaseBlock.getMirrorState(world, pos).map(mirror -> colors.getColor(mirror, new DelegateWorld(world), pos, index)).orElse(-1),
+        colors.register((state, world, pos, index) -> SecretBaseBlock.getMirrorState(world, pos).map(DelegateWorld.createFunction(world, (reader, mirror) -> colors.getColor(mirror, reader, pos, index))).orElse(-1),
             GHOST_BLOCK.get(), SECRET_STAIRS.get(), SECRET_LEVER.get(), SECRET_REDSTONE.get(), ONE_WAY_GLASS.get(), SECRET_WOODEN_BUTTON.get(),
             SECRET_STONE_BUTTON.get(), SECRET_PRESSURE_PLATE.get(), SECRET_PLAYER_PRESSURE_PLATE.get(), SECRET_DOOR.get(), SECRET_IRON_DOOR.get(),
             SECRET_CHEST.get(), SECRET_TRAPDOOR.get(), SECRET_IRON_TRAPDOOR.get(), SECRET_TRAPPED_CHEST.get(), SECRET_GATE.get(), SECRET_DUMMY_BLOCK.get(),

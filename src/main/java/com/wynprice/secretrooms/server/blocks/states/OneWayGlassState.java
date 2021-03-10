@@ -1,46 +1,43 @@
 package com.wynprice.secretrooms.server.blocks.states;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.serialization.*;
+import com.mojang.serialization.MapCodec;
+import com.wynprice.secretrooms.client.world.DelegateWorld;
+import com.wynprice.secretrooms.server.blocks.OneWayGlass;
+import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.SixWayBlock;
 import net.minecraft.state.Property;
+import net.minecraft.util.BlockVoxelShape;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
-import java.util.stream.Stream;
+import java.util.Arrays;
+import java.util.Optional;
 
-public class OneWayGlassState extends BlockState {
+public class OneWayGlassState extends SecretBaseState {
 
-    public OneWayGlassState(Block blockIn, ImmutableMap<Property<?>, Comparable<?>> properties) {
-        super(blockIn, properties, new MapCodec<BlockState>() {
-            @Override
-            public <T> RecordBuilder<T> encode(BlockState input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
-                return null;
-            }
-
-            @Override
-            public <T> DataResult<BlockState> decode(DynamicOps<T> ops, MapLike<T> input) {
-                return null;
-            }
-
-            @Override
-            public <T> Stream<T> keys(DynamicOps<T> ops) {
-                return null;
-            }
-        });
+    public OneWayGlassState(Block block, ImmutableMap<Property<?>, Comparable<?>> propertiesToValueMap, MapCodec<BlockState> codec) {
+        super(block, propertiesToValueMap, codec);
     }
 
     @Override
     public VoxelShape getFaceOcclusionShape(IBlockReader worldIn, BlockPos pos, Direction directionIn) {
-        BlockState blockState = worldIn.getBlockState(pos.offset(directionIn));
-        if(blockState.getBlock() == Blocks.GLASS) {
-            return VoxelShapes.fullCube();
-        }
-        return super.getFaceOcclusionShape(worldIn, pos, directionIn);
+        Optional<BlockState> mirror = SecretBaseBlock.getMirrorState(worldIn, pos);
+        DelegateWorld world = DelegateWorld.getPooled(worldIn);
+        VoxelShape shape = this.get(SecretBaseBlock.SOLID) &&
+            mirror.isPresent() &&
+            !this.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(directionIn)) &&
+            mirror.get().func_242698_a(world, pos, directionIn, BlockVoxelShape.CENTER) ?
+            VoxelShapes.fullCube() : VoxelShapes.empty();
+        world.release();
+        return shape;
     }
+
+
+
 }

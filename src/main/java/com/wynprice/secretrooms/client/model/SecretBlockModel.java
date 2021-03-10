@@ -37,14 +37,15 @@ public class SecretBlockModel implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand, IModelData extraData) {
-        return ModelDataUtils.getData(extraData, SecretModelData.SRM_BLOCKSTATE)
+            return ModelDataUtils.getData(extraData, SecretModelData.SRM_BLOCKSTATE)
             .filter(this::canRenderInLater)
             .map(mirrorState -> this.render(mirrorState, state, DISPATCHER.get().getModelForState(mirrorState), side, rand, extraData))
             .orElse(new ArrayList<>());
     }
 
     protected boolean canRenderInLater(BlockState state) {
-        return RenderTypeLookup.canRenderInLayer(state, MinecraftForgeClient.getRenderLayer());
+        RenderType renderLayer = MinecraftForgeClient.getRenderLayer();
+        return RenderTypeLookup.canRenderInLayer(state, renderLayer);
     }
 
     protected List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
