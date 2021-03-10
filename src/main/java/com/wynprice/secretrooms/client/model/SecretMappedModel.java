@@ -80,7 +80,7 @@ public class SecretMappedModel extends SecretBlockModel {
     }
 
     private void resetUVPositions(int[] aint, int size, int uOff, List<Vector3d> vertices, List<Vector3d> clampedVertices) {
-        boolean uvRot = aint[uOff] != aint[size+uOff];
+        boolean uvRot = aint[uOff] == aint[size+uOff];
 
         int[] t = new int[]{ 1, 0, 3, 2 };
         int[] a = new int[]{ 3, 2, 1, 0 };
