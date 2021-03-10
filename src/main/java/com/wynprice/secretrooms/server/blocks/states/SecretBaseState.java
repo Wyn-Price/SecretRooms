@@ -26,8 +26,15 @@ public class SecretBaseState extends BlockState {
 
     @Override
     public float getBlockHardness(IBlockReader worldIn, BlockPos pos) {
-        //The min is to make sure that if the user say copied bedrock, it can still be destroyed.
-        return Math.min(SecretBaseBlock.getValue(worldIn, pos, BlockState::getBlockHardness, () -> super.getBlockHardness(worldIn, pos)), 1.5F);
+        //The min is to make sure that if the user say copied bedrock, it can still be destroyed.#
+        float value = SecretBaseBlock.getValue(worldIn, pos, BlockState::getBlockHardness, () -> super.getBlockHardness(worldIn, pos));
+        if(value > 5F) {
+            return 5F;
+        } else if(value < 0F) {
+            return 0.5F;
+        } else {
+            return value;
+        }
     }
 
     @Override
