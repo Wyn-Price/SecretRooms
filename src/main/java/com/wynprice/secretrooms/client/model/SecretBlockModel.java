@@ -13,10 +13,12 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 
 import javax.annotation.Nonnull;
@@ -25,6 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
+
+import static com.wynprice.secretrooms.client.SecretModelData.MODEL_MAP_STATE;
+import static com.wynprice.secretrooms.client.SecretModelData.SRM_BLOCKSTATE;
 
 public class SecretBlockModel implements IBakedModel {
 
@@ -37,7 +42,7 @@ public class SecretBlockModel implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand, IModelData extraData) {
-            return ModelDataUtils.getData(extraData, SecretModelData.SRM_BLOCKSTATE)
+            return ModelDataUtils.getData(extraData, SRM_BLOCKSTATE)
             .filter(this::canRenderInLater)
             .map(mirrorState -> this.render(mirrorState, state, DISPATCHER.get().getModelForState(mirrorState), side, rand, extraData))
             .orElse(new ArrayList<>());
@@ -45,7 +50,7 @@ public class SecretBlockModel implements IBakedModel {
 
     protected boolean canRenderInLater(BlockState state) {
         RenderType renderLayer = MinecraftForgeClient.getRenderLayer();
-        return RenderTypeLookup.canRenderInLayer(state, renderLayer);
+        return renderLayer == null || RenderTypeLookup.canRenderInLayer(state, renderLayer);
     }
 
     protected List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
@@ -54,13 +59,30 @@ public class SecretBlockModel implements IBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleTexture(IModelData data) {
-        return ModelDataUtils.getData(data, SecretModelData.SRM_BLOCKSTATE).map(DISPATCHER.get()::getModelForState).orElse(this.model).getParticleTexture(data);
+        return ModelDataUtils.getData(data, SRM_BLOCKSTATE).map(DISPATCHER.get()::getModelForState).orElse(this.model).getParticleTexture(data);
     }
 
     @Nonnull
     @Override
     public IModelData getModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
-        return this.model.getModelData(world, pos, state, tileData);
+        if(tileData == EmptyModelData.INSTANCE) {
+            TileEntity entity = world.getTileEntity(pos);
+            if(entity != null) {
+                tileData = entity.getModelData();
+            }
+        }
+
+        IModelData data = this.model.getModelData(world, pos, state, tileData);
+        if(data != tileData && tileData != EmptyModelData.INSTANCE) {
+            if(tileData.hasProperty(SRM_BLOCKSTATE) && !data.hasProperty(SRM_BLOCKSTATE)) {
+                data.setData(SRM_BLOCKSTATE, tileData.getData(SRM_BLOCKSTATE));
+            }
+            if(tileData.hasProperty(MODEL_MAP_STATE) && !data.hasProperty(MODEL_MAP_STATE)) {
+                data.setData(MODEL_MAP_STATE, tileData.getData(MODEL_MAP_STATE));
+            }
+        }
+
+        return data;
     }
 
     @Override
