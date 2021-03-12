@@ -17,14 +17,14 @@ import net.minecraftforge.client.model.data.IModelData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 public class SecretMappedModel extends SecretBlockModel {
+
+    private final Map<BlockState, AxisAlignedBB> stateAreaCache = new HashMap<>();
+
     public SecretMappedModel(IBakedModel model) {
         super(model);
     }
@@ -37,8 +37,16 @@ public class SecretMappedModel extends SecretBlockModel {
         if(!blockState.isPresent()) {
             return super.render(mirrorState, baseState, model, side, rand, extraData);
         }
-        List<BakedQuad> modelQuads = DISPATCHER.get().getModelForState(blockState.get()).getQuads(blockState.get(), side, rand, extraData);
+
+        if (side != null) {
+            return Collections.emptyList();
+        }
+
         List<BakedQuad> outQuads = new ArrayList<>();
+
+        BlockState mappedState = blockState.get();
+        IBakedModel mappedModel = DISPATCHER.get().getModelForState(mappedState);
+        AxisAlignedBB bb = this.createQuadBorder(mappedModel, mappedState, rand, extraData);
 
 
         List<BakedQuad> allQuads = new ArrayList<>(model.getQuads(mirrorState, null, rand, extraData));
@@ -46,12 +54,8 @@ public class SecretMappedModel extends SecretBlockModel {
             allQuads.addAll(model.getQuads(mirrorState, value, rand, extraData));
         }
 
-
-        for (BakedQuad modelQuad : modelQuads) {
-            AxisAlignedBB bb = this.createQuadBorder(modelQuad);
-            for (BakedQuad texture : ((Iterable<BakedQuad>) () -> allQuads.stream().filter(q -> q.getFace() == modelQuad.getFace()).iterator())) {
-                outQuads.add(this.resizeQuad(texture, bb));
-            }
+        for (BakedQuad quad : allQuads) {
+            outQuads.add(this.resizeQuad(quad, bb));
         }
 
         return outQuads;
@@ -160,16 +164,28 @@ public class SecretMappedModel extends SecretBlockModel {
         return out;
     }
 
-    private AxisAlignedBB createQuadBorder(BakedQuad quad) {
+    private AxisAlignedBB createQuadBorder(IBakedModel mappedModel, BlockState state, Random rand, IModelData extraData) {
+        if(this.stateAreaCache.containsKey(state)) {
+            return this.stateAreaCache.get(state);
+        }
+        List<BakedQuad> modelQuads = new ArrayList<>(mappedModel.getQuads(state, null, rand, extraData));
+        for (Direction direction : Direction.values()) {
+            modelQuads.addAll(mappedModel.getQuads(state, direction, rand, extraData));
+        }
+
         Vector3d min = new Vector3d(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
         Vector3d max = new Vector3d(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 
-        for (Vector3d vertexPos : this.getVertexPositions(quad)) {
-            setVec(min, vertexPos, Math::min);
-            setVec(max, vertexPos, Math::max);
+        for (BakedQuad quad : modelQuads) {
+            for (Vector3d vertexPos : this.getVertexPositions(quad)) {
+                setVec(min, vertexPos, Math::min);
+                setVec(max, vertexPos, Math::max);
+            }
         }
 
-        return new AxisAlignedBB(min.x, min.y, min.z, max.x, max.y, max.z);
+        AxisAlignedBB bb = new AxisAlignedBB(min.x, min.y, min.z, max.x, max.y, max.z);
+        this.stateAreaCache.put(state, bb);
+        return bb;
     }
 
     private void setVec(Vector3d toSet, Vector3d vertex, BiFunction<Double, Double, Double> cons) {

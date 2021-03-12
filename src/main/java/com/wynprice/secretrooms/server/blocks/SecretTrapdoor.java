@@ -1,6 +1,9 @@
 package com.wynprice.secretrooms.server.blocks;
 
+import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.MapCodec;
 import com.wynprice.secretrooms.client.SecretModelData;
+import com.wynprice.secretrooms.server.blocks.states.SecretMappedModelState;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,10 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.pathfinding.PathType;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer;
+import net.minecraft.state.*;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.Half;
 import net.minecraft.util.ActionResultType;
@@ -24,6 +24,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.ModelDataMap;
 
@@ -36,12 +37,12 @@ public class SecretTrapdoor extends SecretBaseBlock {
     private static final DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private static final BooleanProperty POWERED = BlockStateProperties.POWERED;
-    private static final VoxelShape EAST_OPEN_AABB = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 3.0D, 16.0D, 16.0D);
-    private static final VoxelShape WEST_OPEN_AABB = Block.makeCuboidShape(13.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
-    private static final VoxelShape SOUTH_OPEN_AABB = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 3.0D);
-    private static final VoxelShape NORTH_OPEN_AABB = Block.makeCuboidShape(0.0D, 0.0D, 13.0D, 16.0D, 16.0D, 16.0D);
-    private static final VoxelShape BOTTOM_AABB = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 3.0D, 16.0D);
-    private static final VoxelShape TOP_AABB = Block.makeCuboidShape(0.0D, 13.0D, 0.0D, 16.0D, 16.0D, 16.0D);
+    private static final VoxelShape EAST_OPEN_AABB = Block.makeCuboidShape(0.00101D, 0.001D, 0.001D, 3.0D, 15.999D, 15.999D);
+    private static final VoxelShape WEST_OPEN_AABB = Block.makeCuboidShape(13.0D, 0.001D, 0.001D, 15.999D, 15.999D, 15.999D);
+    private static final VoxelShape SOUTH_OPEN_AABB = Block.makeCuboidShape(0.001D, 0.001D, 0.001D, 15.999D, 15.999D, 3.0D);
+    private static final VoxelShape NORTH_OPEN_AABB = Block.makeCuboidShape(0.001D, 0.001D, 13.0D, 15.999D, 15.999D, 15.999D);
+    private static final VoxelShape BOTTOM_AABB = Block.makeCuboidShape(0.001D, 0.001D, 0.001D, 15.999D, 3.0D, 15.999D);
+    private static final VoxelShape TOP_AABB = Block.makeCuboidShape(0.001D, 13.0D, 0.001D, 15.999D, 15.999D, 15.999D);
 
     public SecretTrapdoor(Properties properties) {
         super(properties);
@@ -51,6 +52,11 @@ public class SecretTrapdoor extends SecretBaseBlock {
             .with(HALF, Half.BOTTOM)
             .with(POWERED, false)
         );
+    }
+
+    @Override
+    protected BlockState createNewState(Block block, ImmutableMap<Property<?>, Comparable<?>> propertiesToValueMap, MapCodec<BlockState> codec) {
+        return new SecretMappedModelState(block, propertiesToValueMap, codec);
     }
 
     @Override
@@ -174,6 +180,11 @@ public class SecretTrapdoor extends SecretBaseBlock {
             }
 
         }
+    }
+
+    @Override
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        return stateIn;
     }
 
     @Override

@@ -1,6 +1,10 @@
 package com.wynprice.secretrooms.server.blocks;
 
+import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.MapCodec;
 import com.wynprice.secretrooms.client.SecretModelData;
+import com.wynprice.secretrooms.client.world.DummyIWorld;
+import com.wynprice.secretrooms.server.blocks.states.SecretMappedModelState;
 import net.minecraft.block.*;
 import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.LivingEntity;
@@ -8,10 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathType;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer;
+import net.minecraft.state.*;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.DoorHingeSide;
 import net.minecraft.state.properties.DoubleBlockHalf;
@@ -50,6 +51,11 @@ public class SecretDoor extends SecretBaseBlock {
     public SecretDoor(Properties properties) {
         super(properties);
         this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH).with(OPEN, false).with(HINGE, DoorHingeSide.LEFT).with(POWERED, false).with(HALF, DoubleBlockHalf.LOWER));
+    }
+
+    @Override
+    protected BlockState createNewState(Block block, ImmutableMap<Property<?>, Comparable<?>> propertiesToValueMap, MapCodec<BlockState> codec) {
+        return new SecretMappedModelState(block, propertiesToValueMap, codec);
     }
 
     @Override
@@ -122,7 +128,7 @@ public class SecretDoor extends SecretBaseBlock {
         if (facing.getAxis() == Direction.Axis.Y && doubleblockhalf == DoubleBlockHalf.LOWER == (facing == Direction.UP)) {
             return facingState.getBlock() == this && facingState.get(HALF) != doubleblockhalf ? stateIn.with(FACING, facingState.get(FACING)).with(OPEN, facingState.get(OPEN)).with(HINGE, facingState.get(HINGE)).with(POWERED, facingState.get(POWERED)) : Blocks.AIR.getDefaultState();
         } else {
-            return doubleblockhalf == DoubleBlockHalf.LOWER && facing == Direction.DOWN && !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+            return doubleblockhalf == DoubleBlockHalf.LOWER && facing == Direction.DOWN && !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : stateIn;
         }
     }
 
@@ -218,12 +224,20 @@ public class SecretDoor extends SecretBaseBlock {
         if (this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON) {
             return ActionResultType.FAIL;
         } else {
+            BlockPos other = state.get(HALF) == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
+
+            boolean rotateClockwise = (state.get(HINGE) == DoorHingeSide.LEFT) == (state.get(OPEN));
+            Rotation rotation = rotateClockwise ? Rotation.CLOCKWISE_90 : Rotation.COUNTERCLOCKWISE_90;
+            IWorld world = new DummyIWorld(worldIn);
+            getMirrorData(worldIn, pos).ifPresent(d -> d.setBlockState(d.getBlockState().rotate(world, pos, rotation)));
+            getMirrorData(worldIn, other).ifPresent(d -> d.setBlockState(d.getBlockState().rotate(world, other, rotation)));
+
             state = state.func_235896_a_(OPEN);
             worldIn.setBlockState(pos, state, 10);
             worldIn.playEvent(player, state.get(OPEN) ? this.getOpenSound() : this.getCloseSound(), pos, 0);
 
             requestModelRefresh(worldIn, pos);
-            requestModelRefresh(worldIn, state.get(HALF) == DoubleBlockHalf.LOWER ? pos.up() : pos.down());
+            requestModelRefresh(worldIn, other);
 
             return ActionResultType.SUCCESS;
         }
