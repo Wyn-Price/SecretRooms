@@ -65,6 +65,16 @@ public class DummyIWorld implements IWorld {
     }
 
     @Override
+    public boolean setBlockState(BlockPos pos, BlockState state, int flags, int recursionLeft) {
+        Optional<SecretData> data = SecretBaseBlock.getMirrorData(this.world, pos);
+        if(data.isPresent()) {
+            data.get().setBlockState(state);
+            return true;
+        }
+        return world.setBlockState(pos, state, flags, recursionLeft);
+    }
+
+    @Override
     public long func_241851_ab() {
         return world.func_241851_ab();
     }
@@ -557,16 +567,6 @@ public class DummyIWorld implements IWorld {
     @Override
     public boolean hasBlockState(BlockPos pos, Predicate<BlockState> state) {
         return world.hasBlockState(pos, state);
-    }
-
-    @Override
-    public boolean setBlockState(BlockPos pos, BlockState state, int flags, int recursionLeft) {
-        return world.setBlockState(pos, state, flags, recursionLeft);
-    }
-
-    @Override
-    public boolean setBlockState(BlockPos pos, BlockState newState, int flags) {
-        return world.setBlockState(pos, newState, flags);
     }
 
     @Override

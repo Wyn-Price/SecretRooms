@@ -3,6 +3,7 @@ package com.wynprice.secretrooms;
 import com.wynprice.secretrooms.client.SecretModelHandler;
 import com.wynprice.secretrooms.client.SwitchProbeTooltipRenderer;
 import com.wynprice.secretrooms.client.model.OneWayGlassModel;
+import com.wynprice.secretrooms.client.model.quads.TrueVisionBakedQuad;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.blocks.SecretBlocks;
 import com.wynprice.secretrooms.server.data.SecretBlockLootTableProvider;
@@ -10,6 +11,7 @@ import com.wynprice.secretrooms.server.data.SecretBlockTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretItemTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretRecipeProvider;
 import com.wynprice.secretrooms.server.items.SecretItems;
+import com.wynprice.secretrooms.server.items.TrueVisionGogglesHandler;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntities;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderType;
@@ -55,11 +57,15 @@ public class SecretRooms6 {
             bus.addListener(SecretModelHandler::onBlockColors);
             bus.addListener(SecretModelHandler::onModelBaked);
             bus.addListener(OneWayGlassModel::onModelsReady);
+            bus.addListener(TrueVisionBakedQuad::onTextureStitch);
+            bus.addListener(TrueVisionBakedQuad::onTextureStitched);
 
             bus.addListener(this::clientSetup);
 
             forgeBus.addListener(SwitchProbeTooltipRenderer::onTooltip);
+            forgeBus.register(TrueVisionGogglesHandler.class);
         });
+
     }
 
 

@@ -14,30 +14,29 @@ import java.util.Arrays;
 public class NoTintBakedQuadRetextured extends BakedQuad {
     private final TextureAtlasSprite texture;
 
-    public NoTintBakedQuadRetextured(BakedQuad quad, TextureAtlasSprite textureIn) {
+    public NoTintBakedQuadRetextured(BakedQuad quad, TextureAtlasSprite texture) {
         super(Arrays.copyOf(quad.getVertexData(), quad.getVertexData().length), -1, FaceBakery.getFacingFromVertexData(quad.getVertexData()), quad.getSprite(), quad.applyDiffuseLighting());
-        this.texture = textureIn;
+        this.texture = texture;
         this.remapQuad();
-
     }
 
-    private void remapQuad() {
-        for(int i = 0; i < 4; ++i) {
-            int j = DefaultVertexFormats.BLOCK.getIntegerSize() * i;
-            int uvIndex = 4;
-            this.vertexData[j + uvIndex] = Float.floatToRawIntBits(this.texture.getInterpolatedU(this.getUnInterpolatedU(Float.intBitsToFloat(this.vertexData[j + uvIndex]))));
-            this.vertexData[j + uvIndex + 1] = Float.floatToRawIntBits(this.texture.getInterpolatedV(this.getUnInterpolatedV(Float.intBitsToFloat(this.vertexData[j + uvIndex + 1]))));
+
+    protected void remapQuad() {
+        for (int i = 0; i < 4; ++i) {
+            int off = DefaultVertexFormats.BLOCK.getIntegerSize() * i;
+            this.vertexData[off + 4] = Float.floatToRawIntBits(this.texture.getInterpolatedU(getUnInterpolatedU(Float.intBitsToFloat(this.vertexData[off + 4]), this.sprite)));
+            this.vertexData[off + 5] = Float.floatToRawIntBits(this.texture.getInterpolatedV(getUnInterpolatedV(Float.intBitsToFloat(this.vertexData[off + 5]), this.sprite)));
         }
     }
 
-    private float getUnInterpolatedU(float u) {
-        float f = this.sprite.getMaxU() - this.sprite.getMinU();
-        return (u - this.sprite.getMinU()) / f * 16.0F;
+    public static float getUnInterpolatedU(float u, TextureAtlasSprite sprite) {
+        float f = sprite.getMaxU() - sprite.getMinU();
+        return (u - sprite.getMinU()) / f * 16.0F;
     }
 
-    private float getUnInterpolatedV(float v) {
-        float f = this.sprite.getMaxV() - this.sprite.getMinV();
-        return (v - this.sprite.getMinV()) / f * 16.0F;
+    public static float getUnInterpolatedV(float v, TextureAtlasSprite sprite) {
+        float f = sprite.getMaxV() - sprite.getMinV();
+        return (v - sprite.getMinV()) / f * 16.0F;
     }
 
     @Override

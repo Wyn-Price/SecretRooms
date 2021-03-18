@@ -1,7 +1,8 @@
 package com.wynprice.secretrooms.client.model;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.wynprice.secretrooms.client.SecretModelData;
+import com.wynprice.secretrooms.client.model.quads.TrueVisionBakedQuad;
+import com.wynprice.secretrooms.server.items.TrueVisionGogglesHandler;
 import com.wynprice.secretrooms.server.utils.ModelDataUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -17,15 +18,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockDisplayReader;
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static com.wynprice.secretrooms.client.SecretModelData.MODEL_MAP_STATE;
@@ -42,15 +42,43 @@ public class SecretBlockModel implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand, IModelData extraData) {
-            return ModelDataUtils.getData(extraData, SRM_BLOCKSTATE)
-            .filter(this::canRenderInLater)
-            .map(mirrorState -> this.render(mirrorState, state, DISPATCHER.get().getModelForState(mirrorState), side, rand, extraData))
-            .orElse(new ArrayList<>());
+        Optional<BlockState> data = ModelDataUtils.getData(extraData, SRM_BLOCKSTATE);
+        if (!data.isPresent() || !this.canRenderInLater(data.get())) {
+            return Collections.emptyList();
+        }
+        BlockState mirrorState = data.get();
+        Supplier<List<BakedQuad>> quads = () -> this.render(mirrorState, state, DISPATCHER.get().getModelForState(mirrorState), side, rand, extraData);
+        if (trueVision() && MinecraftForgeClient.getRenderLayer() == RenderType.getTranslucent()) {
+            List<BakedQuad> quadList = quads.get();
+            this.getHelmetQuads(this.gatherAllQuads(quads), quadList);
+            return quadList;
+        }
+        return quads.get();
+    }
+
+    private void getHelmetQuads(List<BakedQuad> allQuads, List<BakedQuad> quads) {
+        for (BakedQuad quad : allQuads) {
+            quads.add(TrueVisionBakedQuad.generateQuad(quad));
+        }
+    }
+
+    private boolean trueVision() {
+        return TrueVisionGogglesHandler.isWearingGoggles(Minecraft.getInstance().player);
     }
 
     protected boolean canRenderInLater(BlockState state) {
         RenderType renderLayer = MinecraftForgeClient.getRenderLayer();
-        return renderLayer == null || RenderTypeLookup.canRenderInLayer(state, renderLayer);
+        return (trueVision() && renderLayer == RenderType.getTranslucent()) ||
+                (renderLayer == null || RenderTypeLookup.canRenderInLayer(state, renderLayer));
+    }
+
+    protected List<BakedQuad> gatherAllQuads(Supplier<List<BakedQuad>> superQuads) {
+        RenderType layer = MinecraftForgeClient.getRenderLayer();
+
+        ForgeHooksClient.setRenderLayer(null);
+        List<BakedQuad> quads = new ArrayList<>(superQuads.get());
+        ForgeHooksClient.setRenderLayer(layer);
+        return quads;
     }
 
     protected List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
@@ -59,7 +87,9 @@ public class SecretBlockModel implements IBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleTexture(IModelData data) {
-        return ModelDataUtils.getData(data, SRM_BLOCKSTATE).map(DISPATCHER.get()::getModelForState).orElse(this.model).getParticleTexture(data);
+        return trueVision() ?
+            this.model.getParticleTexture(data) :
+            ModelDataUtils.getData(data, SRM_BLOCKSTATE).map(DISPATCHER.get()::getModelForState).orElse(this.model).getParticleTexture(data);
     }
 
     @Nonnull
@@ -92,7 +122,7 @@ public class SecretBlockModel implements IBakedModel {
 
     @Override
     public boolean isSideLit() {
-        return false;
+        return trueVision() && this.model.isSideLit();
     }
 
     @Override

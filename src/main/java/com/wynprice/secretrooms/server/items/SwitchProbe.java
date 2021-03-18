@@ -4,6 +4,7 @@ import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.blocks.states.SecretBaseState;
 import com.wynprice.secretrooms.server.data.SecretData;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -52,6 +53,7 @@ public class SwitchProbe extends Item {
     @Override
     public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
         Optional<SecretData> data = SecretBaseBlock.getMirrorData(context.getWorld(), context.getPos());
+        BlockState state = context.getWorld().getBlockState(context.getPos());
         if(data.isPresent()) {
             CompoundNBT compound = stack.getOrCreateTag().getCompound(PROBE_HIT_DATA);
             if(!compound.isEmpty()) {
@@ -59,14 +61,18 @@ public class SwitchProbe extends Item {
                 d.readNBT(compound);
                 data.get().setFrom(d);
 
-                BlockState blockState = context.getWorld().getBlockState(context.getPos());
-                if(blockState.hasProperty(WATERLOGGED) && d.getBlockState().hasProperty(WATERLOGGED)) {
-                    d.setBlockState(d.getBlockState().with(WATERLOGGED, blockState.get(WATERLOGGED)));
+                boolean solid = d.getBlockState().isSolid();
+                if(solid != state.isSolid()) {
+                    context.getWorld().setBlockState(context.getPos(), state.with(SecretBaseBlock.SOLID, solid));
+                }
+
+                if(state.hasProperty(WATERLOGGED) && d.getBlockState().hasProperty(WATERLOGGED)) {
+                    d.setBlockState(d.getBlockState().with(WATERLOGGED, state.get(WATERLOGGED)));
                 }
             }
         } else {
             SecretData d = new SecretData(null);
-            d.setBlockState(context.getWorld().getBlockState(context.getPos()));
+            d.setBlockState(state);
             TileEntity tileEntity = context.getWorld().getTileEntity(context.getPos());
             d.setTileEntityNBT(tileEntity != null ? tileEntity.serializeNBT() : null);
 

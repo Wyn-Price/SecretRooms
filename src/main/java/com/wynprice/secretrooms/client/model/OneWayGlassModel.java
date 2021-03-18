@@ -15,14 +15,11 @@ import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class OneWayGlassModel extends SecretBlockModel {
@@ -53,44 +50,36 @@ public class OneWayGlassModel extends SecretBlockModel {
     private List<BakedQuad> getQuadsNotSolid(BlockState baseState, BlockState delegate, Supplier<List<BakedQuad>> superQuads, IModelData extraData) {
         List<BakedQuad> quads = new ArrayList<>();
 
-        if(MinecraftForgeClient.getRenderLayer() == RenderType.getCutout()) {
-            quads.addAll(this.getGlassQuadsNotSolid(baseState, delegate, superQuads, extraData));
-            ForgeHooksClient.setRenderLayer(RenderType.getCutout());
+        RenderType layer = MinecraftForgeClient.getRenderLayer();
+        if(layer == null || layer == RenderType.getCutout()) {
+            quads.addAll(this.getGlassQuadsNotSolid(baseState, superQuads, extraData));
         }
-        quads.addAll(this.getDelegateQuadsNotSolid(baseState, delegate, superQuads));
+        if(layer == null || RenderTypeLookup.canRenderInLayer(delegate, layer)) {
+            quads.addAll(this.getDelegateQuadsNotSolid(baseState, superQuads));
+        }
 
         return quads;
     }
 
-    private List<BakedQuad> getGlassQuadsNotSolid(BlockState baseState, BlockState delegate, Supplier<List<BakedQuad>> superQuads, IModelData extraData) {
+    private List<BakedQuad> getGlassQuadsNotSolid(BlockState baseState, Supplier<List<BakedQuad>> superQuads, IModelData extraData) {
         List<BakedQuad> quads = new ArrayList<>();
-
-        //Go through the render layers to get all the quads. As they are remapped to the glass texture, it doesn't matter.
-        for (RenderType value : RenderType.getBlockRenderTypes()) {
-            ForgeHooksClient.setRenderLayer(value);
-
-            if(RenderTypeLookup.canRenderInLayer(delegate, value) || MinecraftForgeClient.getRenderLayer() == RenderType.getCutout()) {
-                for (BakedQuad bakedQuad : superQuads.get()) {
-                    //If the quads facing direction is set to glass in the one way glass state
-                    if (baseState.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(bakedQuad.getFace())) && MinecraftForgeClient.getRenderLayer() == RenderType.getCutout()) {
-                        quads.add(new NoTintBakedQuadRetextured(bakedQuad, glassModel.getParticleTexture(extraData)));
-                    }
-                }
+        for (BakedQuad bakedQuad : this.gatherAllQuads(superQuads)) {
+            //If the quads facing direction is set to glass in the one way glass state
+            if (baseState.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(bakedQuad.getFace()))) {
+                quads.add(new NoTintBakedQuadRetextured(bakedQuad, glassModel.getParticleTexture(extraData)));
             }
         }
         return quads;
     }
 
-    private List<BakedQuad> getDelegateQuadsNotSolid(BlockState baseState, BlockState delegate, Supplier<List<BakedQuad>> superQuads) {
+    private List<BakedQuad> getDelegateQuadsNotSolid(BlockState baseState, Supplier<List<BakedQuad>> superQuads) {
         List<BakedQuad> quads = new ArrayList<>();
-        //if(delegate.getRenderType().equals(MinecraftForgeClient.getRenderLayer())) {
-            for (BakedQuad bakedQuad : superQuads.get()) {
-                //If the quads facing direction isn't set to glass in the one way glass state
-                if (!baseState.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(bakedQuad.getFace()))) {
-                    quads.add(bakedQuad);
-                }
+        for (BakedQuad bakedQuad : superQuads.get()) {
+            //If the quads facing direction isn't set to glass in the one way glass state
+            if (!baseState.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(bakedQuad.getFace()))) {
+                quads.add(bakedQuad);
             }
-        //}
+        }
         return quads;
     }
 
@@ -106,5 +95,6 @@ public class OneWayGlassModel extends SecretBlockModel {
     @SubscribeEvent
     public static void onModelsReady(ModelBakeEvent event) {
         glassModel = event.getModelManager().getModel(BlockModelShapes.getModelLocation(Blocks.GLASS.getDefaultState()));
+
     }
 }
