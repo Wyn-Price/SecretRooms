@@ -2,6 +2,7 @@ package com.wynprice.secretrooms.client.model;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.wynprice.secretrooms.client.model.quads.TrueVisionBakedQuad;
+import com.wynprice.secretrooms.client.world.DelegateWorld;
 import com.wynprice.secretrooms.server.items.TrueVisionGogglesHandler;
 import com.wynprice.secretrooms.server.utils.ModelDataUtils;
 import net.minecraft.block.BlockState;
@@ -100,6 +101,13 @@ public class SecretBlockModel implements IBakedModel {
             if(entity != null) {
                 tileData = entity.getModelData();
             }
+        }
+
+        Optional<BlockState> mirror = ModelDataUtils.getData(tileData, SRM_BLOCKSTATE);
+        if(mirror.isPresent()) {
+            DelegateWorld pooled = DelegateWorld.getPooled(world);
+            tileData = DISPATCHER.get().getModelForState(mirror.get()).getModelData(pooled, pos, mirror.get(), tileData);
+            pooled.release();
         }
 
         IModelData data = this.model.getModelData(world, pos, state, tileData);
