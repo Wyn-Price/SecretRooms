@@ -21,6 +21,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -109,17 +110,25 @@ public class SecretDoor extends SecretBaseBlock {
         Direction direction = state.get(FACING);
         boolean flag = !state.get(OPEN);
         boolean flag1 = state.get(HINGE) == DoorHingeSide.RIGHT;
+
+        VoxelShape mirrorShape = super.getShape(state, worldIn, pos, context);
+        VoxelShape shape;
         switch(direction) {
             case EAST:
             default:
-                return flag ? EAST_AABB : (flag1 ? NORTH_AABB : SOUTH_AABB);
+                shape = flag ? EAST_AABB : (flag1 ? NORTH_AABB : SOUTH_AABB);
+                break;
             case SOUTH:
-                return flag ? SOUTH_AABB : (flag1 ? EAST_AABB : WEST_AABB);
+                shape = flag ? SOUTH_AABB : (flag1 ? EAST_AABB : WEST_AABB);
+                break;
             case WEST:
-                return flag ? WEST_AABB : (flag1 ? SOUTH_AABB : NORTH_AABB);
+                shape = flag ? WEST_AABB : (flag1 ? SOUTH_AABB : NORTH_AABB);
+                break;
             case NORTH:
-                return flag ? NORTH_AABB : (flag1 ? WEST_AABB : EAST_AABB);
+                shape = flag ? NORTH_AABB : (flag1 ? WEST_AABB : EAST_AABB);
+                break;
         }
+        return VoxelShapes.combineAndSimplify(shape, mirrorShape, IBooleanFunction.AND);
     }
 
     @Override

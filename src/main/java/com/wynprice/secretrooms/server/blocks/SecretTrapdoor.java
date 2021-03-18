@@ -21,8 +21,10 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -70,21 +72,28 @@ public class SecretTrapdoor extends SecretBaseBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        VoxelShape mirrorShape = super.getShape(state, worldIn, pos, context);
+        VoxelShape shape;
         if (!state.get(OPEN)) {
-            return state.get(HALF) == Half.TOP ? TOP_AABB : BOTTOM_AABB;
+            shape = state.get(HALF) == Half.TOP ? TOP_AABB : BOTTOM_AABB;
         } else {
             switch(state.get(HORIZONTAL_FACING)) {
                 case NORTH:
                 default:
-                    return NORTH_OPEN_AABB;
+                    shape = NORTH_OPEN_AABB;
+                    break;
                 case SOUTH:
-                    return SOUTH_OPEN_AABB;
+                    shape = SOUTH_OPEN_AABB;
+                    break;
                 case WEST:
-                    return WEST_OPEN_AABB;
+                    shape = WEST_OPEN_AABB;
+                    break;
                 case EAST:
-                    return EAST_OPEN_AABB;
+                    shape = EAST_OPEN_AABB;
+                    break;
             }
         }
+        return  VoxelShapes.combineAndSimplify(shape, mirrorShape, IBooleanFunction.AND);
     }
 
     @Override
