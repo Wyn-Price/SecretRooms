@@ -140,10 +140,10 @@ public class SecretBaseBlock extends Block implements IWaterLoggable {
         return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
-    //We need to make sure stuff like fences are connected properly. 
+    //We need to make sure stuff like fences are connected properly.
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        state.updateNeighbours(new DummyIWorld(worldIn), pos, 3);
+        getMirrorState(worldIn, pos).ifPresent(mirror -> mirror.updateNeighbours(new DummyIWorld(worldIn), pos, 3));
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
     }
 
