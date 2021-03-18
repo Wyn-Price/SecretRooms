@@ -114,11 +114,21 @@ public class SecretBaseBlock extends Block implements IWaterLoggable {
         return state.get(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
     }
 
+    private int calls = 0;
+
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
         getMirrorData(worldIn, currentPos).ifPresent(data -> {
             BlockState mirror = data.getBlockState();
+
             DummyIWorld world = new DummyIWorld(worldIn);
+            if(!(facingState.getBlock() instanceof SecretBaseBlock) && calls != 3) {
+                calls++;
+                BlockState facingNewState = facingState.updatePostPlacement(facing.getOpposite(), mirror, world, facingPos, currentPos);
+                calls--;
+                Block.replaceBlock(facingState, facingNewState, worldIn, facingPos, 3);
+            }
+
             BlockState newState = mirror.updatePostPlacement(facing, world.getBlockState(facingPos), world, currentPos, facingPos);
             if(newState != mirror) {
                 data.setBlockState(newState);

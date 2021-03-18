@@ -49,49 +49,4 @@ public class SecretBaseState extends BlockState {
     public VoxelShape getFaceOcclusionShape(IBlockReader worldIn, BlockPos p, Direction directionIn) {
         return SecretBaseBlock.getValue(worldIn, p, (mirror, reader, pos1) -> mirror.getFaceOcclusionShape(reader, p, directionIn), () ->super.getFaceOcclusionShape(worldIn, p, directionIn));
     }
-
-    @Override
-    public boolean isSolidSide(IBlockReader blockReaderIn, BlockPos blockPosIn, Direction directionIn) {
-        BlockState state = blockReaderIn.getBlockState(blockPosIn.offset(directionIn));
-        Optional<BlockState> mirrorOptional = SecretBaseBlock.getMirrorState(blockReaderIn, blockPosIn);
-        if(mirrorOptional.isPresent()) {
-            BlockState mirror = mirrorOptional.get();
-
-            if(Block.cannotAttach(mirror.getBlock())) {
-                return false;
-            }
-
-            //FENCES
-            if(state.getBlock() instanceof FenceBlock) {
-                if(mirror.isIn(BlockTags.FENCES) && state.isIn(BlockTags.WOODEN_FENCES) == mirror.isIn(BlockTags.FENCES)) {
-                    return true;
-                }
-                if(mirror.getBlock() instanceof FenceGateBlock && FenceGateBlock.isParallel(mirror, directionIn)) {
-                    return true;
-                }
-            }
-
-            //PANES
-            if(state.getBlock() instanceof PaneBlock) {
-                if(mirror.getBlock() instanceof PaneBlock || mirror.isIn(BlockTags.WALLS)) {
-                    return true;
-                }
-            }
-
-            //Walls
-            if(state.getBlock() instanceof WallBlock) {
-                if(mirror.getBlock() instanceof FenceGateBlock && FenceGateBlock.isParallel(mirror, directionIn)) {
-                    return true;
-                }
-
-                if(mirror.getBlock() instanceof PaneBlock) {
-                    return true;
-                }
-            }
-
-            return mirror.isSolidSide(blockReaderIn, blockPosIn, directionIn);
-        }
-
-        return super.isSolidSide(blockReaderIn, blockPosIn, directionIn);
-    }
 }
