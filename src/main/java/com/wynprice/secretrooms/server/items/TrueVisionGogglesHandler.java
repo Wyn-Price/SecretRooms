@@ -50,7 +50,7 @@ public class TrueVisionGogglesHandler {
             event.getTable().addPool(
                 LootPool.builder()
                     .addEntry(ItemLootEntry.builder(SecretItems.TRUE_VISION_GOGGLES.get())
-                        .acceptCondition(RandomChance.builder(0.01f))
+                        .acceptCondition(RandomChance.builder(0.05f))
                     )
                 .build());
         }
