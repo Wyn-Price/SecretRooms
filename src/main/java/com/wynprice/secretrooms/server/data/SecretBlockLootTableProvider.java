@@ -1,106 +1,102 @@
 package com.wynprice.secretrooms.server.data;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.wynprice.secretrooms.SecretRooms6;
+import com.mojang.datafixers.util.Pair;
 import com.wynprice.secretrooms.server.items.SecretItems;
-import net.minecraft.advancements.criterion.StatePropertiesPredicate;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DirectoryCache;
-import net.minecraft.data.IDataProvider;
+import net.minecraft.data.LootTableProvider;
 import net.minecraft.data.loot.BlockLootTables;
-import net.minecraft.item.Items;
 import net.minecraft.loot.*;
-import net.minecraft.loot.conditions.BlockStateProperty;
-import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.loot.conditions.SurvivesExplosion;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 
-import java.io.IOException;
-import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static com.wynprice.secretrooms.server.blocks.SecretBlocks.*;
 
-public class SecretBlockLootTableProvider implements IDataProvider {
-    private final DataGenerator dataGenerator;
-    private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
+public class SecretBlockLootTableProvider extends LootTableProvider {
 
     public SecretBlockLootTableProvider(DataGenerator dataGenerator) {
-        this.dataGenerator = dataGenerator;
+        super(dataGenerator);
     }
 
     @Override
-    public void act(DirectoryCache directoryCache) {
-        Path folder = this.dataGenerator.getOutputFolder();
-        Map<ResourceLocation, LootTable> loot = Maps.newHashMap();
-
-
-        createBlockDrop(GHOST_BLOCK, loot);
-        createBlockDrop(SECRET_STAIRS, loot);
-        createBlockDrop(SECRET_LEVER, loot);
-        createBlockDrop(SECRET_REDSTONE, loot);
-        createBlockDrop(ONE_WAY_GLASS, loot);
-        createBlockDrop(SECRET_WOODEN_BUTTON, loot);
-        createBlockDrop(SECRET_STONE_BUTTON, loot);
-        createBlockDrop(TORCH_LEVER, loot);
-        createBlockDrop(WALL_TORCH_LEVER, SecretItems.TORCH_LEVER, loot);
-        createBlockDrop(SECRET_PRESSURE_PLATE, loot);
-        createBlockDrop(SECRET_PLAYER_PRESSURE_PLATE, loot);
-        createDoorItemTable(SECRET_DOOR, loot);
-        createDoorItemTable(SECRET_IRON_DOOR, loot);
-        createBlockDrop(SECRET_CHEST, loot);
-        createBlockDrop(SECRET_TRAPDOOR, loot);
-        createBlockDrop(SECRET_IRON_TRAPDOOR, loot);
-        createBlockDrop(SECRET_TRAPPED_CHEST, loot);
-        createBlockDrop(SECRET_GATE, loot);
-//        createBlockDrop(SECRET_DUMMY_BLOCK, loot);
-        createBlockDrop(SECRET_DAYLIGHT_DETECTOR, loot);
-        createBlockDrop(SECRET_OBSERVER, loot);
-        createBlockDrop(SECRET_CLAMBER, loot);
-
-
-        loot.forEach((location, table) -> {
-            Path path = folder.resolve("data/" + location.getNamespace() + "/loot_tables/" + location.getPath() + ".json");
-            try {
-                IDataProvider.save(GSON, directoryCache, LootTableManager.toJson(table), path);
-            } catch (IOException var6) {
-                SecretRooms6.LOGGER.error("Couldn't save loot table {}", path, var6);
-            }
-
-        });
-
+    protected void validate(Map<ResourceLocation, LootTable> map, ValidationTracker validationtracker) {
+        map.forEach((res, table) -> LootTableManager.validateLootTable(validationtracker, res, table));
     }
 
     @Override
-    public String getName() {
-        return "SecretRoomsBlockLootTable";
+    protected List<
+        Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables() {
+        return ImmutableList.of(
+            Pair.of(SecretRoomsBlockLootTables::new, LootParameterSets.BLOCK)
+        );
     }
 
-    private static void createBlockDrop(Supplier<Block> block, Map<ResourceLocation, LootTable> loot) {
-        createBlockDrop(block, block, loot);
-    }
+    private static class SecretRoomsBlockLootTables implements Consumer<BiConsumer<ResourceLocation, LootTable.Builder>> {
 
-    private static void createBlockDrop(Supplier<Block> block, Supplier<? extends IItemProvider> item, Map<ResourceLocation, LootTable> loot) {
-        loot.put(block.get().getLootTable(), createSingleItemTable(item.get()));
-    }
+        private final Map<ResourceLocation, LootTable.Builder> lootTables = Maps.newHashMap();
 
-    private static LootTable createSingleItemTable(IItemProvider item) {
-        return LootTable.builder()
-            .addLootPool(
-                LootPool.builder()
-                    .rolls(ConstantRange.of(1))
-                    .addEntry(ItemLootEntry.builder(item))
-                    .acceptCondition(SurvivesExplosion.builder())
-            ).build();
-    }
+        @Override
+        public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
+            this.lootTables.clear();
+            this.addTables();
+            this.lootTables.forEach(consumer);
+        }
+        
+        private void addTables() {
+            this.createBlockDrop(GHOST_BLOCK);
+            this.createBlockDrop(SECRET_STAIRS);
+            this.createBlockDrop(SECRET_LEVER);
+            this.createBlockDrop(SECRET_REDSTONE);
+            this.createBlockDrop(ONE_WAY_GLASS);
+            this.createBlockDrop(SECRET_WOODEN_BUTTON);
+            this.createBlockDrop(SECRET_STONE_BUTTON);
+            this.createBlockDrop(TORCH_LEVER);
+            this.createBlockDrop(WALL_TORCH_LEVER, SecretItems.TORCH_LEVER);
+            this.createBlockDrop(SECRET_PRESSURE_PLATE);
+            this.createBlockDrop(SECRET_PLAYER_PRESSURE_PLATE);
+            this.createDoorItemTable(SECRET_DOOR);
+            this.createDoorItemTable(SECRET_IRON_DOOR);
+            this.createBlockDrop(SECRET_CHEST);
+            this.createBlockDrop(SECRET_TRAPDOOR);
+            this.createBlockDrop(SECRET_IRON_TRAPDOOR);
+            this.createBlockDrop(SECRET_TRAPPED_CHEST);
+            this.createBlockDrop(SECRET_GATE);
+            this.createBlockDrop(SECRET_DAYLIGHT_DETECTOR);
+            this.createBlockDrop(SECRET_OBSERVER);
+            this.createBlockDrop(SECRET_CLAMBER);
+        }
 
-    private static void createDoorItemTable(Supplier<Block> block, Map<ResourceLocation, LootTable> loot) {
-        loot.put(block.get().getLootTable(), BlockLootTables.registerDoor(block.get()).build());
+        private void createBlockDrop(Supplier<Block> block) {
+            createBlockDrop(block, block);
+        }
+
+        private void createBlockDrop(Supplier<Block> block, Supplier<? extends IItemProvider> item) {
+            this.lootTables.put(block.get().getLootTable(), createSingleItemTable(item.get()));
+        }
+
+        private LootTable.Builder createSingleItemTable(IItemProvider item) {
+            return LootTable.builder()
+                .addLootPool(
+                    LootPool.builder()
+                        .rolls(ConstantRange.of(1))
+                        .addEntry(ItemLootEntry.builder(item))
+                        .acceptCondition(SurvivesExplosion.builder())
+                );
+        }
+
+        private void createDoorItemTable(Supplier<Block> block) {
+            this.lootTables.put(block.get().getLootTable(), BlockLootTables.registerDoor(block.get()));
+        }
     }
 
 }

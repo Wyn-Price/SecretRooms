@@ -34,7 +34,7 @@ public class SecretBlocks {
     public static final Supplier<Block> SECRET_IRON_TRAPDOOR = REGISTRY.register("secret_iron_trapdoor", () -> new SecretTrapdoor(Block.Properties.create(Materials.SRM_MATERIAL_IRON).notSolid()));
     public static final Supplier<Block> SECRET_TRAPPED_CHEST = REGISTRY.register("secret_trapped_chest", () -> new SecretTrappedChest(Block.Properties.create(Materials.SRM_MATERIAL).notSolid()));
     public static final Supplier<Block> SECRET_GATE = REGISTRY.register("secret_gate", () -> new SecretGateBlock(Block.Properties.create(Materials.SRM_MATERIAL).notSolid()));
-    public static final Supplier<Block> SECRET_DUMMY_BLOCK = REGISTRY.register("secret_dummy_block", () -> new SecretBaseBlock(Block.Properties.create(Materials.SRM_MATERIAL).notSolid()));
+    public static final Supplier<Block> SECRET_DUMMY_BLOCK = REGISTRY.register("secret_dummy_block", () -> new SecretBaseBlock(Block.Properties.create(Materials.SRM_MATERIAL).notSolid().noDrops()));
     public static final Supplier<Block> SECRET_DAYLIGHT_DETECTOR = REGISTRY.register("secret_daylight_detector", () -> new SecretDaylightDetector(Block.Properties.create(Materials.SRM_MATERIAL).notSolid()));
     public static final Supplier<Block> SECRET_OBSERVER = REGISTRY.register("secret_observer", () -> new SecretObserver(Block.Properties.create(Materials.SRM_MATERIAL).notSolid()));
     public static final Supplier<Block> SECRET_CLAMBER = REGISTRY.register("secret_clamber", () -> new SecretClamber(Block.Properties.create(Materials.SRM_MATERIAL).notSolid()));

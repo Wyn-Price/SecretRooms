@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 import static com.wynprice.secretrooms.server.blocks.SecretBlocks.*;
 import static com.wynprice.secretrooms.server.items.SecretItems.CAMOUFLAGE_PASTE;
 import static com.wynprice.secretrooms.server.items.SecretItems.SWITCH_PROBE;
+import static com.wynprice.secretrooms.server.items.SecretItems.TRUE_VISION_GOGGLES;
 
 public class SecretRecipeProvider extends RecipeProvider {
     public SecretRecipeProvider(DataGenerator generatorIn) {
@@ -51,7 +52,7 @@ public class SecretRecipeProvider extends RecipeProvider {
         ShapelessRecipeBuilder.shapelessRecipe(SECRET_OBSERVER.get()).addIngredient(camoPaste).addIngredient(Items.OBSERVER).setGroup("secret_observer").addCriterion("has_camo", hasItem(camoPaste)).build(consumer);
         ShapelessRecipeBuilder.shapelessRecipe(SECRET_CLAMBER.get()).addIngredient(camoPaste).addIngredient(Items.LADDER).setGroup("secret_clamber").addCriterion("has_camo", hasItem(camoPaste)).build(consumer);
         ShapedRecipeBuilder.shapedRecipe(SECRET_GATE.get()).key('X', ItemTags.PLANKS).key('0', camoPaste).key('R', Items.REDSTONE).key('A', Items.ENDER_PEARL).patternLine("X0X").patternLine("0A0").patternLine("XRX").setGroup("secret_gate").addCriterion("has_camo", hasItem(camoPaste)).build(consumer);
-
+//        ShapedRecipeBuilder.shapedRecipe(TRUE_VISION_GOGGLES.get()).key('G', Items.GLASS).key('D', Items.DIAMOND).key()
     }
 
     private InventoryChangeTrigger.Instance hasItems(IItemProvider... itemIn) {

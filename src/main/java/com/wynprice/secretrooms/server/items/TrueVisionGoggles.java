@@ -3,7 +3,10 @@ package com.wynprice.secretrooms.server.items;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.wynprice.secretrooms.SecretRooms6;
+import com.wynprice.secretrooms.client.model.TrueVisionGogglesModel;
+import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -33,6 +36,12 @@ public class TrueVisionGoggles extends ArmorItem {
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlotType slot, String type) {
         return ARMOR_TEXTURE;
+    }
+
+    @Nullable
+    @Override
+    public <A extends BipedModel<?>> A getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType armorSlot, A _default) {
+        return (A) TrueVisionGogglesModel.INSTANCE;
     }
 
     private enum DummyArmorMaterial implements IArmorMaterial {

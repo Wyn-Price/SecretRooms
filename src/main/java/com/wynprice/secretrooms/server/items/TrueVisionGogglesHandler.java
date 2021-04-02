@@ -6,13 +6,19 @@ import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.loot.*;
+import net.minecraft.loot.conditions.RandomChance;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class TrueVisionGogglesHandler {
+
+    private static final ResourceLocation END_CHEST_LOOT = new ResourceLocation("chests/end_city_treasure");
 
     private static boolean clientWearingItem;
 
@@ -35,6 +41,18 @@ public class TrueVisionGogglesHandler {
                     renderer.notifyBlockUpdate(null, pos, null, null, 8);
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLootTableLoad(LootTableLoadEvent event) {
+        if(END_CHEST_LOOT.equals(event.getName())) {
+            event.getTable().addPool(
+                LootPool.builder()
+                    .addEntry(ItemLootEntry.builder(SecretItems.TRUE_VISION_GOGGLES.get())
+                        .acceptCondition(RandomChance.builder(0.01f))
+                    )
+                .build());
         }
     }
 
