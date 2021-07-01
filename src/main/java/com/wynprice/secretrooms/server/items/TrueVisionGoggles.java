@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.client.model.TrueVisionGogglesModel;
 import net.minecraft.client.renderer.entity.model.BipedModel;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
@@ -42,6 +43,21 @@ public class TrueVisionGoggles extends ArmorItem {
     @Override
     public <A extends BipedModel<?>> A getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType armorSlot, A _default) {
         return (A) TrueVisionGogglesModel.INSTANCE;
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return false;
+    }
+
+    @Override
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+        return false;
+    }
+
+    @Override
+    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+        return false;
     }
 
     private enum DummyArmorMaterial implements IArmorMaterial {

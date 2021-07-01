@@ -39,7 +39,7 @@ public class SecretItems {
     public static final RegistryObject<Item> CAMOUFLAGE_PASTE = REGISTRY.register("camouflage_paste", () -> new Item(prop()));
     public static final RegistryObject<Item> SWITCH_PROBE = REGISTRY.register("switch_probe", () -> new SwitchProbe(prop()));
 
-    public static final RegistryObject<Item> TRUE_VISION_GOGGLES = REGISTRY.register("true_vision_goggles", () -> new TrueVisionGoggles(prop()));
+    public static final RegistryObject<Item> TRUE_VISION_GOGGLES = REGISTRY.register("true_vision_goggles", () -> new TrueVisionGoggles(prop().maxDamage(900)));
 
     private static Item.Properties prop() {
         return new Item.Properties().group(SecretRooms6.TAB);

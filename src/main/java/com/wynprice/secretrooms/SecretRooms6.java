@@ -52,6 +52,8 @@ public class SecretRooms6 {
         SecretTileEntities.REGISTRY.register(bus);
 
         forgeBus.addListener(this::modifyBreakSpeed);
+        forgeBus.addListener(TrueVisionGogglesHandler::onLootTableLoad);
+        forgeBus.addListener(TrueVisionGogglesHandler::onPlayerTick);
 
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
             bus.addListener(SecretModelHandler::onBlockColors);
@@ -63,7 +65,9 @@ public class SecretRooms6 {
             bus.addListener(this::clientSetup);
 
             forgeBus.addListener(SwitchProbeTooltipRenderer::onTooltip);
-            forgeBus.register(TrueVisionGogglesHandler.class);
+
+            forgeBus.addListener(TrueVisionGogglesHandler::onClientWorldLoad);
+            forgeBus.addListener(TrueVisionGogglesHandler::onClientWorldTick);
         });
 
     }
