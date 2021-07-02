@@ -1,0 +1,35 @@
+{
+  "secretroomsmod.probe.noneset": "Данные не выбраны!",
+  "secretroomsmod.probe.containedblock": "Хранящийся блок:     ",
+  "secretroomsmod.probe.data": "Данные внутри зонда-переключателя:",
+  "secretroomsmod.probe.blockset": "Блок: {0}",
+  "secretroomsmod.probe.blockproperty": "  {0}={1}",
+
+
+  "itemGroup.secretroomsmod": "Secret Rooms Mod",
+
+  "block.secretroomsmod.ghost_block": "Призрачный блок",
+  "block.secretroomsmod.secret_stairs": "Секретные ступеньки",
+  "block.secretroomsmod.secret_lever": "Секретный рычаг",
+  "block.secretroomsmod.secret_redstone": "Секретный редстоун",
+  "block.secretroomsmod.secret_one_way_glass": "Одностороннее стекло",
+  "block.secretroomsmod.secret_wooden_button": "Секретная деревянная кнопка",
+  "block.secretroomsmod.secret_stone_button": "Секретная каменная кнопка",
+  "block.secretroomsmod.secret_pressure_plate": "Секретная нажимная пластина",
+  "block.secretroomsmod.secret_player_pressure_plate": "Секретная нажимная пластина для игроков",
+  "block.secretroomsmod.secret_door": "Секретная дверь",
+  "block.secretroomsmod.secret_iron_door": "Секретная железная дверь",
+  "block.secretroomsmod.secret_chest": "Секретный сундук",
+  "block.secretroomsmod.secret_trapdoor": "Секретный люк",
+  "block.secretroomsmod.secret_iron_trapdoor": "Секретный железный люк",
+  "block.secretroomsmod.secret_trapped_chest": "Секретный сундук-ловушка",
+  "block.secretroomsmod.secret_gate": "Секретный мост",
+  "block.secretroomsmod.secret_daylight_detector": "Секретный датчик дневного света",
+  "block.secretroomsmod.secret_observer": "Секретный наблюдатель",
+  "block.secretroomsmod.secret_clamber": "Секретная лестница",
+  "block.secretroomsmod.secret_dummy_block": "Секретный блок-болванка",
+  "block.secretroomsmod.torch_lever": "Рычаг-факел",
+
+  "item.secretroomsmod.camouflage_paste": "Камуфляжная паста",
+  "item.secretroomsmod.switch_probe": "Зонд-переключатель"
+}
