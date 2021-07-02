@@ -354,7 +354,7 @@ public class SecretBaseBlock extends Block implements IWaterLoggable {
     public static <T> T getValue(IBlockReader world, BlockPos pos, StateFunction<T> function, Supplier<T> defaultValue) {
         return getMirrorState(world, pos)
             .map(DelegateWorld.createFunction(world,
-                (reader, mirror) -> function.getValue(mirror, world, pos)
+                (reader, mirror) -> function.getValue(mirror, reader, pos)
             )).orElseGet(defaultValue);
     }
 
