@@ -1,0 +1,38 @@
+{
+  "secretroomsmod.probe.noneset": "¡Sin conjunto de datos!",
+  "secretroomsmod.probe.containedblock": "Bloque contenido:     ",
+  "secretroomsmod.probe.data": "Conjunto de datos en sonda:",
+  "secretroomsmod.probe.blockset": "Bloque: {0}",
+  "secretroomsmod.probe.blockproperty": "  {0}={1}",
+
+  "secretroomsmod.container.secretchest.name": "Cofre secreto",
+
+
+  "itemGroup.secretroomsmod": "Habitaciones secretas",
+
+  "block.secretroomsmod.ghost_block": "Bloque falso",
+  "block.secretroomsmod.secret_stairs": "Escaleras secretas",
+  "block.secretroomsmod.secret_lever": "Palanca secreta",
+  "block.secretroomsmod.secret_redstone": "Redstone secreta",
+  "block.secretroomsmod.one_way_glass": "Cristal unidireccional",
+  "block.secretroomsmod.secret_wooden_button": "Botón de madera secreto",
+  "block.secretroomsmod.secret_stone_button": "Botón de piedra secreto",
+  "block.secretroomsmod.secret_pressure_plate": "Placa de presión secreta",
+  "block.secretroomsmod.secret_player_pressure_plate": "Placa de presión secreta para jugadores",
+  "block.secretroomsmod.secret_door": "Puerta secreta",
+  "block.secretroomsmod.secret_iron_door": "Puerta de hierro secreta",
+  "block.secretroomsmod.secret_chest": "Cofre secreto",
+  "block.secretroomsmod.secret_trapdoor": "Trampilla secreta",
+  "block.secretroomsmod.secret_iron_trapdoor": "Trampilla de hierro secreta",
+  "block.secretroomsmod.secret_trapped_chest": "Cofre trampa secreto",
+  "block.secretroomsmod.secret_gate": "Puerta de valla secreta",
+  "block.secretroomsmod.secret_daylight_detector": "Sensor de luz solar secreto",
+  "block.secretroomsmod.secret_observer": "Observador secreto",
+  "block.secretroomsmod.secret_clamber": "Andamio secreto",
+  "block.secretroomsmod.secret_dummy_block": "Bloque simulado secreto",
+  "block.secretroomsmod.torch_lever": "Palanca de antorcha",
+
+  "item.secretroomsmod.camouflage_paste": "Pasta de camuflaje",
+  "item.secretroomsmod.switch_probe": "Sonda de cambios",
+  "item.secretroomsmod.true_vision_goggles": "Gafas de visión verdadera"
+}
