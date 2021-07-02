@@ -16,6 +16,8 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
 
 import javax.annotation.Nullable;
@@ -39,6 +41,7 @@ public class TrueVisionGoggles extends ArmorItem {
         return ARMOR_TEXTURE;
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Nullable
     @Override
     public <A extends BipedModel<?>> A getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType armorSlot, A _default) {

@@ -11,6 +11,7 @@ import com.wynprice.secretrooms.server.data.SecretBlockTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretItemTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretRecipeProvider;
 import com.wynprice.secretrooms.server.items.SecretItems;
+import com.wynprice.secretrooms.server.items.TrueVisionGogglesClientHandler;
 import com.wynprice.secretrooms.server.items.TrueVisionGogglesHandler;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntities;
 import net.minecraft.block.Block;
@@ -66,8 +67,8 @@ public class SecretRooms6 {
 
             forgeBus.addListener(SwitchProbeTooltipRenderer::onTooltip);
 
-            forgeBus.addListener(TrueVisionGogglesHandler::onClientWorldLoad);
-            forgeBus.addListener(TrueVisionGogglesHandler::onClientWorldTick);
+            forgeBus.addListener(TrueVisionGogglesClientHandler::onClientWorldLoad);
+            forgeBus.addListener(TrueVisionGogglesClientHandler::onClientWorldTick);
         });
 
     }

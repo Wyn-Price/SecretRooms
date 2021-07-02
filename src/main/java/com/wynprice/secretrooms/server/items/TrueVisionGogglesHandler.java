@@ -23,30 +23,7 @@ public class TrueVisionGogglesHandler {
 
     public static final float GOGGLES_BREAK_CHANCE = 0.2F;
 
-    private static boolean clientWearingItem;
 
-    public static void onClientWorldLoad(ClientPlayerNetworkEvent.LoggedInEvent event) {
-        clientWearingItem = isWearingGoggles(event.getPlayer());
-    }
-
-    public static void onClientWorldTick(TickEvent.ClientTickEvent event) {
-        if(event.phase != TickEvent.Phase.START) {
-            return;
-        }
-        ClientPlayerEntity player = Minecraft.getInstance().player;
-        if(player == null) return;
-        boolean wearing = isWearingGoggles(player);
-        if(wearing != clientWearingItem) {
-            clientWearingItem = wearing;
-            WorldRenderer renderer = Minecraft.getInstance().worldRenderer;
-            for (TileEntity tileEntity : player.world.loadedTileEntityList) {
-                if(tileEntity instanceof SecretTileEntity) {
-                    BlockPos pos = tileEntity.getPos();
-                    renderer.notifyBlockUpdate(null, pos, null, null, 8);
-                }
-            }
-        }
-    }
 
     public static void onLootTableLoad(LootTableLoadEvent event) {
         if(END_CHEST_LOOT.equals(event.getName())) {
@@ -66,9 +43,5 @@ public class TrueVisionGogglesHandler {
                 stack.damageItem(1, event.player, (p) -> p.sendBreakAnimation(EquipmentSlotType.HEAD));
             }
         }
-    }
-
-    public static boolean isWearingGoggles(PlayerEntity player) {
-        return player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == SecretItems.TRUE_VISION_GOGGLES.get();
     }
 }

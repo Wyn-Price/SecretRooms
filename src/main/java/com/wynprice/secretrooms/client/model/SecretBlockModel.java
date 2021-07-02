@@ -3,6 +3,7 @@ package com.wynprice.secretrooms.client.model;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.wynprice.secretrooms.client.model.quads.TrueVisionBakedQuad;
 import com.wynprice.secretrooms.client.world.DelegateWorld;
+import com.wynprice.secretrooms.server.items.TrueVisionGogglesClientHandler;
 import com.wynprice.secretrooms.server.items.TrueVisionGogglesHandler;
 import com.wynprice.secretrooms.server.utils.ModelDataUtils;
 import net.minecraft.block.BlockState;
@@ -64,7 +65,7 @@ public class SecretBlockModel implements IBakedModel {
     }
 
     private boolean trueVision() {
-        return TrueVisionGogglesHandler.isWearingGoggles(Minecraft.getInstance().player);
+        return TrueVisionGogglesClientHandler.isWearingGoggles(Minecraft.getInstance().player);
     }
 
     protected boolean canRenderInLater(BlockState state) {
