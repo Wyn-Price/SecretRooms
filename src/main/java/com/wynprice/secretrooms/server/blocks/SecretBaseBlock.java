@@ -37,6 +37,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -366,8 +367,19 @@ public class SecretBaseBlock extends Block implements IWaterLoggable {
         if(world == null || pos == null) {
             return Optional.empty();
         }
+
+        BlockState blockState = null;
+        if (world instanceof World) {
+            Chunk chunk = ((World) world).getChunkProvider().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
+            if (chunk != null) {
+                blockState = chunk.getBlockState(pos);
+            }
+        } else {
+            blockState = world.getBlockState(pos);
+        }
+
         TileEntity te = world.getTileEntity(pos);
-        return world.getBlockState(pos).getBlock() instanceof SecretBaseBlock && te instanceof SecretTileEntity ?
+        return blockState != null && blockState.getBlock() instanceof SecretBaseBlock && te instanceof SecretTileEntity ?
             Optional.of(((SecretTileEntity) te).getData()) : Optional.empty();
     }
 
