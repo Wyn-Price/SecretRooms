@@ -368,6 +368,7 @@ public class SecretBaseBlock extends Block implements IWaterLoggable {
             return Optional.empty();
         }
 
+        // Fixes a deadlock that occurs when there is a SecretBlock in a spawn chunk (see https://github.com/Wyn-Price/SecretRooms/pull/53)
         BlockState blockState = null;
         if (world instanceof World) {
             Chunk chunk = ((World) world).getChunkProvider().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
