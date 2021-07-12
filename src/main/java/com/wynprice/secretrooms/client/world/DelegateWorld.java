@@ -28,7 +28,7 @@ public class DelegateWorld implements IBlockDisplayReader {
         if(AVAILABLE.isEmpty()) {
             return new DelegateWorld(reader);
         }
-        DelegateWorld world = AVAILABLE.get(0);
+        DelegateWorld world = AVAILABLE.remove(0);
         world.use(reader);
         return world;
     }
