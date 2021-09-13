@@ -1,103 +1,121 @@
 package com.wynprice.secretrooms.server.blocks;
 
 import com.wynprice.secretrooms.server.tileentity.SecretDaylightDetectorTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.LightType;
-import net.minecraft.world.World;
+import com.wynprice.secretrooms.server.tileentity.SecretTileEntities;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DaylightDetectorBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.DaylightDetectorBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class SecretDaylightDetector extends SecretBaseBlock {
 
-    public static final IntegerProperty POWER = BlockStateProperties.POWER_0_15;
+    public static final IntegerProperty POWER = BlockStateProperties.POWER;
     public static final BooleanProperty INVERTED = BlockStateProperties.INVERTED;
 
     public SecretDaylightDetector(Properties properties) {
         super(properties);
-        this.setDefaultState(this.getDefaultState().with(POWER, 0).with(INVERTED, false));
+        this.registerDefaultState(this.defaultBlockState().setValue(POWER, 0).setValue(INVERTED, false));
     }
 
     @Override
-    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        return blockState.get(POWER);
+    public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
+        return blockState.getValue(POWER);
     }
 
-    public static void updatePower(BlockState state, World world, BlockPos pos) {
-        if (world.getDimensionType().hasSkyLight()) {
+    public static void updatePower(BlockState state, Level world, BlockPos pos) {
+        if (world.dimensionType().hasSkyLight()) {
 
-            int light = world.getLightFor(LightType.SKY, pos) - world.getSkylightSubtracted();
+            int light = world.getBrightness(LightLayer.SKY, pos) - world.getSkyDarken();
             for (Direction value : Direction.values()) {
-                light = Math.max(light, world.getLightFor(LightType.SKY, pos.offset(value)) - world.getSkylightSubtracted());
+                light = Math.max(light, world.getBrightness(LightLayer.SKY, pos.relative(value)) - world.getSkyDarken());
             }
-            float sunAngle = world.getCelestialAngleRadians(1.0F);
-            boolean flag = state.get(INVERTED);
+            float sunAngle = world.getSunAngle(1.0F);
+            boolean flag = state.getValue(INVERTED);
             if (flag) {
                 light = 15 - light;
             } else if (light > 0) {
                 float f1 = sunAngle < (float)Math.PI ? 0.0F : ((float)Math.PI * 2F);
                 sunAngle = sunAngle + (f1 - sunAngle) * 0.2F;
-                light = Math.round((float)light * MathHelper.cos(sunAngle));
+                light = Math.round((float)light * Mth.cos(sunAngle));
             }
 
-            light = MathHelper.clamp(light, 0, 15);
-            if (state.get(POWER) != light) {
-                world.setBlockState(pos, state.with(POWER, light), 3);
+            light = Mth.clamp(light, 0, 15);
+            if (state.getValue(POWER) != light) {
+                world.setBlock(pos, state.setValue(POWER, light), 3);
             }
 
         }
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (player.isAllowEdit()) {
-            if (worldIn.isRemote) {
-                return ActionResultType.SUCCESS;
+    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+        if (player.mayBuild()) {
+            if (worldIn.isClientSide) {
+                return InteractionResult.SUCCESS;
             } else {
-                BlockState blockstate = state.func_235896_a_(INVERTED);
-                worldIn.setBlockState(pos, blockstate, 4);
+                BlockState blockstate = state.cycle(INVERTED);
+                worldIn.setBlock(pos, blockstate, 4);
                 updatePower(blockstate, worldIn, pos);
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         } else {
-            return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+            return super.use(state, worldIn, pos, player, handIn, hit);
         }
     }
 
     @Override
-    public boolean shouldCheckWeakPower(BlockState state, IWorldReader world, BlockPos pos, Direction side) {
+    public boolean shouldCheckWeakPower(BlockState state, LevelReader world, BlockPos pos, Direction side) {
         return false;
     }
 
     @Override
-    public boolean canProvidePower(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         return true;
     }
 
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new SecretDaylightDetectorTileEntity(pos, state);
+    }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new SecretDaylightDetectorTileEntity();
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return !level.isClientSide && level.dimensionType().hasSkyLight() ? BaseEntityBlock.createTickerHelper(type, SecretTileEntities.SECRET_DAYLIGHT_DETECTOR_TILE_ENTITY.get(), SecretDaylightDetector::tickEntity) : null;
+    }
+
+    private static void tickEntity(Level level, BlockPos pos, BlockState state, SecretDaylightDetectorTileEntity t) {
+        if (level.getGameTime() % 20L == 0L) {
+            updatePower(state, level, pos);
+        }
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(POWER, INVERTED);
     }
 }

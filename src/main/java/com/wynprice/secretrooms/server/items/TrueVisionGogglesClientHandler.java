@@ -2,12 +2,14 @@ package com.wynprice.secretrooms.server.items;
 
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.client.multiplayer.ClientChunkCache;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.event.TickEvent;
 
@@ -23,22 +25,32 @@ public class TrueVisionGogglesClientHandler {
         if(event.phase != TickEvent.Phase.START) {
             return;
         }
-        ClientPlayerEntity player = Minecraft.getInstance().player;
+        LocalPlayer player = Minecraft.getInstance().player;
         if(player == null) return;
         boolean wearing = isWearingGoggles(player);
         if(wearing != clientWearingItem) {
             clientWearingItem = wearing;
-            WorldRenderer renderer = Minecraft.getInstance().worldRenderer;
-            for (TileEntity tileEntity : player.world.loadedTileEntityList) {
-                if(tileEntity instanceof SecretTileEntity) {
-                    BlockPos pos = tileEntity.getPos();
-                    renderer.notifyBlockUpdate(null, pos, null, null, 8);
+            LevelRenderer renderer = Minecraft.getInstance().levelRenderer;
+            ClientChunkCache source = player.clientLevel.getChunkSource();
+
+            ChunkPos chunkPos = new ChunkPos(player.blockPosition());
+            int d = Minecraft.getInstance().options.renderDistance;
+            for (int x = -d; x <= d; x++) {
+                for (int z = -d; z <= d; z++) {
+                    if(source.hasChunk(chunkPos.x + x, chunkPos.z + z)) {
+                        for (BlockEntity blockEntity : source.getChunk(chunkPos.x + x, chunkPos.z + z, false).getBlockEntities().values()) {
+                            if(blockEntity instanceof SecretTileEntity) {
+                                BlockPos pos = blockEntity.getBlockPos();
+                                renderer.blockChanged(null, pos, null, null, 8);
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
-    public static boolean isWearingGoggles(PlayerEntity player) {
-        return player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == SecretItems.TRUE_VISION_GOGGLES.get();
+    public static boolean isWearingGoggles(Player player) {
+        return player.getItemBySlot(EquipmentSlot.HEAD).getItem() == SecretItems.TRUE_VISION_GOGGLES.get();
     }
 }

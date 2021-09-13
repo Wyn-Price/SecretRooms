@@ -3,15 +3,19 @@ package com.wynprice.secretrooms.client;
 import com.wynprice.secretrooms.client.model.OneWayGlassModel;
 import com.wynprice.secretrooms.client.model.SecretBlockModel;
 import com.wynprice.secretrooms.client.model.SecretMappedModel;
+import com.wynprice.secretrooms.client.model.TrueVisionGogglesModel;
 import com.wynprice.secretrooms.client.world.DelegateWorld;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.BlockModelShapes;
-import net.minecraft.client.renderer.color.BlockColors;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 
 import java.util.Map;
@@ -20,6 +24,10 @@ import java.util.function.Function;
 import static com.wynprice.secretrooms.server.blocks.SecretBlocks.*;
 
 public class SecretModelHandler {
+
+    public static void onEntityModelRegistered(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(TrueVisionGogglesModel.TRUE_VISION_GOGGLES_MODEL, () -> LayerDefinition.create(TrueVisionGogglesModel.createMesh(CubeDeformation.NONE, 0.0F), 64, 32));
+    }
 
     public static void onBlockColors(ColorHandlerEvent.Block event) {
         BlockColors colors = event.getBlockColors();
@@ -32,7 +40,7 @@ public class SecretModelHandler {
     }
 
     public static void onModelBaked(ModelBakeEvent event) {
-        Map<ResourceLocation, IBakedModel> registry = event.getModelRegistry();
+        Map<ResourceLocation, BakedModel> registry = event.getModelRegistry();
 
         put(registry, SecretBlockModel::new,
             GHOST_BLOCK.get(), SECRET_STAIRS.get(), SECRET_LEVER.get(), SECRET_REDSTONE.get(), SECRET_WOODEN_BUTTON.get(), SECRET_STONE_BUTTON.get(),
@@ -44,10 +52,10 @@ public class SecretModelHandler {
         put(registry, OneWayGlassModel::new, ONE_WAY_GLASS.get());
     }
 
-    private static void put(Map<ResourceLocation, IBakedModel> registry, Function<IBakedModel, IBakedModel> creator, Block... blocks) {
+    private static void put(Map<ResourceLocation, BakedModel> registry, Function<BakedModel, BakedModel> creator, Block... blocks) {
         for (Block block : blocks) {
-            for (BlockState state : block.getStateContainer().getValidStates()) {
-                registry.put(BlockModelShapes.getModelLocation(state), creator.apply(registry.get(BlockModelShapes.getModelLocation(state))));
+            for (BlockState state : block.getStateDefinition().getPossibleStates()) {
+                registry.put(BlockModelShaper.stateToModelLocation(state), creator.apply(registry.get(BlockModelShaper.stateToModelLocation(state))));
             }
         }
     }

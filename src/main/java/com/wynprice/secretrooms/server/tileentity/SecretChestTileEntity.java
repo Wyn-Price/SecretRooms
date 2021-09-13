@@ -1,53 +1,54 @@
 package com.wynprice.secretrooms.server.tileentity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.ChestContainer;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 
-public class SecretChestTileEntity extends SecretTileEntity implements IInventory, INamedContainerProvider {
+public class SecretChestTileEntity extends SecretTileEntity implements Container, MenuProvider {
     private final ItemStackHandler handler = new ItemStackHandler(27);
     private int numPlayersUsing;
 
-    public SecretChestTileEntity() {
-        super(SecretTileEntities.SECRET_CHEST_TILE_ENTITY.get());
+    public SecretChestTileEntity(BlockPos pos, BlockState state) {
+        super(SecretTileEntities.SECRET_CHEST_TILE_ENTITY.get(), pos, state);
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT nbt) {
+    public void load(CompoundTag nbt) {
         this.handler.deserializeNBT(nbt.getCompound("Items"));
-        super.read(state, nbt);
+        super.load(nbt);
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
+    public CompoundTag save(CompoundTag compound) {
         compound.put("Items", this.handler.serializeNBT());
-        return super.write(compound);
+        return super.save(compound);
     }
 
     @Override
-    public ITextComponent getDisplayName() {
-        return new TranslationTextComponent("secretroomsmod.container.secretchest.name");
+    public Component getDisplayName() {
+        return new TranslatableComponent("secretroomsmod.container.secretchest.name");
     }
 
     @Nullable
     @Override
-    public Container createMenu(int id, PlayerInventory inv, PlayerEntity player) {
-        return ChestContainer.createGeneric9X3(id, inv, this);
+    public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
+        return ChestMenu.threeRows(id, inv, this);
     }
 
     @Override
-    public void openInventory(PlayerEntity player) {
+    public void startOpen(Player player) {
         if (!player.isSpectator()) {
             if (this.numPlayersUsing < 0) {
                 this.numPlayersUsing = 0;
@@ -60,7 +61,7 @@ public class SecretChestTileEntity extends SecretTileEntity implements IInventor
     }
 
     @Override
-    public void closeInventory(PlayerEntity player) {
+    public void stopOpen(Player player) {
         if (!player.isSpectator()) {
             --this.numPlayersUsing;
             this.onOpenOrClose();
@@ -69,12 +70,12 @@ public class SecretChestTileEntity extends SecretTileEntity implements IInventor
     }
 
     private void onOpenOrClose() {
-        this.world.notifyNeighborsOfStateChange(this.pos, this.getBlockState().getBlock());
-        this.world.notifyNeighborsOfStateChange(this.pos.down(), this.getBlockState().getBlock());
+        this.level.updateNeighborsAt(this.worldPosition, this.getBlockState().getBlock());
+        this.level.updateNeighborsAt(this.worldPosition.below(), this.getBlockState().getBlock());
     }
 
     @Override
-    public int getSizeInventory() {
+    public int getContainerSize() {
         return 27;
     }
 
@@ -88,34 +89,34 @@ public class SecretChestTileEntity extends SecretTileEntity implements IInventor
     }
 
     @Override
-    public ItemStack getStackInSlot(int index) {
+    public ItemStack getItem(int index) {
         return this.handler.getStackInSlot(index);
     }
 
     @Override
-    public ItemStack decrStackSize(int index, int count) {
+    public ItemStack removeItem(int index, int count) {
         return this.handler.getStackInSlot(index).split(count);
     }
 
     @Override
-    public ItemStack removeStackFromSlot(int index) {
+    public ItemStack removeItemNoUpdate(int index) {
         ItemStack slot = this.handler.getStackInSlot(index);
         this.handler.setStackInSlot(index, ItemStack.EMPTY);
         return slot;
     }
 
     @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {
+    public void setItem(int index, ItemStack stack) {
         this.handler.setStackInSlot(index, stack);
     }
 
     @Override
-    public boolean isUsableByPlayer(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true;
     }
 
     @Override
-    public void clear() {
+    public void clearContent() {
         for (int i = 0; i < this.handler.getSlots(); i++) {
             this.handler.setStackInSlot(i, ItemStack.EMPTY);
         }

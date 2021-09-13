@@ -1,19 +1,19 @@
 package com.wynprice.secretrooms.server.blocks;
 
 import com.wynprice.secretrooms.server.data.SecretData;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.DirectionalBlock;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DirectionalBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -32,36 +32,36 @@ public class SecretGateBlock extends SecretBaseBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        boolean powered = state.get(POWERED);
-        boolean newPowered = worldIn.isBlockPowered(pos);
+    public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+        boolean powered = state.getValue(POWERED);
+        boolean newPowered = worldIn.hasNeighborSignal(pos);
         if(powered != newPowered) {
             if(newPowered) {
                 this.tryBuildGate(worldIn, pos, state);
             } else {
                 this.destroyGate(worldIn, pos, state, true);
             }
-            worldIn.setBlockState(pos, state.with(POWERED, newPowered).with(OPEN, newPowered));
+            worldIn.setBlockAndUpdate(pos, state.setValue(POWERED, newPowered).setValue(OPEN, newPowered));
         }
     }
 
     @Override
-    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             this.destroyGate(worldIn, pos, state, false);
         }
-        super.onReplaced(state, worldIn, pos, newState, isMoving);
+        super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
-        return super.getStateForPlacement(context).with(FACING, context.getFace());
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return super.getStateForPlacement(context).setValue(FACING, context.getClickedFace());
     }
 
     @Override
-    public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
-        if(state.get(OPEN)) {
+    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand) {
+        if(state.getValue(OPEN)) {
             tryBuildGate(worldIn, pos, state);
         } else {
             destroyGate(worldIn, pos, state, true);
@@ -69,18 +69,18 @@ public class SecretGateBlock extends SecretBaseBlock {
         super.tick(state, worldIn, pos, rand);
     }
 
-    private void tryBuildGate(World world, BlockPos pos, BlockState gateState) {
+    private void tryBuildGate(Level world, BlockPos pos, BlockState gateState) {
         Optional<SecretData> data = getMirrorData(world, pos);
-        Direction direction = gateState.get(FACING);
+        Direction direction = gateState.getValue(FACING);
 
         for (int i = 1; i <= MAX_LEVELS; i++) {
-            BlockPos off = pos.offset(direction, i);
+            BlockPos off = pos.relative(direction, i);
 
             BlockState state = world.getBlockState(off);
             if(!state.getMaterial().isReplaceable() && state.getBlock() != SecretBlocks.SECRET_DUMMY_BLOCK.get()) { //TODO: move to BlockState#isReplaceable
                 if(state.getBlock() == this) {
-                    world.setBlockState(off, state.with(OPEN, true));
-                    world.getPendingBlockTicks().scheduleTick(off, this, 3);
+                    world.setBlockAndUpdate(off, state.setValue(OPEN, true));
+                    world.getBlockTicks().scheduleTick(off, this, 3);
                 }
                 return;
             }
@@ -91,32 +91,32 @@ public class SecretGateBlock extends SecretBaseBlock {
 
             for (Direction value : Direction.values()) {
                 if(value.getAxis() != direction.getAxis()) {
-                    BlockPos offPos = off.offset(value);
+                    BlockPos offPos = off.relative(value);
                     BlockState offState = world.getBlockState(offPos);
                     if(offState.getBlock() == this) {
-                        world.setBlockState(offPos, offState.with(OPEN, true));
-                        world.getPendingBlockTicks().scheduleTick(offPos, this, 3);
+                        world.setBlockAndUpdate(offPos, offState.setValue(OPEN, true));
+                        world.getBlockTicks().scheduleTick(offPos, this, 3);
                     }
                 }
             }
 
-            world.setBlockState(off, SecretBlocks.SECRET_DUMMY_BLOCK.get().getDefaultState());
+            world.setBlockAndUpdate(off, SecretBlocks.SECRET_DUMMY_BLOCK.get().defaultBlockState());
             data.ifPresent(sdata -> getMirrorData(world, off).ifPresent(d -> d.setFrom(sdata)));
             requestModelRefresh(world, off);
-            world.getTileEntity(off).markDirty();
+            world.getBlockEntity(off).setChanged();
         }
     }
 
-    private void destroyGate(World world, BlockPos pos, BlockState gateState, boolean recursive) {
-        Direction direction = gateState.get(FACING);
+    private void destroyGate(Level world, BlockPos pos, BlockState gateState, boolean recursive) {
+        Direction direction = gateState.getValue(FACING);
         for (int i = 1; i <= MAX_LEVELS; i++) {
-            BlockPos off = pos.offset(direction, i);
+            BlockPos off = pos.relative(direction, i);
 
             BlockState state = world.getBlockState(off);
             if(state.getBlock() != SecretBlocks.SECRET_DUMMY_BLOCK.get()) {
                 if(state.getBlock() == this && recursive) {
-                    world.setBlockState(off, state.with(OPEN, false));
-                    world.getPendingBlockTicks().scheduleTick(off, this, 3);
+                    world.setBlockAndUpdate(off, state.setValue(OPEN, false));
+                    world.getBlockTicks().scheduleTick(off, this, 3);
                 }
                 return;
             }
@@ -128,23 +128,23 @@ public class SecretGateBlock extends SecretBaseBlock {
             if(recursive) {
                 for (Direction value : Direction.values()) {
                     if(value.getAxis() != direction.getAxis()) {
-                        BlockPos offPos = off.offset(value);
+                        BlockPos offPos = off.relative(value);
                         BlockState offState = world.getBlockState(offPos);
                         if(offState.getBlock() == this) {
-                            world.setBlockState(offPos, offState.with(OPEN, false));
-                            world.getPendingBlockTicks().scheduleTick(offPos, this, 3);
+                            world.setBlockAndUpdate(offPos, offState.setValue(OPEN, false));
+                            world.getBlockTicks().scheduleTick(offPos, this, 3);
                         }
                     }
                 }
             }
 
-            world.setBlockState(off, Blocks.AIR.getDefaultState());
+            world.setBlockAndUpdate(off, Blocks.AIR.defaultBlockState());
         }
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(POWERED, OPEN, FACING);
     }
 }

@@ -11,21 +11,24 @@ import com.wynprice.secretrooms.server.data.SecretBlockTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretItemTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretRecipeProvider;
 import com.wynprice.secretrooms.server.items.SecretItems;
+import com.wynprice.secretrooms.server.items.TrueVisionGoggles;
 import com.wynprice.secretrooms.server.items.TrueVisionGogglesClientHandler;
 import com.wynprice.secretrooms.server.items.TrueVisionGogglesHandler;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntities;
-import net.minecraft.block.Block;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectUtils;
-import net.minecraft.potion.Effects;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.effect.MobEffectUtil;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -33,8 +36,8 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,6 +55,8 @@ public class SecretRooms6 {
         SecretItems.REGISTRY.register(bus);
         SecretTileEntities.REGISTRY.register(bus);
 
+        bus.addListener(this::onRegisterReloads);
+
         forgeBus.addListener(this::modifyBreakSpeed);
         forgeBus.addListener(TrueVisionGogglesHandler::onLootTableLoad);
         forgeBus.addListener(TrueVisionGogglesHandler::onPlayerTick);
@@ -59,6 +64,8 @@ public class SecretRooms6 {
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
             bus.addListener(SecretModelHandler::onBlockColors);
             bus.addListener(SecretModelHandler::onModelBaked);
+            bus.addListener(SecretModelHandler::onEntityModelRegistered);
+
             bus.addListener(OneWayGlassModel::onModelsReady);
             bus.addListener(TrueVisionBakedQuad::onTextureStitch);
             bus.addListener(TrueVisionBakedQuad::onTextureStitched);
@@ -74,33 +81,33 @@ public class SecretRooms6 {
     }
 
 
-    public static final ItemGroup TAB = new ItemGroup(-1, MODID) {
+    public static final CreativeModeTab TAB = new CreativeModeTab(-1, MODID) {
         @Override
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             return new ItemStack(SecretItems.CAMOUFLAGE_PASTE.get());
         }
     };
 
     public void modifyBreakSpeed(PlayerEvent.BreakSpeed event) {
-        PlayerEntity player = event.getPlayer();
-        SecretBaseBlock.getMirrorState(player.world, event.getPos()).ifPresent(mirror -> {
+        Player player = event.getPlayer();
+        SecretBaseBlock.getMirrorState(player.level, event.getPos()).ifPresent(mirror -> {
             //Copied and pasted from PlayerEntity#getDigSpeed
-            float f = player.inventory.getDestroySpeed(mirror);
+            float f = player.getInventory().getDestroySpeed(mirror);
             if (f > 1.0F) {
-                int i = EnchantmentHelper.getEfficiencyModifier(player);
-                ItemStack itemstack = player.getHeldItemMainhand();
+                int i = EnchantmentHelper.getBlockEfficiency(player);
+                ItemStack itemstack = player.getMainHandItem();
                 if (i > 0 && !itemstack.isEmpty()) {
                     f += (i * i + 1);
                 }
             }
 
-            if (EffectUtils.hasMiningSpeedup(player)) {
-                f *= 1.0F + (float)(EffectUtils.getMiningSpeedup(player) + 1) * 0.2F;
+            if (MobEffectUtil.hasDigSpeed(player)) {
+                f *= 1.0F + (float)(MobEffectUtil.getDigSpeedAmplification(player) + 1) * 0.2F;
             }
 
-            if (player.isPotionActive(Effects.MINING_FATIGUE)) {
+            if (player.hasEffect(MobEffects.DIG_SLOWDOWN)) {
                 float f1;
-                switch(player.getActivePotionEffect(Effects.MINING_FATIGUE).getAmplifier()) {
+                switch(player.getEffect(MobEffects.DIG_SLOWDOWN).getAmplifier()) {
                     case 0:
                         f1 = 0.3F;
                         break;
@@ -118,7 +125,7 @@ public class SecretRooms6 {
                 f *= f1;
             }
 
-            if (player.areEyesInFluid(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(player)) {
+            if (player.isEyeInFluid(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(player)) {
                 f /= 5.0F;
             }
 
@@ -152,10 +159,16 @@ public class SecretRooms6 {
             SecretBlocks.SECRET_TRAPPED_CHEST.get(), SecretBlocks.SECRET_GATE.get(), SecretBlocks.SECRET_DUMMY_BLOCK.get(),
             SecretBlocks.SECRET_DAYLIGHT_DETECTOR.get(),SecretBlocks.SECRET_OBSERVER.get(), SecretBlocks.SECRET_CLAMBER.get()
         }) {
-            RenderTypeLookup.setRenderLayer(block, type -> true);
+            ItemBlockRenderTypes.setRenderLayer(block, type -> true);
         }
 
-        RenderTypeLookup.setRenderLayer(SecretBlocks.TORCH_LEVER.get(), RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(SecretBlocks.WALL_TORCH_LEVER.get(), RenderType.getCutout());
+        ItemBlockRenderTypes.setRenderLayer(SecretBlocks.TORCH_LEVER.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(SecretBlocks.WALL_TORCH_LEVER.get(), RenderType.cutout());
+    }
+
+
+    public void onRegisterReloads(RegisterClientReloadListenersEvent event) {
+        ResourceManagerReloadListener listener = rm -> SecretItems.TRUE_VISION_GOGGLES.ifPresent(TrueVisionGoggles::refreshArmorModel);
+        event.registerReloadListener(listener);
     }
 }

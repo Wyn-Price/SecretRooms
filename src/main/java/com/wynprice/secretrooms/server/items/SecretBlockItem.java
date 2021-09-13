@@ -4,28 +4,27 @@ import com.wynprice.secretrooms.client.world.DummyIWorld;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.data.SecretData;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
-import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class SecretBlockItem extends BlockItem {
+class SecretBlockItem extends BlockItem {
     public SecretBlockItem(Block blockIn, Properties builder) {
         super(blockIn, builder);
     }
 
     @Override
-    protected boolean placeBlock(BlockItemUseContext context, BlockState state) {
-        BlockPos offFace = context.replacingClickedOnBlock() ? context.getPos() : context.getPos().offset(context.getFace().getOpposite());
-        BlockState placedOnStateRaw = context.getWorld().getBlockState(offFace);
-        TileEntity placedOnTileEntity = context.getWorld().getTileEntity(offFace);
+    protected boolean placeBlock(BlockPlaceContext context, BlockState state) {
+        BlockPos offFace = context.replacingClickedOnBlock() ? context.getClickedPos() : context.getClickedPos().relative(context.getClickedFace().getOpposite());
+        BlockState placedOnStateRaw = context.getLevel().getBlockState(offFace);
+        BlockEntity placedOnTileEntity = context.getLevel().getBlockEntity(offFace);
         if(placedOnTileEntity instanceof SecretTileEntity) {
             SecretData data = ((SecretTileEntity) placedOnTileEntity).getData();
             placedOnStateRaw = data.getBlockState();
@@ -33,33 +32,33 @@ public class SecretBlockItem extends BlockItem {
         }
 
         BlockState placedOnState = placedOnStateRaw.getBlock().getStateForPlacement(
-            new BlockItemUseContext(
-                context.getPlayer(), context.getHand(), context.getItem(),
-                new BlockRayTraceResult(context.getHitVec(), context.getFace(), offFace, context.isInside())
+            new BlockPlaceContext(
+                context.getPlayer(), context.getHand(), context.getItemInHand(),
+                new BlockHitResult(context.getClickLocation(), context.getClickedFace(), offFace, context.isInside())
             )
         );
         if(placedOnState == null) {
             placedOnState = placedOnStateRaw;
         }
         if(placedOnState.hasProperty(WATERLOGGED)) {
-            placedOnState = placedOnState.with(WATERLOGGED, false);
+            placedOnState = placedOnState.setValue(WATERLOGGED, false);
         }
 
-        return this.doSetBlock(context.getWorld(), context.getPos(), offFace, state, placedOnState, placedOnTileEntity);
+        return this.doSetBlock(context.getLevel(), context.getClickedPos(), offFace, state, placedOnState, placedOnTileEntity);
     }
 
-    protected boolean doSetBlock(World world, BlockPos pos, BlockPos placedOn, BlockState state, BlockState placedOnState, TileEntity placedOnTileEntity) {
-        if(world.setBlockState(pos, this.getBlock() instanceof SecretBaseBlock ? ((SecretBaseBlock) this.getBlock()).getPlaceState(world, placedOn, placedOnState, state) : state, 11)) {
-            placedOnState = Block.getValidBlockForPosition(placedOnState, new DummyIWorld(world), pos);
+    protected boolean doSetBlock(Level world, BlockPos pos, BlockPos placedOn, BlockState state, BlockState placedOnState, BlockEntity placedOnTileEntity) {
+        if(world.setBlock(pos, this.getBlock() instanceof SecretBaseBlock ? ((SecretBaseBlock) this.getBlock()).getPlaceState(world, placedOn, placedOnState, state) : state, 11)) {
+            placedOnState = Block.updateFromNeighbourShapes(placedOnState, new DummyIWorld(world), pos);
             this.setData(world, pos, placedOnState, placedOnTileEntity);
-            world.getChunkProvider().getLightManager().checkBlock(pos);
+            world.getChunkSource().getLightEngine().checkBlock(pos);
             return true;
         }
         return false;
     }
 
-    protected void setData(World world, BlockPos pos, BlockState placedOnState, TileEntity placedOnTileEntity) {
-        TileEntity te = world.getTileEntity(pos);
+    protected void setData(Level world, BlockPos pos, BlockState placedOnState, BlockEntity placedOnTileEntity) {
+        BlockEntity te = world.getBlockEntity(pos);
         if(te instanceof SecretTileEntity) {
             SecretData data = ((SecretTileEntity) te).getData();
             data.setBlockState(placedOnState);

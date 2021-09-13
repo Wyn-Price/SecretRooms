@@ -4,16 +4,22 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import com.wynprice.secretrooms.server.items.SecretItems;
-import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.LootTableProvider;
-import net.minecraft.data.loot.BlockLootTables;
-import net.minecraft.loot.*;
-import net.minecraft.loot.conditions.SurvivesExplosion;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.LootTables;
+import net.minecraft.world.level.storage.loot.ValidationContext;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -29,15 +35,15 @@ public class SecretBlockLootTableProvider extends LootTableProvider {
     }
 
     @Override
-    protected void validate(Map<ResourceLocation, LootTable> map, ValidationTracker validationtracker) {
-        map.forEach((res, table) -> LootTableManager.validateLootTable(validationtracker, res, table));
+    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationtracker) {
+        map.forEach((res, table) -> LootTables.validate(validationtracker, res, table));
     }
 
     @Override
     protected List<
-        Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables() {
+        Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
         return ImmutableList.of(
-            Pair.of(SecretRoomsBlockLootTables::new, LootParameterSets.BLOCK)
+            Pair.of(SecretRoomsBlockLootTables::new, LootContextParamSets.BLOCK)
         );
     }
 
@@ -80,22 +86,22 @@ public class SecretBlockLootTableProvider extends LootTableProvider {
             createBlockDrop(block, block);
         }
 
-        private void createBlockDrop(Supplier<Block> block, Supplier<? extends IItemProvider> item) {
+        private void createBlockDrop(Supplier<Block> block, Supplier<? extends ItemLike> item) {
             this.lootTables.put(block.get().getLootTable(), createSingleItemTable(item.get()));
         }
 
-        private LootTable.Builder createSingleItemTable(IItemProvider item) {
-            return LootTable.builder()
-                .addLootPool(
-                    LootPool.builder()
-                        .rolls(ConstantRange.of(1))
-                        .addEntry(ItemLootEntry.builder(item))
-                        .acceptCondition(SurvivesExplosion.builder())
+        private LootTable.Builder createSingleItemTable(ItemLike item) {
+            return LootTable.lootTable()
+                .withPool(
+                    LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1))
+                        .add(LootItem.lootTableItem(item))
+                        .when(ExplosionCondition.survivesExplosion())
                 );
         }
 
         private void createDoorItemTable(Supplier<Block> block) {
-            this.lootTables.put(block.get().getLootTable(), BlockLootTables.registerDoor(block.get()));
+            this.lootTables.put(block.get().getLootTable(), BlockLoot.createDoorTable(block.get()));
         }
     }
 

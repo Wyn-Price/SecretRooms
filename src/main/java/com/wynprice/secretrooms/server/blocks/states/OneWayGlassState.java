@@ -3,20 +3,18 @@ package com.wynprice.secretrooms.server.blocks.states;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
 import com.wynprice.secretrooms.client.world.DelegateWorld;
-import com.wynprice.secretrooms.server.blocks.OneWayGlass;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SixWayBlock;
-import net.minecraft.state.Property;
-import net.minecraft.util.BlockVoxelShape;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.PipeBlock;
+import net.minecraft.world.level.block.SupportType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 public class OneWayGlassState extends SecretBaseState {
@@ -26,7 +24,7 @@ public class OneWayGlassState extends SecretBaseState {
     }
 
     @Override
-    public boolean isSolid() {
+    public boolean canOcclude() {
         //We don't want the glass to cull out other blocks, so we need to ensure that if this is from the
         //'shouldSideBeRendered' call, we act like a non solid block.
         StackTraceElement[] trace = Thread.currentThread().getStackTrace();
@@ -37,14 +35,14 @@ public class OneWayGlassState extends SecretBaseState {
     }
 
     @Override
-    public VoxelShape getFaceOcclusionShape(IBlockReader worldIn, BlockPos pos, Direction directionIn) {
+    public VoxelShape getFaceOcclusionShape(BlockGetter worldIn, BlockPos pos, Direction directionIn) {
         Optional<BlockState> mirror = SecretBaseBlock.getMirrorState(worldIn, pos);
         DelegateWorld world = DelegateWorld.getPooled(worldIn);
-        VoxelShape shape = this.get(SecretBaseBlock.SOLID) &&
+        VoxelShape shape = this.getValue(SecretBaseBlock.SOLID) &&
             mirror.isPresent() &&
-            !this.get(SixWayBlock.FACING_TO_PROPERTY_MAP.get(directionIn)) &&
-            mirror.get().func_242698_a(world, pos, directionIn, BlockVoxelShape.CENTER) ?
-            VoxelShapes.fullCube() : VoxelShapes.empty();
+            !this.getValue(PipeBlock.PROPERTY_BY_DIRECTION.get(directionIn)) &&
+            mirror.get().isFaceSturdy(world, pos, directionIn, SupportType.CENTER) ?
+            Shapes.block() : Shapes.empty();
         world.release();
         return shape;
     }

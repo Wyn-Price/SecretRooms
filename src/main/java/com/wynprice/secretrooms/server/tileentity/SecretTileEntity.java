@@ -3,75 +3,78 @@ package com.wynprice.secretrooms.server.tileentity;
 import com.wynprice.secretrooms.client.SecretModelData;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.data.SecretData;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SecretTileEntity extends TileEntity {
+public class SecretTileEntity extends BlockEntity {
 
     private final SecretData data = new SecretData(this);
 
-    public SecretTileEntity(TileEntityType<?> tileEntityType) {
-        super(tileEntityType);
+    public SecretTileEntity(BlockPos p_155115_, BlockState p_155116_) {
+        super(SecretTileEntities.SECRET_TILE_ENTITY.get(), p_155115_, p_155116_);
     }
 
-    public SecretTileEntity() {
-        super(SecretTileEntities.SECRET_TILE_ENTITY.get());
-    }
-
-    @Override
-    public CompoundNBT write(CompoundNBT compound) {
-        compound.put("secret_data", this.data.writeNBT(new CompoundNBT()));
-        return super.write(compound);
+    public SecretTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT nbt) {
-        super.read(state, nbt);
+    public CompoundTag save(CompoundTag compound) {
+        compound.put("secret_data", this.data.writeNBT(new CompoundTag()));
+        return super.save(compound);
+    }
+
+    @Override
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
         this.data.readNBT(nbt.getCompound("secret_data"));
     }
 
     @Override
-    public CompoundNBT getUpdateTag() {
-        return this.write(new CompoundNBT());
+    public CompoundTag getUpdateTag() {
+        return this.save(new CompoundTag());
     }
 
 
     @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        this.read(state, tag);
+    public void handleUpdateTag(CompoundTag tag) {
+        this.load(tag);
     }
 
     @Nullable
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(this.pos, -1, this.data.writeNBT(new CompoundNBT()));
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return new ClientboundBlockEntityDataPacket(this.worldPosition, -1, this.data.writeNBT(new CompoundTag()));
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        this.data.readNBT(pkt.getNbtCompound());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        this.data.readNBT(pkt.getTag());
     }
 
     @Nonnull
     @Override
     public IModelData getModelData() {
-        if(this.removed) {
+        if(this.remove) {
             return super.getModelData();
         }
         ModelDataMap.Builder builder = new ModelDataMap.Builder()
                 .withInitial(SecretModelData.SRM_BLOCKSTATE, this.data.getBlockState());
-        BlockState state = this.world.getBlockState(this.pos);
+        BlockState state = this.level.getBlockState(this.worldPosition);
         if(state.getBlock() instanceof SecretBaseBlock) {
-            ((SecretBaseBlock) state.getBlock()).applyExtraModelData(this.world, this.pos, state, builder);
+            ((SecretBaseBlock) state.getBlock()).applyExtraModelData(this.level, this.worldPosition, state, builder);
         }
         return builder.build();
     }

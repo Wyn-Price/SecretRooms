@@ -1,6 +1,6 @@
 package com.wynprice.secretrooms.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.wynprice.secretrooms.SecretRooms6;
@@ -8,22 +8,22 @@ import com.wynprice.secretrooms.server.data.SecretData;
 import com.wynprice.secretrooms.server.items.SecretItems;
 import com.wynprice.secretrooms.server.items.SwitchProbe;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import com.mojang.blaze3d.platform.Lighting;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextProperties;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 
 public class SwitchProbeTooltipRenderer {
@@ -33,77 +33,70 @@ public class SwitchProbeTooltipRenderer {
         if(SecretItems.SWITCH_PROBE.get() != stack.getItem()) {
             return;
         }
-        CompoundNBT compound = stack.getChildTag(SwitchProbe.PROBE_HIT_DATA);
+        CompoundTag compound = stack.getTagElement(SwitchProbe.PROBE_HIT_DATA);
         if(compound != null && !compound.isEmpty()) {
             SecretData data = new SecretData(null);
             data.readNBT(compound);
             Item item = data.getBlockState().getBlock().asItem();
 
-            MatrixStack matrixStack = event.getMatrixStack();
-            matrixStack.push();
+            PoseStack matrixStack = event.getMatrixStack();
+            matrixStack.pushPose();
             matrixStack.translate(event.getX(), event.getY(), 401);
 
             TextureManager tm = Minecraft.getInstance().getTextureManager();
-            tm.bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-            tm.getTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE).setBlurMipmapDirect(false, false);
+            tm.bindForSetup(InventoryMenu.BLOCK_ATLAS);
+            tm.getTexture(InventoryMenu.BLOCK_ATLAS).setFilter(false, false);
 
-            for (ITextProperties line : event.getLines()) {
-                if(line instanceof TranslationTextComponent && (SecretRooms6.MODID + ".probe.containedblock").equals(((TranslationTextComponent) line).getKey())) {
-                    matrixStack.translate(event.getFontRenderer().getStringWidth(line.getString()) - 16, 1, 0);
+            for (FormattedText line : event.getLines()) {
+                if(line instanceof TranslatableComponent && (SecretRooms6.MODID + ".probe.containedblock").equals(((TranslatableComponent) line).getKey())) {
+                    matrixStack.translate(event.getFontRenderer().width(line.getString()) - 16, 1, 0);
                     matrixStack.scale(0.625F, 0.625F, 1F);
                     if(item == Items.AIR) {
-                        TextureAtlasSprite texture = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getTexture(data.getBlockState());
+                        TextureAtlasSprite texture = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getParticleIcon(data.getBlockState());
                         int color = Minecraft.getInstance().getBlockColors().getColor(
                             data.getBlockState(),
-                            Minecraft.getInstance().world,
-                            Minecraft.getInstance().player.getPosition(),
+                            Minecraft.getInstance().level,
+                            Minecraft.getInstance().player.blockPosition(),
                             0
                         );
-                        RenderSystem.color4f(
+                        RenderSystem.setShaderColor(
                             ((color >> 16) & 0xFF) / 255F,
                             ((color >> 8) & 0xFF) / 255F,
                             (color & 0xFF) / 255F,
                             1F);
-                        AbstractGui.blit(matrixStack, 0, 0, 0, 16, 16, texture);
+                        GuiComponent.blit(matrixStack, 0, 0, 0, 16, 16, texture);
                     } else {
-                        RenderHelper.enableStandardItemLighting();
-                        RenderSystem.enableRescaleNormal();
-                        RenderSystem.enableAlphaTest();
-                        RenderSystem.defaultAlphaFunc();
+                        Lighting.setupForEntityInInventory();
                         RenderSystem.enableBlend();
                         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-                        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+                        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
                         ItemRenderer ir = Minecraft.getInstance().getItemRenderer();
                         ItemStack render = new ItemStack(item);
-                        IBakedModel model = ir.getItemModelWithOverrides(render, null, null);
+                        BakedModel model = ir.getModel(render, null, null, 0);
 
-                        boolean diffuse = !model.isSideLit();
+                        boolean diffuse = !model.usesBlockLight();
                         if (diffuse) {
-                            RenderHelper.setupGuiFlatDiffuseLighting();
+                            Lighting.setupForFlatItems();
                         }
 
                         matrixStack.translate(8, 8, 8);
                         matrixStack.scale(16, -16, 16);
 
-                        IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
-                        ir.renderItem(render, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, 0xF000F0, OverlayTexture.NO_OVERLAY, model);
-                        buffer.finish();
+                        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+                        ir.render(render, ItemTransforms.TransformType.GUI, false, matrixStack, buffer, 0xF000F0, OverlayTexture.NO_OVERLAY, model);
+                        buffer.endBatch();
 
                         RenderSystem.enableDepthTest();
                         if (diffuse) {
-                            RenderHelper.setupGui3DDiffuseLighting();
+                            Lighting.setupFor3DItems();
                         }
-
-                        RenderSystem.disableAlphaTest();
-                        RenderSystem.disableRescaleNormal();
-                        RenderHelper.disableStandardItemLighting();
                     }
                     break;
                 }
                 matrixStack.translate(0, 10, 0);
             }
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     }
 }

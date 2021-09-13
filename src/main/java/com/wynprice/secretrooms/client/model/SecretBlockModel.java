@@ -1,25 +1,24 @@
 package com.wynprice.secretrooms.client.model;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.wynprice.secretrooms.client.model.quads.TrueVisionBakedQuad;
 import com.wynprice.secretrooms.client.world.DelegateWorld;
 import com.wynprice.secretrooms.server.items.TrueVisionGogglesClientHandler;
-import com.wynprice.secretrooms.server.items.TrueVisionGogglesHandler;
 import com.wynprice.secretrooms.server.utils.ModelDataUtils;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockDisplayReader;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -33,12 +32,12 @@ import java.util.function.Supplier;
 import static com.wynprice.secretrooms.client.SecretModelData.MODEL_MAP_STATE;
 import static com.wynprice.secretrooms.client.SecretModelData.SRM_BLOCKSTATE;
 
-public class SecretBlockModel implements IBakedModel {
+public class SecretBlockModel implements BakedModel {
 
-    private static final Supplier<BlockRendererDispatcher> DISPATCHER = () -> Minecraft.getInstance().getBlockRendererDispatcher();
-    private final IBakedModel model;
+    private static final Supplier<BlockRenderDispatcher> DISPATCHER = () -> Minecraft.getInstance().getBlockRenderer();
+    private final BakedModel model;
 
-    public SecretBlockModel(IBakedModel model) {
+    public SecretBlockModel(BakedModel model) {
         this.model = model;
     }
 
@@ -49,8 +48,8 @@ public class SecretBlockModel implements IBakedModel {
             return Collections.emptyList();
         }
         BlockState mirrorState = data.get();
-        Supplier<List<BakedQuad>> quads = () -> this.render(mirrorState, state, DISPATCHER.get().getModelForState(mirrorState), side, rand, extraData);
-        if (trueVision() && MinecraftForgeClient.getRenderLayer() == RenderType.getTranslucent()) {
+        Supplier<List<BakedQuad>> quads = () -> this.render(mirrorState, state, DISPATCHER.get().getBlockModel(mirrorState), side, rand, extraData);
+        if (trueVision() && MinecraftForgeClient.getRenderLayer() == RenderType.translucent()) {
             List<BakedQuad> quadList = quads.get();
             this.getHelmetQuads(this.gatherAllQuads(quads), quadList);
             return quadList;
@@ -70,8 +69,8 @@ public class SecretBlockModel implements IBakedModel {
 
     protected boolean canRenderInLater(BlockState state) {
         RenderType renderLayer = MinecraftForgeClient.getRenderLayer();
-        return (trueVision() && renderLayer == RenderType.getTranslucent()) ||
-                (renderLayer == null || RenderTypeLookup.canRenderInLayer(state, renderLayer));
+        return (trueVision() && renderLayer == RenderType.translucent()) ||
+                (renderLayer == null || ItemBlockRenderTypes.canRenderInLayer(state, renderLayer));
     }
 
     protected List<BakedQuad> gatherAllQuads(Supplier<List<BakedQuad>> superQuads) {
@@ -83,22 +82,22 @@ public class SecretBlockModel implements IBakedModel {
         return quads;
     }
 
-    protected List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull IBakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+    protected List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull BakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         return new ArrayList<>(model.getQuads(mirrorState, side, rand, extraData));
     }
 
     @Override
-    public TextureAtlasSprite getParticleTexture(IModelData data) {
+    public TextureAtlasSprite getParticleIcon(IModelData data) {
         return trueVision() ?
-            this.model.getParticleTexture(data) :
-            ModelDataUtils.getData(data, SRM_BLOCKSTATE).map(DISPATCHER.get()::getModelForState).orElse(this.model).getParticleTexture(data);
+            this.model.getParticleIcon(data) :
+            ModelDataUtils.getData(data, SRM_BLOCKSTATE).map(DISPATCHER.get()::getBlockModel).orElse(this.model).getParticleIcon(data);
     }
 
     @Nonnull
     @Override
-    public IModelData getModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
+    public IModelData getModelData(@Nonnull BlockAndTintGetter world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
         if(tileData == EmptyModelData.INSTANCE) {
-            TileEntity entity = world.getTileEntity(pos);
+            BlockEntity entity = world.getBlockEntity(pos);
             if(entity != null) {
                 tileData = entity.getModelData();
             }
@@ -107,7 +106,7 @@ public class SecretBlockModel implements IBakedModel {
         Optional<BlockState> mirror = ModelDataUtils.getData(tileData, SRM_BLOCKSTATE);
         if(mirror.isPresent()) {
             DelegateWorld pooled = DelegateWorld.getPooled(world);
-            tileData = DISPATCHER.get().getModelForState(mirror.get()).getModelData(pooled, pos, mirror.get(), tileData);
+            tileData = DISPATCHER.get().getBlockModel(mirror.get()).getModelData(pooled, pos, mirror.get(), tileData);
             pooled.release();
         }
 
@@ -130,8 +129,8 @@ public class SecretBlockModel implements IBakedModel {
     }
 
     @Override
-    public boolean isSideLit() {
-        return trueVision() && this.model.isSideLit();
+    public boolean usesBlockLight() {
+        return trueVision() && this.model.usesBlockLight();
     }
 
     @Override
@@ -140,13 +139,13 @@ public class SecretBlockModel implements IBakedModel {
     }
 
     @Override
-    public ItemCameraTransforms getItemCameraTransforms() {
-        return this.model.getItemCameraTransforms();
+    public ItemTransforms getTransforms() {
+        return this.model.getTransforms();
     }
 
     @Override
-    public boolean isAmbientOcclusion() {
-        return this.model.isAmbientOcclusion();
+    public boolean useAmbientOcclusion() {
+        return this.model.useAmbientOcclusion();
     }
 
     @Override
@@ -155,22 +154,22 @@ public class SecretBlockModel implements IBakedModel {
     }
 
     @Override
-    public TextureAtlasSprite getParticleTexture() {
-        return this.model.getParticleTexture();
+    public TextureAtlasSprite getParticleIcon() {
+        return this.model.getParticleIcon();
     }
 
     @Override
-    public ItemOverrideList getOverrides() {
+    public ItemOverrides getOverrides() {
         return this.model.getOverrides();
     }
 
     @Override
-    public boolean isBuiltInRenderer() {
+    public boolean isCustomRenderer() {
         return false;
     }
 
     @Override
-    public IBakedModel handlePerspective(ItemCameraTransforms.TransformType cameraTransformType, MatrixStack mat) {
+    public BakedModel handlePerspective(ItemTransforms.TransformType cameraTransformType, PoseStack mat) {
         return this.model.handlePerspective(cameraTransformType, mat);
     }
 }

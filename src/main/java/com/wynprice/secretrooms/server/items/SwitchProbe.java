@@ -2,38 +2,30 @@ package com.wynprice.secretrooms.server.items;
 
 import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
-import com.wynprice.secretrooms.server.blocks.states.SecretBaseState;
 import com.wynprice.secretrooms.server.data.SecretData;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.state.Property;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 
-import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class SwitchProbe extends Item {
 
@@ -44,59 +36,59 @@ public class SwitchProbe extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity playerIn, Hand handIn) {
-        ItemStack stack = playerIn.getHeldItem(handIn);
+    public InteractionResultHolder<ItemStack> use(Level world, Player playerIn, InteractionHand handIn) {
+        ItemStack stack = playerIn.getItemInHand(handIn);
 //        stack.getOrCreateTag().remove(PROBE_HIT_DATA);
-        return new ActionResult<>(ActionResultType.SUCCESS, stack);
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }
 
     @Override
-    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
-        Optional<SecretData> data = SecretBaseBlock.getMirrorData(context.getWorld(), context.getPos());
-        BlockState state = context.getWorld().getBlockState(context.getPos());
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
+        Optional<SecretData> data = SecretBaseBlock.getMirrorData(context.getLevel(), context.getClickedPos());
+        BlockState state = context.getLevel().getBlockState(context.getClickedPos());
         if(data.isPresent()) {
-            CompoundNBT compound = stack.getOrCreateTag().getCompound(PROBE_HIT_DATA);
+            CompoundTag compound = stack.getOrCreateTag().getCompound(PROBE_HIT_DATA);
             if(!compound.isEmpty()) {
                 SecretData d = new SecretData(null);
                 d.readNBT(compound);
                 data.get().setFrom(d);
 
-                boolean solid = d.getBlockState().isSolid();
-                if(solid != state.isSolid()) {
-                    context.getWorld().setBlockState(context.getPos(), state.with(SecretBaseBlock.SOLID, solid));
+                boolean solid = d.getBlockState().canOcclude();
+                if(solid != state.canOcclude()) {
+                    context.getLevel().setBlockAndUpdate(context.getClickedPos(), state.setValue(SecretBaseBlock.SOLID, solid));
                 }
 
                 if(state.hasProperty(WATERLOGGED) && d.getBlockState().hasProperty(WATERLOGGED)) {
-                    d.setBlockState(d.getBlockState().with(WATERLOGGED, state.get(WATERLOGGED)));
+                    d.setBlockState(d.getBlockState().setValue(WATERLOGGED, state.getValue(WATERLOGGED)));
                 }
             }
         } else {
             SecretData d = new SecretData(null);
             d.setBlockState(state);
-            TileEntity tileEntity = context.getWorld().getTileEntity(context.getPos());
+            BlockEntity tileEntity = context.getLevel().getBlockEntity(context.getClickedPos());
             d.setTileEntityNBT(tileEntity != null ? tileEntity.serializeNBT() : null);
 
-            d.writeNBT(stack.getOrCreateChildTag(PROBE_HIT_DATA));
+            d.writeNBT(stack.getOrCreateTagElement(PROBE_HIT_DATA));
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> text, ITooltipFlag flag) {
-        CompoundNBT compound = stack.getOrCreateTag().getCompound(PROBE_HIT_DATA);
-        text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.containedblock").mergeStyle(TextFormatting.GOLD));
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> text, TooltipFlag flag) {
+        CompoundTag compound = stack.getOrCreateTag().getCompound(PROBE_HIT_DATA);
+        text.add(new TranslatableComponent(SecretRooms6.MODID + ".probe.containedblock").withStyle(ChatFormatting.GOLD));
         if(compound.isEmpty()) {
-            text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.noneset"));
+            text.add(new TranslatableComponent(SecretRooms6.MODID + ".probe.noneset"));
         } else if(Screen.hasShiftDown()){
             SecretData data = new SecretData(null);
             data.readNBT(compound);
 
             BlockState state = data.getBlockState();
-            text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.data").mergeStyle(TextFormatting.BLUE));
-            text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.blockset", state.getBlock().getRegistryName()).mergeStyle(TextFormatting.AQUA));
+            text.add(new TranslatableComponent(SecretRooms6.MODID + ".probe.data").withStyle(ChatFormatting.BLUE));
+            text.add(new TranslatableComponent(SecretRooms6.MODID + ".probe.blockset", state.getBlock().getRegistryName()).withStyle(ChatFormatting.AQUA));
 
             for (Property<?> property : state.getProperties()) {
-                text.add(new TranslationTextComponent(SecretRooms6.MODID + ".probe.blockproperty", property.getName(), propertyString(property, state.get(property))).mergeStyle(TextFormatting.DARK_AQUA));
+                text.add(new TranslatableComponent(SecretRooms6.MODID + ".probe.blockproperty", property.getName(), propertyString(property, state.getValue(property))).withStyle(ChatFormatting.DARK_AQUA));
             }
         }
     }

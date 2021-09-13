@@ -1,13 +1,13 @@
 package com.wynprice.secretrooms.server.blocks;
 
 import com.wynprice.secretrooms.server.tileentity.SecretChestTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class SecretTrappedChest extends SecretChest {
 
@@ -16,26 +16,26 @@ public class SecretTrappedChest extends SecretChest {
     }
 
     @Override
-    public boolean canProvidePower(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         return true;
     }
 
     @Override
-    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        TileEntity tileEntity = blockAccess.getTileEntity(pos);
+    public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
+        BlockEntity tileEntity = blockAccess.getBlockEntity(pos);
         if(tileEntity instanceof SecretChestTileEntity) {
-            return MathHelper.clamp(((SecretChestTileEntity) tileEntity).getNumPlayersUsing(), 0, 15);
+            return Mth.clamp(((SecretChestTileEntity) tileEntity).getNumPlayersUsing(), 0, 15);
         }
         return 0;
     }
 
     @Override
-    public boolean shouldCheckWeakPower(BlockState state, IWorldReader world, BlockPos pos, Direction side) {
+    public boolean shouldCheckWeakPower(BlockState state, LevelReader world, BlockPos pos, Direction side) {
         return false;
     }
 
     @Override
-    public int getStrongPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        return side == Direction.UP ? blockState.getWeakPower(blockAccess, pos, side) : 0;
+    public int getDirectSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
+        return side == Direction.UP ? blockState.getSignal(blockAccess, pos, side) : 0;
     }
 }
