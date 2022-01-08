@@ -18,14 +18,14 @@ public class TrueVisionBakedQuad {
     private static TextureAtlasSprite overlaySprite;
 
     public static void onTextureStitch(TextureStitchEvent.Pre event) {
-        if(InventoryMenu.BLOCK_ATLAS.equals(event.getMap().location())) {
+        if(InventoryMenu.BLOCK_ATLAS.equals(event.getAtlas().location())) {
             event.addSprite(OVERLAY_LOCATION);
         }
     }
 
     public static void onTextureStitched(TextureStitchEvent.Post event) {
-        if(InventoryMenu.BLOCK_ATLAS.equals(event.getMap().location())) {
-            overlaySprite = event.getMap().getSprite(OVERLAY_LOCATION);
+        if(InventoryMenu.BLOCK_ATLAS.equals(event.getAtlas().location())) {
+            overlaySprite = event.getAtlas().getSprite(OVERLAY_LOCATION);
         }
     }
 

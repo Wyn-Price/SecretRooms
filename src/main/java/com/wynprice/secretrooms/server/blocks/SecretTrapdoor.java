@@ -183,7 +183,7 @@ public class SecretTrapdoor extends SecretBaseBlock {
                 worldIn.setBlock(pos, state.setValue(POWERED, flag), 2);
                 requestModelRefresh(worldIn, pos);
                 if (state.getValue(BlockStateProperties.WATERLOGGED)) {
-                    worldIn.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
+                    worldIn.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
                 }
             }
 

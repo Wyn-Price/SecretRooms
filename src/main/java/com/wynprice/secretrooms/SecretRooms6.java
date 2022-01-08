@@ -1,7 +1,8 @@
 package com.wynprice.secretrooms;
 
 import com.wynprice.secretrooms.client.SecretModelHandler;
-import com.wynprice.secretrooms.client.SwitchProbeTooltipRenderer;
+import com.wynprice.secretrooms.client.SwitchProbeTooltip;
+import com.wynprice.secretrooms.client.SwitchProbeTooltipComponent;
 import com.wynprice.secretrooms.client.model.OneWayGlassModel;
 import com.wynprice.secretrooms.client.model.quads.TrueVisionBakedQuad;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
@@ -10,10 +11,7 @@ import com.wynprice.secretrooms.server.data.SecretBlockLootTableProvider;
 import com.wynprice.secretrooms.server.data.SecretBlockTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretItemTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretRecipeProvider;
-import com.wynprice.secretrooms.server.items.SecretItems;
-import com.wynprice.secretrooms.server.items.TrueVisionGoggles;
-import com.wynprice.secretrooms.server.items.TrueVisionGogglesClientHandler;
-import com.wynprice.secretrooms.server.items.TrueVisionGogglesHandler;
+import com.wynprice.secretrooms.server.items.*;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntities;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -28,6 +26,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -72,7 +71,7 @@ public class SecretRooms6 {
 
             bus.addListener(this::clientSetup);
 
-            forgeBus.addListener(SwitchProbeTooltipRenderer::onTooltip);
+            forgeBus.addListener(SwitchProbe::appendHover);
 
             forgeBus.addListener(TrueVisionGogglesClientHandler::onClientWorldLoad);
             forgeBus.addListener(TrueVisionGogglesClientHandler::onClientWorldTick);
@@ -164,6 +163,8 @@ public class SecretRooms6 {
 
         ItemBlockRenderTypes.setRenderLayer(SecretBlocks.TORCH_LEVER.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(SecretBlocks.WALL_TORCH_LEVER.get(), RenderType.cutout());
+
+        MinecraftForgeClient.registerTooltipComponentFactory(SwitchProbeTooltipComponent.class, SwitchProbeTooltip::new);
     }
 
 

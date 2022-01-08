@@ -49,7 +49,7 @@ public class SecretBlockModel implements BakedModel {
         }
         BlockState mirrorState = data.get();
         Supplier<List<BakedQuad>> quads = () -> this.render(mirrorState, state, DISPATCHER.get().getBlockModel(mirrorState), side, rand, extraData);
-        if (trueVision() && MinecraftForgeClient.getRenderLayer() == RenderType.translucent()) {
+        if (trueVision() && MinecraftForgeClient.getRenderType() == RenderType.translucent()) {
             List<BakedQuad> quadList = quads.get();
             this.getHelmetQuads(this.gatherAllQuads(quads), quadList);
             return quadList;
@@ -68,17 +68,17 @@ public class SecretBlockModel implements BakedModel {
     }
 
     protected boolean canRenderInLater(BlockState state) {
-        RenderType renderLayer = MinecraftForgeClient.getRenderLayer();
+        RenderType renderLayer = MinecraftForgeClient.getRenderType();
         return (trueVision() && renderLayer == RenderType.translucent()) ||
                 (renderLayer == null || ItemBlockRenderTypes.canRenderInLayer(state, renderLayer));
     }
 
     protected List<BakedQuad> gatherAllQuads(Supplier<List<BakedQuad>> superQuads) {
-        RenderType layer = MinecraftForgeClient.getRenderLayer();
+        RenderType layer = MinecraftForgeClient.getRenderType();
 
-        ForgeHooksClient.setRenderLayer(null);
+        ForgeHooksClient.setRenderType(null);
         List<BakedQuad> quads = new ArrayList<>(superQuads.get());
-        ForgeHooksClient.setRenderLayer(layer);
+        ForgeHooksClient.setRenderType(layer);
         return quads;
     }
 
@@ -149,8 +149,8 @@ public class SecretBlockModel implements BakedModel {
     }
 
     @Override
-    public boolean isAmbientOcclusion(BlockState state) {
-        return this.model.isAmbientOcclusion(state);
+    public boolean useAmbientOcclusion(BlockState state) {
+        return this.model.useAmbientOcclusion(state);
     }
 
     @Override

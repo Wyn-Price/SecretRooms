@@ -165,7 +165,7 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
     @Nullable
     @Override
     public BlockPathTypes getAiPathNodeType(BlockState state, BlockGetter world, BlockPos pos, @Nullable Mob entity) {
-        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getAiPathNodeType(reader, pos1, entity), () -> super.getAiPathNodeType(state, world, pos, entity));
+        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getBlockPathType(reader, pos1, entity), () -> super.getAiPathNodeType(state, world, pos, entity));
     }
 
     @Override
@@ -201,8 +201,9 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
     @Override
     public int getLightEmission(BlockState state, BlockGetter world, BlockPos pos) {
         int result = getValue(world, pos, BlockState::getLightEmission, () -> super.getLightEmission(state, world, pos));
+        StackTraceElement element = Thread.currentThread().getStackTrace()[3];
         //This is needed so we can control AO. Try to remove this asap
-        if ("net.minecraft.client.renderer.BlockModelRenderer".equals(Thread.currentThread().getStackTrace()[3].getClassName())) {
+        if ("net.minecraft.client.renderer.block.ModelBlockRenderer".equals(element.getClassName()) && "tesselateBlock".equals(element.getMethodName())) {
             Optional<BlockState> mirrorState = getMirrorState(world, pos);
             if(mirrorState.isPresent()) {
                 Boolean isAoModel = DistExecutor.callWhenOn(Dist.CLIENT, () -> () ->
