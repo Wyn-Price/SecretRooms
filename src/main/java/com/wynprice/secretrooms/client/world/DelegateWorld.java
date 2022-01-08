@@ -59,9 +59,11 @@ public class DelegateWorld implements IBlockDisplayReader {
     }
 
     public void release() {
-        AVAILABLE.add(this);
-        this.world = null;
-        this.reader = null;
+        synchronized (DelegateWorld.class) {
+            AVAILABLE.add(this);
+            this.world = null;
+            this.reader = null;
+        }
     }
 
     @Nullable
