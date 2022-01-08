@@ -26,10 +26,6 @@ public class DelegateWorld implements BlockAndTintGetter {
             return new DelegateWorld(reader);
         }
         DelegateWorld world = AVAILABLE.remove(0);
-        //Impossible bug that sometimes decides to appear
-        if(world == null) {
-            return new DelegateWorld(reader);
-        }
         world.use(reader);
         return world;
     }
@@ -60,9 +56,11 @@ public class DelegateWorld implements BlockAndTintGetter {
     }
 
     public void release() {
-        AVAILABLE.add(this);
-        this.world = null;
-        this.reader = null;
+	synchronized(DelegateWorld.class) {
+            AVAILABLE.add(this);
+            this.world = null;
+            this.reader = null;
+	}
     }
 
     @Nullable
