@@ -56,7 +56,7 @@ public class SecretTileEntity extends BlockEntity {
     @Nullable
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return new ClientboundBlockEntityDataPacket(this.worldPosition, -1, this.data.writeNBT(new CompoundTag()));
+        return ClientboundBlockEntityDataPacket.create(this, be -> this.data.writeNBT(new CompoundTag()));
     }
 
     @Override

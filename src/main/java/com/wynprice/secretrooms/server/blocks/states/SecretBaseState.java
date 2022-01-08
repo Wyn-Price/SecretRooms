@@ -45,4 +45,9 @@ public class SecretBaseState extends BlockState {
     public VoxelShape getFaceOcclusionShape(BlockGetter worldIn, BlockPos p, Direction directionIn) {
         return SecretBaseBlock.getValue(worldIn, p, (mirror, reader, pos1) -> mirror.getFaceOcclusionShape(reader, p, directionIn), () ->super.getFaceOcclusionShape(worldIn, p, directionIn));
     }
+
+    @Override
+    public boolean useShapeForLightOcclusion() {
+        return true;
+    }
 }

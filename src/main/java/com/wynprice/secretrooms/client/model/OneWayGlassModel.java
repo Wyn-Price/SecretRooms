@@ -34,17 +34,17 @@ public class OneWayGlassModel extends SecretBlockModel {
 
     @Override
     protected boolean canRenderInLater(BlockState state) {
-        return MinecraftForgeClient.getRenderLayer() == RenderType.cutout() || super.canRenderInLater(state);
+        return MinecraftForgeClient.getRenderType() == RenderType.cutout() || super.canRenderInLater(state);
     }
 
     @Override
     public List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull BakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        RenderType startLayer = MinecraftForgeClient.getRenderLayer();
+        RenderType startLayer = MinecraftForgeClient.getRenderType();
 
         Supplier<List<BakedQuad>> superQuads = () -> getQuadsForSide(mirrorState, baseState, side, rand, extraData);
         List<BakedQuad> out = this.getQuadsNotSolid(baseState, mirrorState, superQuads, extraData);
 
-        ForgeHooksClient.setRenderLayer(startLayer);
+        ForgeHooksClient.setRenderType(startLayer);
 
         return out;
     }
@@ -52,7 +52,7 @@ public class OneWayGlassModel extends SecretBlockModel {
     private List<BakedQuad> getQuadsNotSolid(BlockState baseState, BlockState delegate, Supplier<List<BakedQuad>> superQuads, IModelData extraData) {
         List<BakedQuad> quads = new ArrayList<>();
 
-        RenderType layer = MinecraftForgeClient.getRenderLayer();
+        RenderType layer = MinecraftForgeClient.getRenderType();
         if(layer == null || layer == RenderType.cutout()) {
             quads.addAll(this.getGlassQuadsNotSolid(baseState, superQuads, extraData));
         }

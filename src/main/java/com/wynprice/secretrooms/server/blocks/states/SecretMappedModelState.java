@@ -20,4 +20,5 @@ public class SecretMappedModelState extends SecretBaseState {
     public VoxelShape getFaceOcclusionShape(BlockGetter worldIn, BlockPos p, Direction directionIn) {
         return Shapes.getFaceShape(this.getOcclusionShape(worldIn, p), directionIn);
     }
+    
 }

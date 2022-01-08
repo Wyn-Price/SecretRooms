@@ -55,7 +55,7 @@ public class SecretButton extends SecretBaseBlock {
             worldIn.setBlock(pos, state.setValue(POWERED, Boolean.TRUE), 3);
             this.playSound(player, worldIn, pos, true);
             this.updateNeighbors(worldIn, pos);
-            worldIn.getBlockTicks().scheduleTick(pos, this, this.tickRate(worldIn));
+            worldIn.scheduleTick(pos, this, this.tickRate(worldIn));
             return InteractionResult.SUCCESS;
         }
     }
@@ -123,7 +123,7 @@ public class SecretButton extends SecretBaseBlock {
         }
 
         if (flag) {
-            worldIn.getBlockTicks().scheduleTick(new BlockPos(pos), this, this.tickRate(worldIn));
+            worldIn.scheduleTick(new BlockPos(pos), this, this.tickRate(worldIn));
         }
     }
 

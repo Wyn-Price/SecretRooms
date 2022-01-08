@@ -1,6 +1,8 @@
 package com.wynprice.secretrooms.server.items;
 
+import com.mojang.datafixers.util.Either;
 import com.wynprice.secretrooms.SecretRooms6;
+import com.wynprice.secretrooms.client.SwitchProbeTooltipComponent;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.data.SecretData;
 import net.minecraft.ChatFormatting;
@@ -12,6 +14,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -20,6 +23,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraftforge.client.event.RenderTooltipEvent;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -73,22 +77,30 @@ public class SwitchProbe extends Item {
         return InteractionResult.SUCCESS;
     }
 
-    @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> text, TooltipFlag flag) {
+    public static void appendHover(RenderTooltipEvent.GatherComponents event) {
+        if(event.getItemStack().getItem() != SecretItems.SWITCH_PROBE.get()) {
+            return;
+        }
+        ItemStack stack = event.getItemStack();
+        var elements = event.getTooltipElements();
+
         CompoundTag compound = stack.getOrCreateTag().getCompound(PROBE_HIT_DATA);
-        text.add(new TranslatableComponent(SecretRooms6.MODID + ".probe.containedblock").withStyle(ChatFormatting.GOLD));
+        elements.add(Either.right(new SwitchProbeTooltipComponent(
+            new TranslatableComponent(SecretRooms6.MODID + ".probe.containedblock").withStyle(ChatFormatting.GOLD).getVisualOrderText(),
+            stack
+        )));
         if(compound.isEmpty()) {
-            text.add(new TranslatableComponent(SecretRooms6.MODID + ".probe.noneset"));
+            elements.add(Either.left(new TranslatableComponent(SecretRooms6.MODID + ".probe.noneset")));
         } else if(Screen.hasShiftDown()){
             SecretData data = new SecretData(null);
             data.readNBT(compound);
 
             BlockState state = data.getBlockState();
-            text.add(new TranslatableComponent(SecretRooms6.MODID + ".probe.data").withStyle(ChatFormatting.BLUE));
-            text.add(new TranslatableComponent(SecretRooms6.MODID + ".probe.blockset", state.getBlock().getRegistryName()).withStyle(ChatFormatting.AQUA));
+            elements.add(Either.left(new TranslatableComponent(SecretRooms6.MODID + ".probe.data").withStyle(ChatFormatting.BLUE)));
+            elements.add(Either.left(new TranslatableComponent(SecretRooms6.MODID + ".probe.blockset", state.getBlock().getRegistryName()).withStyle(ChatFormatting.AQUA)));
 
             for (Property<?> property : state.getProperties()) {
-                text.add(new TranslatableComponent(SecretRooms6.MODID + ".probe.blockproperty", property.getName(), propertyString(property, state.getValue(property))).withStyle(ChatFormatting.DARK_AQUA));
+                elements.add(Either.left(new TranslatableComponent(SecretRooms6.MODID + ".probe.blockproperty", property.getName(), propertyString(property, state.getValue(property))).withStyle(ChatFormatting.DARK_AQUA)));
             }
         }
     }

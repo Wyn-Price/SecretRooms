@@ -26,9 +26,9 @@ public class OneWayGlassState extends SecretBaseState {
     @Override
     public boolean canOcclude() {
         //We don't want the glass to cull out other blocks, so we need to ensure that if this is from the
-        //'shouldSideBeRendered' call, we act like a non solid block.
-        StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-        if("net.minecraft.block.Block".equals(trace[2].getClassName()) && "shouldSideBeRendered".equals(trace[2].getMethodName())) {
+        //'shouldRenderFace' call, we act like a non solid block.
+        StackTraceElement trace = Thread.currentThread().getStackTrace()[2];
+        if("net.minecraft.world.level.block.Block".equals(trace.getClassName()) && "shouldRenderFace".equals(trace.getMethodName())) {
             return false;
         }
         return true;

@@ -23,7 +23,7 @@ public class GhostBlock extends SecretBaseBlock {
 
     @Override
     public BlockState getPlaceState(BlockGetter wold, BlockPos placedOnPos, BlockState placedOn, BlockState fallback) {
-        return super.getPlaceState(wold, placedOnPos, placedOn, fallback).setValue(NORMAL_CUBE, placedOn.isRedstoneConductor(wold, placedOnPos));
+        return super.getPlaceState(wold, placedOnPos, placedOn, fallback).setValue(NORMAL_CUBE, placedOn.isSolidRender(wold, placedOnPos));
     }
 
     @Override

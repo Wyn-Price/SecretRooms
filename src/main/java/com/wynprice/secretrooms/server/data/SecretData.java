@@ -4,6 +4,8 @@ import com.wynprice.secretrooms.SecretRooms6;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -90,7 +92,7 @@ public class SecretData {
                 this.base.requestModelDataUpdate();
                 world.sendBlockUpdated(this.base.getBlockPos(), this.base.getBlockState(), this.base.getBlockState(), 11);
             } else {
-                ClientboundBlockEntityDataPacket supdatetileentitypacket = this.base.getUpdatePacket();
+                Packet<ClientGamePacketListener> supdatetileentitypacket = this.base.getUpdatePacket();
                 for (ServerPlayer player : ((ServerLevel) world).players()) {
                     if (supdatetileentitypacket != null) {
                         player.connection.send(supdatetileentitypacket);

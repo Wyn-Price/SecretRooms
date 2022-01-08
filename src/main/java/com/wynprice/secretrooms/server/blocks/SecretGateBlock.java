@@ -80,7 +80,7 @@ public class SecretGateBlock extends SecretBaseBlock {
             if(!state.getMaterial().isReplaceable() && state.getBlock() != SecretBlocks.SECRET_DUMMY_BLOCK.get()) { //TODO: move to BlockState#isReplaceable
                 if(state.getBlock() == this) {
                     world.setBlockAndUpdate(off, state.setValue(OPEN, true));
-                    world.getBlockTicks().scheduleTick(off, this, 3);
+                    world.scheduleTick(off, this, 3);
                 }
                 return;
             }
@@ -95,7 +95,7 @@ public class SecretGateBlock extends SecretBaseBlock {
                     BlockState offState = world.getBlockState(offPos);
                     if(offState.getBlock() == this) {
                         world.setBlockAndUpdate(offPos, offState.setValue(OPEN, true));
-                        world.getBlockTicks().scheduleTick(offPos, this, 3);
+                        world.scheduleTick(offPos, this, 3);
                     }
                 }
             }
@@ -116,7 +116,7 @@ public class SecretGateBlock extends SecretBaseBlock {
             if(state.getBlock() != SecretBlocks.SECRET_DUMMY_BLOCK.get()) {
                 if(state.getBlock() == this && recursive) {
                     world.setBlockAndUpdate(off, state.setValue(OPEN, false));
-                    world.getBlockTicks().scheduleTick(off, this, 3);
+                    world.scheduleTick(off, this, 3);
                 }
                 return;
             }
@@ -132,7 +132,7 @@ public class SecretGateBlock extends SecretBaseBlock {
                         BlockState offState = world.getBlockState(offPos);
                         if(offState.getBlock() == this) {
                             world.setBlockAndUpdate(offPos, offState.setValue(OPEN, false));
-                            world.getBlockTicks().scheduleTick(offPos, this, 3);
+                            world.scheduleTick(offPos, this, 3);
                         }
                     }
                 }

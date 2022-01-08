@@ -71,7 +71,7 @@ public abstract class AbstractSecretPressurePlateBase extends SecretBaseBlock {
         }
 
         if (flag1) {
-            worldIn.getBlockTicks().scheduleTick(new BlockPos(pos), this, this.tickRate(worldIn));
+            worldIn.scheduleTick(new BlockPos(pos), this, this.tickRate(worldIn));
         }
 
     }

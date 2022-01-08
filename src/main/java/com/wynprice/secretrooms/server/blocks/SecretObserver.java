@@ -40,7 +40,7 @@ public class SecretObserver extends SecretBaseBlock {
             worldIn.setBlock(pos, state.setValue(POWERED, false), 2);
         } else {
             worldIn.setBlock(pos, state.setValue(POWERED, true), 2);
-            worldIn.getBlockTicks().scheduleTick(pos, this, 2);
+            worldIn.scheduleTick(pos, this, 2);
         }
 
         this.updateNeighborsInFront(worldIn, pos, state);
@@ -58,7 +58,7 @@ public class SecretObserver extends SecretBaseBlock {
 
     private void startSignal(LevelAccessor worldIn, BlockPos pos) {
         if (!worldIn.isClientSide() && !worldIn.getBlockTicks().hasScheduledTick(pos, this)) {
-            worldIn.getBlockTicks().scheduleTick(pos, this, 2);
+            worldIn.scheduleTick(pos, this, 2);
         }
     }
 
