@@ -23,13 +23,13 @@ public class GhostBlock extends SecretBaseBlock {
 
     @Override
     public BlockState getPlaceState(BlockGetter wold, BlockPos placedOnPos, BlockState placedOn, BlockState fallback) {
-        return super.getPlaceState(wold, placedOnPos, placedOn, fallback).setValue(NORMAL_CUBE, placedOn.isSolidRender(wold, placedOnPos));
+        return super.getPlaceState(wold, placedOnPos, placedOn, fallback).setValue(NORMAL_CUBE, placedOn.isCollisionShapeFullBlock(wold, placedOnPos));
     }
 
-    @Override
-    public Boolean getSolidValue() {
-        return false;
-    }
+//    @Override
+//    public Boolean getSolidValue() {
+//        return false;
+//    }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

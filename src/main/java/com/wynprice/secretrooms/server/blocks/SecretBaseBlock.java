@@ -36,6 +36,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -169,8 +170,23 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
     }
 
     @Override
+    public boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType type) {
+        return getValue(world, pos, (mirror, reader, pos1) -> mirror.isPathfindable(world, pos, type), () -> super.isPathfindable(state, world, pos, type));
+    }
+
+    @Override
+    public float getShadeBrightness(BlockState state, BlockGetter world, BlockPos pos) {
+        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getShadeBrightness(world, pos), () -> super.getShadeBrightness(state, world, pos));
+    }
+
+    @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return getValue(worldIn, pos, (mirror, reader, pos1) -> mirror.getShape(reader, pos1, context), () -> super.getShape(state, worldIn, pos, context));
+    }
+
+    @Override
+    public VoxelShape getBlockSupportShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
+        return getValue(worldIn, pos, BlockStateBase::getBlockSupportShape, () -> super.getBlockSupportShape(state, worldIn, pos));
     }
 
     @Override

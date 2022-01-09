@@ -30,10 +30,8 @@ public class SecretTileEntity extends BlockEntity {
         super(type, pos, state);
     }
 
-    @Override
-    public CompoundTag save(CompoundTag compound) {
+    public void saveAdditional(CompoundTag compound) {
         compound.put("secret_data", this.data.writeNBT(new CompoundTag()));
-        return super.save(compound);
     }
 
     @Override

@@ -31,9 +31,9 @@ public class SecretChestTileEntity extends SecretTileEntity implements Container
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound) {
+    public void saveAdditional(CompoundTag compound) {
         compound.put("Items", this.handler.serializeNBT());
-        return super.save(compound);
+        super.saveAdditional(compound);
     }
 
     @Override

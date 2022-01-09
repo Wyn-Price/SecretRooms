@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -44,6 +45,16 @@ public class SecretBaseState extends BlockState {
     @Override
     public VoxelShape getFaceOcclusionShape(BlockGetter worldIn, BlockPos p, Direction directionIn) {
         return SecretBaseBlock.getValue(worldIn, p, (mirror, reader, pos1) -> mirror.getFaceOcclusionShape(reader, p, directionIn), () ->super.getFaceOcclusionShape(worldIn, p, directionIn));
+    }
+
+    @Override
+    public boolean isCollisionShapeFullBlock(BlockGetter p_60839_, BlockPos p_60840_) {
+        return super.isCollisionShapeFullBlock(p_60839_, p_60840_);
+    }
+
+    @Override
+    public boolean isFaceSturdy(BlockGetter p_60660_, BlockPos p_60661_, Direction p_60662_, SupportType p_60663_) {
+        return super.isFaceSturdy(p_60660_, p_60661_, p_60662_, p_60663_);
     }
 
     @Override
