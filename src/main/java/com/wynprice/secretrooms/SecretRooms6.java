@@ -2,6 +2,7 @@ package com.wynprice.secretrooms;
 
 import com.wynprice.secretrooms.client.SecretModelHandler;
 import com.wynprice.secretrooms.client.SwitchProbeTooltipRenderer;
+import com.wynprice.secretrooms.client.compat.SecretRoomsTOPCompat;
 import com.wynprice.secretrooms.client.model.OneWayGlassModel;
 import com.wynprice.secretrooms.client.model.quads.TrueVisionBakedQuad;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
@@ -31,9 +32,12 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,6 +52,7 @@ public class SecretRooms6 {
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
         
         bus.addListener(this::gatherData);
+        bus.addListener(this::onInterModEnqueue);
         SecretBlocks.REGISTRY.register(bus);
         SecretItems.REGISTRY.register(bus);
         SecretTileEntities.REGISTRY.register(bus);
@@ -71,6 +76,11 @@ public class SecretRooms6 {
             forgeBus.addListener(TrueVisionGogglesClientHandler::onClientWorldTick);
         });
 
+    }
+
+    public void onInterModEnqueue(InterModEnqueueEvent event) {
+        if (ModList.get().isLoaded("theoneprobe"))
+            InterModComms.sendTo("theoneprobe", "getTheOneProbe", SecretRoomsTOPCompat::new);
     }
 
 
