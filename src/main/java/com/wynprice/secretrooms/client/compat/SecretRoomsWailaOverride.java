@@ -14,7 +14,7 @@ public class SecretRoomsWailaOverride implements IBlockComponentProvider {
     public BlockState getOverride(IBlockAccessor accessor, IPluginConfig config) {
         if(TrueVisionGogglesClientHandler.isWearingGoggles(accessor.getPlayer()))
             return accessor.getBlockState();
-        return SecretBaseBlock.getMirrorState(accessor.getWorld(), accessor.getPosition()).orElse(Blocks.STONE.getDefaultState());
+        return SecretBaseBlock.getMirrorState(accessor.getWorld(), accessor.getPosition()).orElse(accessor.getBlockState());
     }
 
     @Override
