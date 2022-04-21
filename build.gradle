@@ -15,7 +15,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: "com.matthewprenger.cursegradle"
 
-version = '1.18.1-1.1.4'
+version = '1.18.1-1.1.5'
 group = 'com.wynprice.secretrooms' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'secretrooms'
 
