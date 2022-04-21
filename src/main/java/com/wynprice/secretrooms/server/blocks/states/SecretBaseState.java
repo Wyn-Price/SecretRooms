@@ -3,6 +3,7 @@ package com.wynprice.secretrooms.server.blocks.states;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
+import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -12,13 +13,23 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SecretBaseState extends BlockState {
     public SecretBaseState(Block block, ImmutableMap<Property<?>, Comparable<?>> propertiesToValueMap, MapCodec<BlockState> codec) {
         super(block, propertiesToValueMap, codec);
     }
 
     @Override
+    public boolean skipRendering(BlockState p_60720_, Direction p_60721_) {
+        this.removeAllKeys();
+        return super.skipRendering(p_60720_, p_60721_);
+    }
+
+    @Override
     public boolean canOcclude() {
+        this.removeAllKeys();
         Block block = this.getBlock();
         if(block instanceof SecretBaseBlock) {
             Boolean value = ((SecretBaseBlock) block).getSolidValue();
@@ -44,21 +55,46 @@ public class SecretBaseState extends BlockState {
 
     @Override
     public VoxelShape getFaceOcclusionShape(BlockGetter worldIn, BlockPos p, Direction directionIn) {
-        return SecretBaseBlock.getValue(worldIn, p, (mirror, reader, pos1) -> mirror.getFaceOcclusionShape(reader, p, directionIn), () ->super.getFaceOcclusionShape(worldIn, p, directionIn));
+        this.addOcclusionCacheKeysForRemoval(worldIn, p, directionIn);
+        return SecretBaseBlock.getValue(worldIn, p, (mirror, reader, pos1) -> mirror.getFaceOcclusionShape(reader, p, directionIn), () -> super.getFaceOcclusionShape(worldIn, p, directionIn));
     }
 
     @Override
-    public boolean isCollisionShapeFullBlock(BlockGetter p_60839_, BlockPos p_60840_) {
-        return super.isCollisionShapeFullBlock(p_60839_, p_60840_);
-    }
-
-    @Override
-    public boolean isFaceSturdy(BlockGetter p_60660_, BlockPos p_60661_, Direction p_60662_, SupportType p_60663_) {
-        return super.isFaceSturdy(p_60660_, p_60661_, p_60662_, p_60663_);
+    public boolean emissiveRendering(BlockGetter worldIn, BlockPos pos) {
+        return SecretBaseBlock.getValue(worldIn, pos, (mirror, reader, pos1) -> mirror.emissiveRendering(reader, pos), () -> super.emissiveRendering(worldIn, pos));
     }
 
     @Override
     public boolean useShapeForLightOcclusion() {
         return true;
+    }
+
+    private static ThreadLocal<List<Block.BlockStatePairKey>> TO_REMOVE = ThreadLocal.withInitial(ArrayList::new);
+
+    //This is to prevent Block#shouldRenderFace from returning false inccorectly
+    //As the results of occlusion is usually cached, but in this case we don't
+    //Want to cache it
+    private void addOcclusionCacheKeysForRemoval(BlockGetter worldIn, BlockPos p, Direction directionIn) {
+        BlockState other = worldIn.getBlockState(p.relative(directionIn));
+
+        //When this is the block being checked
+        Block.BlockStatePairKey thisCall = new Block.BlockStatePairKey(other, this.asState(), directionIn.getOpposite());
+
+        //When `other` is the block being checked.
+        Block.BlockStatePairKey otherCall = new Block.BlockStatePairKey(this.asState(), other, directionIn);
+
+        List<Block.BlockStatePairKey> keys = TO_REMOVE.get();
+        keys.add(thisCall);
+        keys.add(otherCall);
+    }
+
+    private void removeAllKeys() {
+        List<Block.BlockStatePairKey> keys = TO_REMOVE.get();
+        Object2ByteLinkedOpenHashMap<Block.BlockStatePairKey> map = Block.OCCLUSION_CACHE.get();
+
+        for (Block.BlockStatePairKey key : keys) {
+            map.removeByte(key);
+        }
+        keys.clear();
     }
 }

@@ -30,6 +30,7 @@ public class SecretTileEntity extends BlockEntity {
         super(type, pos, state);
     }
 
+    @Override
     public void saveAdditional(CompoundTag compound) {
         compound.put("secret_data", this.data.writeNBT(new CompoundTag()));
     }
@@ -42,7 +43,7 @@ public class SecretTileEntity extends BlockEntity {
 
     @Override
     public CompoundTag getUpdateTag() {
-        return this.save(new CompoundTag());
+        return this.saveWithoutMetadata();
     }
 
 
