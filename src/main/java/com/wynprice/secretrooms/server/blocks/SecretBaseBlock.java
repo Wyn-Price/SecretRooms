@@ -42,6 +42,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.IBlockRenderProperties;
@@ -171,16 +172,17 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
 
     @Override
     public boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType type) {
-        return getValue(world, pos, (mirror, reader, pos1) -> mirror.isPathfindable(world, pos, type), () -> super.isPathfindable(state, world, pos, type));
+        return getValue(world, pos, (mirror, reader, pos1) -> mirror.isPathfindable(reader, pos, type), () -> super.isPathfindable(state, world, pos, type));
     }
 
     @Override
     public float getShadeBrightness(BlockState state, BlockGetter world, BlockPos pos) {
-        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getShadeBrightness(world, pos), () -> super.getShadeBrightness(state, world, pos));
+        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getShadeBrightness(reader, pos), () -> super.getShadeBrightness(state, world, pos));
     }
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+        if(true) return Shapes.empty();
         return getValue(worldIn, pos, (mirror, reader, pos1) -> mirror.getShape(reader, pos1, context), () -> super.getShape(state, worldIn, pos, context));
     }
 
@@ -196,7 +198,11 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
 
     @Override
     public VoxelShape getOcclusionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
-        return getValue(worldIn, pos, BlockState::getBlockSupportShape, () -> super.getOcclusionShape(state, worldIn, pos));
+        if(true) return Shapes.empty();
+        return getValue(worldIn, pos, BlockState::getOcclusionShape, () -> {
+            System.out.println("a");
+            return super.getOcclusionShape(state, worldIn, pos);
+        });
     }
 
     @Override
@@ -219,7 +225,7 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
         int result = getValue(world, pos, BlockState::getLightEmission, () -> super.getLightEmission(state, world, pos));
         StackTraceElement element = Thread.currentThread().getStackTrace()[3];
         //This is needed so we can control AO. Try to remove this asap
-        if ("net.minecraft.client.renderer.block.ModelBlockRenderer".equals(element.getClassName()) && "tesselateBlock".equals(element.getMethodName())) {
+        if ("net.minecraft.client.renderer.block.ModelBlockRenderer".equals(element.getClassName())) {
             Optional<BlockState> mirrorState = getMirrorState(world, pos);
             if(mirrorState.isPresent()) {
                 Boolean isAoModel = DistExecutor.callWhenOn(Dist.CLIENT, () -> () ->

@@ -4,6 +4,7 @@ import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.data.SecretData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceKey;
@@ -213,7 +214,7 @@ public class DummyIWorld implements LevelAccessor {
     }
 
     @Override
-    public Biome getUncachedNoiseBiome(int p_46809_, int p_46810_, int p_46811_) {
+    public Holder<Biome> getUncachedNoiseBiome(int p_46809_, int p_46810_, int p_46811_) {
         return this.world.getUncachedNoiseBiome(p_46809_, p_46810_, p_46811_);
     }
 
