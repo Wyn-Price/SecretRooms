@@ -182,7 +182,6 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-        if(true) return Shapes.empty();
         return getValue(worldIn, pos, (mirror, reader, pos1) -> mirror.getShape(reader, pos1, context), () -> super.getShape(state, worldIn, pos, context));
     }
 
@@ -198,11 +197,7 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
 
     @Override
     public VoxelShape getOcclusionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
-        if(true) return Shapes.empty();
-        return getValue(worldIn, pos, BlockState::getOcclusionShape, () -> {
-            System.out.println("a");
-            return super.getOcclusionShape(state, worldIn, pos);
-        });
+        return getValue(worldIn, pos, BlockState::getOcclusionShape, () -> super.getOcclusionShape(state, worldIn, pos));
     }
 
     @Override
