@@ -5,6 +5,8 @@
   "secretroomsmod.probe.blockset": "Блок: {0}",
   "secretroomsmod.probe.blockproperty": "  {0}={1}",
 
+  "secretroomsmod.container.secretchest.name": "Секретный сундук",
+  
 
   "itemGroup.secretroomsmod": "Secret Rooms Mod",
 
@@ -12,7 +14,7 @@
   "block.secretroomsmod.secret_stairs": "Секретные ступеньки",
   "block.secretroomsmod.secret_lever": "Секретный рычаг",
   "block.secretroomsmod.secret_redstone": "Секретный редстоун",
-  "block.secretroomsmod.secret_one_way_glass": "Одностороннее стекло",
+  "block.secretroomsmod.one_way_glass": "Одностороннее стекло",
   "block.secretroomsmod.secret_wooden_button": "Секретная деревянная кнопка",
   "block.secretroomsmod.secret_stone_button": "Секретная каменная кнопка",
   "block.secretroomsmod.secret_pressure_plate": "Секретная нажимная пластина",
