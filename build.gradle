@@ -6,7 +6,7 @@ plugins {
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
-version = '1.19.2-1.1.5'
+version = '1.19.2-1.2.0'
 group = 'com.wynprice.secretrooms' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'secretrooms'
 
