@@ -5,18 +5,19 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.wynprice.secretrooms.client.SecretModelData;
 import com.wynprice.secretrooms.server.utils.ModelDataUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelData;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -32,10 +33,10 @@ public class SecretMappedModel extends SecretBlockModel {
     private static final Supplier<BlockRenderDispatcher> DISPATCHER = () -> Minecraft.getInstance().getBlockRenderer();
 
     @Override
-    public List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull BakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+    protected List<BakedQuad> render(@NotNull BlockState mirrorState, @NotNull BlockState baseState, @NotNull BakedModel model, @org.jetbrains.annotations.Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @org.jetbrains.annotations.Nullable RenderType renderType) {
         Optional<BlockState> blockState = ModelDataUtils.getData(extraData, SecretModelData.MODEL_MAP_STATE);
         if(!blockState.isPresent()) {
-            return super.render(mirrorState, baseState, model, side, rand, extraData);
+            return super.render(mirrorState, baseState, model, side, rand, extraData, renderType);
         }
 
         if (side != null) {
@@ -49,9 +50,9 @@ public class SecretMappedModel extends SecretBlockModel {
         AABB bb = this.createQuadBorder(mappedModel, mappedState, rand, extraData);
 
 
-        List<BakedQuad> allQuads = new ArrayList<>(model.getQuads(mirrorState, null, rand, extraData));
+        List<BakedQuad> allQuads = new ArrayList<>(model.getQuads(mirrorState, null, rand, extraData, null));
         for (Direction value : Direction.values()) {
-            allQuads.addAll(model.getQuads(mirrorState, value, rand, extraData));
+            allQuads.addAll(model.getQuads(mirrorState, value, rand, extraData, null));
         }
 
         for (BakedQuad quad : allQuads) {
@@ -164,13 +165,13 @@ public class SecretMappedModel extends SecretBlockModel {
         return out;
     }
 
-    private AABB createQuadBorder(BakedModel mappedModel, BlockState state, Random rand, IModelData extraData) {
+    private AABB createQuadBorder(BakedModel mappedModel, BlockState state, RandomSource rand, ModelData extraData) {
         if(this.stateAreaCache.containsKey(state)) {
             return this.stateAreaCache.get(state);
         }
-        List<BakedQuad> modelQuads = new ArrayList<>(mappedModel.getQuads(state, null, rand, extraData));
+        List<BakedQuad> modelQuads = new ArrayList<>(mappedModel.getQuads(state, null, rand, extraData, null));
         for (Direction direction : Direction.values()) {
-            modelQuads.addAll(mappedModel.getQuads(state, direction, rand, extraData));
+            modelQuads.addAll(mappedModel.getQuads(state, direction, rand, extraData, null));
         }
 
         Vec3 min = new Vec3(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);

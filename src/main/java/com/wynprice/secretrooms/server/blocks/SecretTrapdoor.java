@@ -27,7 +27,7 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nullable;
 
@@ -61,8 +61,8 @@ public class SecretTrapdoor extends SecretBaseBlock {
     }
 
     @Override
-    public void applyExtraModelData(BlockGetter world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
-        builder.withInitial(SecretModelData.MODEL_MAP_STATE, Blocks.OAK_TRAPDOOR.defaultBlockState()
+    public void applyExtraModelData(BlockGetter world, BlockPos pos, BlockState state, ModelData.Builder builder) {
+        builder.with(SecretModelData.MODEL_MAP_STATE, Blocks.OAK_TRAPDOOR.defaultBlockState()
             .setValue(HORIZONTAL_FACING, state.getValue(HORIZONTAL_FACING))
             .setValue(OPEN, state.getValue(OPEN))
             .setValue(HALF, state.getValue(HALF))

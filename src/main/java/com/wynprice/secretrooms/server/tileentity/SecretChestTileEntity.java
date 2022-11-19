@@ -3,7 +3,6 @@ package com.wynprice.secretrooms.server.tileentity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -38,7 +37,7 @@ public class SecretChestTileEntity extends SecretTileEntity implements Container
 
     @Override
     public Component getDisplayName() {
-        return new TranslatableComponent("secretroomsmod.container.secretchest.name");
+        return Component.translatable("secretroomsmod.container.secretchest.name");
     }
 
     @Nullable

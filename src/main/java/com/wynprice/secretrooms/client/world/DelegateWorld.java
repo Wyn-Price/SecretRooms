@@ -21,13 +21,16 @@ import java.util.function.Function;
 public class DelegateWorld implements BlockAndTintGetter {
 
     private static final List<DelegateWorld> AVAILABLE = new ArrayList<>();
-    public static synchronized DelegateWorld getPooled(BlockGetter reader) {
-        if(AVAILABLE.isEmpty()) {
-            return new DelegateWorld(reader);
+
+    public static DelegateWorld getPooled(BlockGetter reader) {
+        synchronized(AVAILABLE) {
+            if(AVAILABLE.isEmpty()) {
+                return new DelegateWorld(reader);
+            }
+            DelegateWorld world = AVAILABLE.remove(0);
+            world.use(reader);
+            return world;
         }
-        DelegateWorld world = AVAILABLE.remove(0);
-        world.use(reader);
-        return world;
     }
 
     public static <T> Function<BlockState, T> createFunction(BlockGetter reader, BiFunction<DelegateWorld, BlockState, T> func) {
@@ -56,11 +59,11 @@ public class DelegateWorld implements BlockAndTintGetter {
     }
 
     public void release() {
-	synchronized(DelegateWorld.class) {
-            AVAILABLE.add(this);
-            this.world = null;
-            this.reader = null;
-	}
+        synchronized(AVAILABLE) {
+                AVAILABLE.add(this);
+                this.world = null;
+                this.reader = null;
+        }
     }
 
     @Nullable

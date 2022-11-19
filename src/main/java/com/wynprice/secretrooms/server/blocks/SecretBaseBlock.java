@@ -42,11 +42,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.IBlockRenderProperties;
-import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.extensions.common.IClientBlockExtensions;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.fml.DistExecutor;
 
 import javax.annotation.Nullable;
@@ -164,10 +163,9 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
         return getValue(world, pos, (mirror, reader, pos1) -> mirror.getSoundType(world, pos1, entity), () -> super.getSoundType(state, world, pos, entity));
     }
 
-    @Nullable
     @Override
-    public BlockPathTypes getAiPathNodeType(BlockState state, BlockGetter world, BlockPos pos, @Nullable Mob entity) {
-        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getBlockPathType(reader, pos1, entity), () -> super.getAiPathNodeType(state, world, pos, entity));
+    public @org.jetbrains.annotations.Nullable BlockPathTypes getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @org.jetbrains.annotations.Nullable Mob mob) {
+        return getValue(level, pos, (mirror, reader, pos1) -> mirror.getBlockPathType(reader, pos1, mob), () -> super.getBlockPathType(state, level, pos, mob));
     }
 
     @Override
@@ -273,8 +271,8 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
     }
 
     @Override
-    public void initializeClient(Consumer<IBlockRenderProperties> consumer) {
-        consumer.accept(new IBlockRenderProperties() {
+    public void initializeClient(Consumer<IClientBlockExtensions> consumer) {
+        consumer.accept(new IClientBlockExtensions() {
             @Override
             //ParticleEngine#crack
             public boolean addHitEffects(BlockState state, Level level, HitResult target, ParticleEngine manager) {
@@ -367,7 +365,7 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
         return new SecretTileEntity(pos, state);
     }
 
-    public void applyExtraModelData(BlockGetter world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
+    public void applyExtraModelData(BlockGetter world, BlockPos pos, BlockState state, ModelData.Builder builder) {
     }
 
     public Boolean getSolidValue() {

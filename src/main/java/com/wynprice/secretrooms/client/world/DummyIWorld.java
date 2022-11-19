@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.Entity;
@@ -132,8 +133,9 @@ public class DummyIWorld implements LevelAccessor {
         return this.world.getChunkSource();
     }
 
+
     @Override
-    public Random getRandom() {
+    public RandomSource getRandom() {
         return this.world.getRandom();
     }
 
@@ -150,6 +152,11 @@ public class DummyIWorld implements LevelAccessor {
     @Override
     public void levelEvent(@org.jetbrains.annotations.Nullable Player p_46771_, int p_46772_, BlockPos p_46773_, int p_46774_) {
         this.world.levelEvent(p_46771_, p_46772_, p_46773_, p_46774_);
+    }
+
+    @Override
+    public void gameEvent(GameEvent pEvent, Vec3 pPosition, GameEvent.Context pContext) {
+        this.world.gameEvent(pEvent, pPosition, pContext);
     }
 
     @Override

@@ -17,7 +17,7 @@ public class TrueVisionGogglesClientHandler {
 
     private static boolean clientWearingItem;
 
-    public static void onClientWorldLoad(ClientPlayerNetworkEvent.LoggedInEvent event) {
+    public static void onClientWorldLoad(ClientPlayerNetworkEvent.LoggingIn event) {
         clientWearingItem = isWearingGoggles(event.getPlayer());
     }
 
@@ -34,7 +34,7 @@ public class TrueVisionGogglesClientHandler {
             ClientChunkCache source = player.clientLevel.getChunkSource();
 
             ChunkPos chunkPos = new ChunkPos(player.blockPosition());
-            int d = Minecraft.getInstance().options.renderDistance;
+            int d = Minecraft.getInstance().options.renderDistance().get();
             for (int x = -d; x <= d; x++) {
                 for (int z = -d; z <= d; z++) {
                     if(source.hasChunk(chunkPos.x + x, chunkPos.z + z)) {
