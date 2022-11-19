@@ -195,6 +195,11 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
         return getValue(worldIn, pos, (mirror, reader, pos1) -> mirror.getCollisionShape(reader, pos1, context), () -> super.getCollisionShape(state, worldIn, pos, context));
     }
 
+    //TODO: find issue where interaction between blockstates are cached?
+    //The light occulsion is wrong.
+    //Might be ModelBlockRenderer#CACHE
+    //possibley getShadeBrightness or LevelRenderer#getLightColor
+    //Maybe introduced from the weird canOcculde behaviour we do in the blockstate
     @Override
     public VoxelShape getOcclusionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
         return getValue(worldIn, pos, BlockState::getOcclusionShape, () -> super.getOcclusionShape(state, worldIn, pos));
