@@ -18,10 +18,11 @@ public class SwitchProbeTooltip extends ClientTextTooltip {
 
     @Override
     public void renderImage(Font font, int x, int y, PoseStack stack, ItemRenderer item, int p_194053_) {
-        int xStart = x + super.getWidth(font) + 10;
+        int xStart = x + super.getWidth(font) + 3;
+        int yStart = y - 6;
         if(this.component.getItemStackIfRender() != null) {
-            item.renderAndDecorateItem(this.component.getItemStackIfRender(), xStart, y, 0);
-            item.renderGuiItemDecorations(font, this.component.getItemStackIfRender(), xStart, y);
+            item.renderAndDecorateItem(this.component.getItemStackIfRender(), xStart, yStart, 0);
+            item.renderGuiItemDecorations(font, this.component.getItemStackIfRender(), xStart, yStart);
         } else if(this.component.getSpriteIfRender() != null) {
             int colour = this.component.getSpriteColourIfRender();
             RenderSystem.setShaderColor(
@@ -29,7 +30,7 @@ public class SwitchProbeTooltip extends ClientTextTooltip {
                 ((colour >> 8) & 0xFF) / 255F,
                 (colour & 0xFF) / 255F,
                 1F);
-            GuiComponent.blit(stack, xStart, y, 0, 16, 16, this.component.getSpriteIfRender());
+            GuiComponent.blit(stack, xStart, yStart, 0, 16, 16, this.component.getSpriteIfRender());
 
         }
     }

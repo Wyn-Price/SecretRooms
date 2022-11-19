@@ -2,8 +2,8 @@
   "secretroomsmod.probe.noneset": "No Data Set!",
   "secretroomsmod.probe.containedblock": "Contained Block:",
   "secretroomsmod.probe.data": "Data set inside probe:",
-  "secretroomsmod.probe.blockset": "Block: {0}",
-  "secretroomsmod.probe.blockproperty": "  {0}={1}",
+  "secretroomsmod.probe.blockset": "Block: %s",
+  "secretroomsmod.probe.blockproperty": "  %s=%s",
 
   "secretroomsmod.container.secretchest.name": "Secret Chest",
 

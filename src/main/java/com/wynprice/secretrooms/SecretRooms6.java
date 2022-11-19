@@ -70,9 +70,9 @@ public class SecretRooms6 {
             bus.addListener(OneWayGlassModel::onModelsReady);
             bus.addListener(TrueVisionBakedQuad::onTextureStitch);
             bus.addListener(TrueVisionBakedQuad::onTextureStitched);
+            bus.addListener(SwitchProbe::onRegisterTooltipFactories);
 
             forgeBus.addListener(SwitchProbe::appendHover);
-            forgeBus.addListener(SwitchProbe::onRegisterTooltipFactories);
 
             forgeBus.addListener(TrueVisionGogglesClientHandler::onClientWorldLoad);
             forgeBus.addListener(TrueVisionGogglesClientHandler::onClientWorldTick);

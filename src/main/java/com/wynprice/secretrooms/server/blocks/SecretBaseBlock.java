@@ -94,11 +94,10 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
                         d.setBlockState(mirror.setValue(BlockStateProperties.WATERLOGGED, true));
                     }
                 });
+                return SimpleWaterloggedBlock.super.placeLiquid(worldIn, pos, state, fluidStateIn);
             }
-            return fluid;
-        } else {
-            return false;
         }
+        return false;
 
     }
 

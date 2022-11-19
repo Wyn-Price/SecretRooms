@@ -75,7 +75,7 @@ public class SecretBlockModel implements BakedModel {
 
         ChunkRenderTypeSet mirrorSet = mirrorModel.getRenderTypes(mirrorState, rand, data);
 
-        if(!trueVision()) {
+        if(trueVision()) {
             return ChunkRenderTypeSet.union(mirrorSet, ChunkRenderTypeSet.of(RenderType.translucent()));
         }
 

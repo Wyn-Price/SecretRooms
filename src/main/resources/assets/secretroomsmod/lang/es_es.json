@@ -2,8 +2,8 @@
   "secretroomsmod.probe.noneset": "¡Sin conjunto de datos!",
   "secretroomsmod.probe.containedblock": "Bloque contenido:     ",
   "secretroomsmod.probe.data": "Conjunto de datos en sonda:",
-  "secretroomsmod.probe.blockset": "Bloque: {0}",
-  "secretroomsmod.probe.blockproperty": "  {0}={1}",
+  "secretroomsmod.probe.blockset": "Bloque: %s",
+  "secretroomsmod.probe.blockproperty": "  %s=%s",
 
   "secretroomsmod.container.secretchest.name": "Cofre secreto",
 

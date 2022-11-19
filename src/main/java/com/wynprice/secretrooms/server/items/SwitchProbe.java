@@ -52,16 +52,18 @@ public class SwitchProbe extends Item {
             if(!compound.isEmpty()) {
                 SecretData d = new SecretData(null);
                 d.readNBT(compound);
-                data.get().setFrom(d);
 
                 boolean solid = d.getBlockState().canOcclude();
                 if(solid != state.canOcclude()) {
                     context.getLevel().setBlockAndUpdate(context.getClickedPos(), state.setValue(SecretBaseBlock.SOLID, solid));
                 }
 
+                // Set the mirror state waterlogged to be the blockstate's waterlogged
                 if(state.hasProperty(WATERLOGGED) && d.getBlockState().hasProperty(WATERLOGGED)) {
                     d.setBlockState(d.getBlockState().setValue(WATERLOGGED, state.getValue(WATERLOGGED)));
                 }
+
+                data.get().setFrom(d);
             }
         } else {
             SecretData d = new SecretData(null);

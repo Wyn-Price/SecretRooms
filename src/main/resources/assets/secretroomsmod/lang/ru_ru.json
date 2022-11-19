@@ -2,8 +2,8 @@
   "secretroomsmod.probe.noneset": "Данные не выбраны!",
   "secretroomsmod.probe.containedblock": "Хранящийся блок:     ",
   "secretroomsmod.probe.data": "Данные внутри зонда-переключателя:",
-  "secretroomsmod.probe.blockset": "Блок: {0}",
-  "secretroomsmod.probe.blockproperty": "  {0}={1}",
+  "secretroomsmod.probe.blockset": "Блок: %s",
+  "secretroomsmod.probe.blockproperty": "  %s=%s",
 
 
   "itemGroup.secretroomsmod": "Secret Rooms Mod",
