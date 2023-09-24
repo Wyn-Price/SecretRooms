@@ -21,13 +21,9 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-public class SecretMappedModel extends SecretBlockModel {
+public class  SecretMappedModel extends SecretBlockModel {
 
     private final Map<BlockState, AABB> stateAreaCache = new HashMap<>();
-
-    public SecretMappedModel(BakedModel model) {
-        super(model);
-    }
 
     private static final Supplier<BlockRenderDispatcher> DISPATCHER = () -> Minecraft.getInstance().getBlockRenderer();
 

@@ -1,6 +1,6 @@
 package com.wynprice.secretrooms.server.data;
 
-import com.wynprice.secretrooms.SecretRooms6;
+import com.wynprice.secretrooms.SecretRooms7;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.*;
@@ -16,7 +16,6 @@ import java.util.function.Consumer;
 import static com.wynprice.secretrooms.server.blocks.SecretBlocks.*;
 import static com.wynprice.secretrooms.server.items.SecretItems.CAMOUFLAGE_PASTE;
 import static com.wynprice.secretrooms.server.items.SecretItems.SWITCH_PROBE;
-import static com.wynprice.secretrooms.server.items.SecretItems.TRUE_VISION_GOGGLES;
 
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
@@ -34,10 +33,10 @@ public class SecretRecipeProvider extends RecipeProvider {
         ShapedRecipeBuilder.shaped(TORCH_LEVER.get()).define('T', Items.TORCH).define('L', Items.LEVER).pattern("T").pattern("L").group("torch_lever.json").unlockedBy("has_torch_lever", hasItems(Items.TORCH, Items.LEVER)).save(consumer);
         ShapedRecipeBuilder.shaped(camoPaste, 9).define('X', Tags.Items.DYES).define('#', Items.CLAY_BALL).pattern("XXX").pattern("X#X").pattern("XXX").group("camouflage_paste").unlockedBy("has_earth_item", has(SecretItemTags.EARTH_ITEM)).save(consumer);
         ShapedRecipeBuilder.shaped(GHOST_BLOCK.get(), 4).define('X', camoPaste).define('0', SecretItemTags.SECRET_RECIPE_ITEMS).pattern("X0X").pattern("0 0").pattern("X0X").group("ghost_block").unlockedBy("has_camo", has(camoPaste)).save(consumer);
-        ShapedRecipeBuilder.shaped(ONE_WAY_GLASS.get(), 9).define('X', camoPaste).define('0', SecretItemTags.CLEAR_GLASS).pattern("XXX").pattern("000").pattern("000").group("one_way_glass").unlockedBy("has_camo", has(camoPaste)).save(consumer, new ResourceLocation(SecretRooms6.MODID, "one_way_glass_up"));
-        ShapedRecipeBuilder.shaped(ONE_WAY_GLASS.get(), 9).define('X', camoPaste).define('0', SecretItemTags.CLEAR_GLASS).pattern("000").pattern("000").pattern("XXX").group("one_way_glass").unlockedBy("has_camo", has(camoPaste)).save(consumer, new ResourceLocation(SecretRooms6.MODID, "one_way_glass_down"));
-        ShapedRecipeBuilder.shaped(ONE_WAY_GLASS.get(), 9).define('X', camoPaste).define('0', SecretItemTags.CLEAR_GLASS).pattern("X00").pattern("X00").pattern("X00").group("one_way_glass").unlockedBy("has_camo", has(camoPaste)).save(consumer, new ResourceLocation(SecretRooms6.MODID, "one_way_glass_left"));
-        ShapedRecipeBuilder.shaped(ONE_WAY_GLASS.get(), 9).define('X', camoPaste).define('0', SecretItemTags.CLEAR_GLASS).pattern("00X").pattern("00X").pattern("00X").group("one_way_glass").unlockedBy("has_camo", has(camoPaste)).save(consumer, new ResourceLocation(SecretRooms6.MODID, "one_way_glass_right"));
+        ShapedRecipeBuilder.shaped(ONE_WAY_GLASS.get(), 9).define('X', camoPaste).define('0', SecretItemTags.CLEAR_GLASS).pattern("XXX").pattern("000").pattern("000").group("one_way_glass").unlockedBy("has_camo", has(camoPaste)).save(consumer, new ResourceLocation(SecretRooms7.MODID, "one_way_glass_up"));
+        ShapedRecipeBuilder.shaped(ONE_WAY_GLASS.get(), 9).define('X', camoPaste).define('0', SecretItemTags.CLEAR_GLASS).pattern("000").pattern("000").pattern("XXX").group("one_way_glass").unlockedBy("has_camo", has(camoPaste)).save(consumer, new ResourceLocation(SecretRooms7.MODID, "one_way_glass_down"));
+        ShapedRecipeBuilder.shaped(ONE_WAY_GLASS.get(), 9).define('X', camoPaste).define('0', SecretItemTags.CLEAR_GLASS).pattern("X00").pattern("X00").pattern("X00").group("one_way_glass").unlockedBy("has_camo", has(camoPaste)).save(consumer, new ResourceLocation(SecretRooms7.MODID, "one_way_glass_left"));
+        ShapedRecipeBuilder.shaped(ONE_WAY_GLASS.get(), 9).define('X', camoPaste).define('0', SecretItemTags.CLEAR_GLASS).pattern("00X").pattern("00X").pattern("00X").group("one_way_glass").unlockedBy("has_camo", has(camoPaste)).save(consumer, new ResourceLocation(SecretRooms7.MODID, "one_way_glass_right"));
         ShapelessRecipeBuilder.shapeless(SWITCH_PROBE.get()).requires(camoPaste).requires(Items.REDSTONE_TORCH).group("switch_probe").unlockedBy("has_camo", has(camoPaste)).save(consumer);
         ShapelessRecipeBuilder.shapeless(ONE_WAY_GLASS.get()).requires(camoPaste).requires(SecretItemTags.CLEAR_GLASS).group("one_way_glass_shapeless").unlockedBy("has_camo", has(camoPaste)).save(consumer);
         ShapelessRecipeBuilder.shapeless(SECRET_CHEST.get()).requires(camoPaste).requires(Tags.Items.CHESTS_WOODEN).group("secret_chest").unlockedBy("has_camo", has(camoPaste)).save(consumer);

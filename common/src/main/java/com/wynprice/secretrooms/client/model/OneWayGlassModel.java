@@ -25,9 +25,6 @@ import java.util.Random;
 import java.util.function.Supplier;
 
 public class OneWayGlassModel extends SecretBlockModel {
-    public OneWayGlassModel(BakedModel model) {
-        super(model);
-    }
 
     private static final Minecraft MC = Minecraft.getInstance();
     private static BakedModel glassModel;

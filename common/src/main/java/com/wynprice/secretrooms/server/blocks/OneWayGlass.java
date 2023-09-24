@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
 import com.wynprice.secretrooms.server.blocks.states.OneWayGlassState;
 import com.wynprice.secretrooms.server.data.SecretBlockTags;
+import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -72,8 +73,8 @@ public class OneWayGlass extends SecretBaseBlock {
         if(player.getItemInHand(handIn).isEmpty()) {
             worldIn.setBlock(pos, state.cycle(PipeBlock.PROPERTY_BY_DIRECTION.get(hit.getDirection())), 3);
             BlockEntity tileEntity = worldIn.getBlockEntity(pos);
-            if(tileEntity != null) {
-                tileEntity.requestModelDataUpdate();
+            if(tileEntity instanceof SecretTileEntity te) {
+                te.requestModelDataUpdateIfPossible();
             }
             return InteractionResult.SUCCESS;
         }
@@ -112,8 +113,8 @@ public class OneWayGlass extends SecretBaseBlock {
     @Override
     public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         BlockEntity tileEntity = worldIn.getBlockEntity(currentPos);
-        if(tileEntity != null && tileEntity.getLevel().isClientSide) {
-            tileEntity.requestModelDataUpdate();
+        if(tileEntity instanceof SecretTileEntity te && tileEntity.getLevel().isClientSide) {
+            te.requestModelDataUpdateIfPossible();
         }
         return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }

@@ -1,6 +1,11 @@
-package com.example.examplemod.platform.services;
+package com.wynprice.secretrooms.platform.services;
 
-public interface IPlatformHelper {
+import com.wynprice.secretrooms.registry.RegistryHolder;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+
+public interface ISecretRoomsPlatformHelper {
 
     /**
      * Gets the name of the current platform
@@ -33,4 +38,9 @@ public interface IPlatformHelper {
 
         return isDevelopmentEnvironment() ? "development" : "production";
     }
+
+    RegistryHolder<Item> createItemRegistryHolder();
+
+    RegistryHolder<Block> createBlockRegistryHolder();
+    RegistryHolder<BlockEntityType<?>> createBlockEntityRegistryHolder();
 }

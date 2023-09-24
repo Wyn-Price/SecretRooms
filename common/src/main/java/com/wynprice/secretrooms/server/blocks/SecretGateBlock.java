@@ -4,6 +4,7 @@ import com.wynprice.secretrooms.server.data.SecretData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -60,7 +61,7 @@ public class SecretGateBlock extends SecretBaseBlock {
     }
 
     @Override
-    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand) {
+    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
         if(state.getValue(OPEN)) {
             tryBuildGate(worldIn, pos, state);
         } else {
@@ -77,7 +78,7 @@ public class SecretGateBlock extends SecretBaseBlock {
             BlockPos off = pos.relative(direction, i);
 
             BlockState state = world.getBlockState(off);
-            if(!state.getMaterial().isReplaceable() && state.getBlock() != SecretBlocks.SECRET_DUMMY_BLOCK.get()) { //TODO: move to BlockState#isReplaceable
+            if(!state.canBeReplaced() && state.getBlock() != SecretBlocks.SECRET_DUMMY_BLOCK.get()) { //TODO: move to BlockState#isReplaceable
                 if(state.getBlock() == this) {
                     world.setBlockAndUpdate(off, state.setValue(OPEN, true));
                     world.scheduleTick(off, this, 3);

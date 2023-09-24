@@ -58,6 +58,10 @@ public class SecretTileEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this, be -> this.data.writeNBT(new CompoundTag()));
     }
 
+    public void requestModelDataUpdateIfPossible() {
+        //TODO (port) if forge, run requestModelDataUpdate
+    }
+
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
         this.data.readNBT(pkt.getTag());

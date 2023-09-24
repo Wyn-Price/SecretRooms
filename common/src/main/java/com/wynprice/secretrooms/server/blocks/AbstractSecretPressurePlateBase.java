@@ -1,5 +1,6 @@
 package com.wynprice.secretrooms.server.blocks;
 
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.core.Direction;
@@ -34,7 +35,7 @@ public abstract class AbstractSecretPressurePlateBase extends SecretBaseBlock {
 
 
     @Override
-    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand) {
+    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
         if (!worldIn.isClientSide) {
             int i = this.getRedstoneStrength(state);
             if (i > 0) {
@@ -102,11 +103,11 @@ public abstract class AbstractSecretPressurePlateBase extends SecretBaseBlock {
         return true;
     }
 
-    @Override
-    public boolean shouldCheckWeakPower(BlockState state, LevelReader world, BlockPos pos, Direction side) {
-        return this.getRedstoneStrength(state) == 0;
-    }
-
+//    @Override
+//    public boolean shouldCheckWeakPower(BlockState state, LevelReader world, BlockPos pos, Direction side) {
+//        return this.getRedstoneStrength(state) == 0;
+//    }
+//
 
     protected abstract void playClickOnSound(LevelAccessor worldIn, BlockPos pos);
 

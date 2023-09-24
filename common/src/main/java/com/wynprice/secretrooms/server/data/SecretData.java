@@ -1,12 +1,14 @@
 package com.wynprice.secretrooms.server.data;
 
-import com.wynprice.secretrooms.SecretRooms6;
+import com.wynprice.secretrooms.SecretRooms7;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
+import com.wynprice.secretrooms.server.tileentity.SecretTileEntities;
+import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -19,14 +21,14 @@ import javax.annotation.Nullable;
 public class SecretData {
 
     @Nullable
-    private final BlockEntity base;
+    private final SecretTileEntity base;
 
     private BlockState blockState = Blocks.STONE.defaultBlockState();
     @Nullable private CompoundTag tileEntityNBT = null;
 
     private BlockEntity tileEntityCache;
 
-    public SecretData(BlockEntity base) {
+    public SecretData(SecretTileEntity base) {
         this.base = base;
     }
 
@@ -39,7 +41,7 @@ public class SecretData {
     }
 
     public void readNBT(CompoundTag tag) {
-        this.setBlockState(NbtUtils.readBlockState(tag.getCompound("blockstate")));
+        this.setBlockState(NbtUtils.readBlockState(this.base.getLevel().holderLookup(Registries.BLOCK), tag.getCompound("blockstate")));
         this.setTileEntityNBT(tag.getCompound("tile_data"));
     }
 
@@ -49,9 +51,9 @@ public class SecretData {
                 if(this.base != null) {
                     this.tileEntityCache.setLevel(this.base.getLevel());
                 }
-                this.tileEntityCache.blockState = this.blockState;
+                this.tileEntityCache.setBlockState(this.blockState);
             } else {
-                SecretRooms6.LOGGER.warn("Unable to create Block Entity with id {}. Disregarding it from future references ", this.tileEntityNBT.getString("id"));
+                SecretRooms7.LOGGER.warn("Unable to create Block Entity with id {}. Disregarding it from future references ", this.tileEntityNBT.getString("id"));
                 this.tileEntityNBT = null;
             }
         }
@@ -89,7 +91,7 @@ public class SecretData {
         if(this.base != null && this.base.getLevel() != null) {
             Level world = this.base.getLevel();
             if(world.isClientSide) {
-                this.base.requestModelDataUpdate();
+                this.base.requestModelDataUpdateIfPossible();
                 world.sendBlockUpdated(this.base.getBlockPos(), this.base.getBlockState(), this.base.getBlockState(), 11);
             } else {
                 Packet<ClientGamePacketListener> supdatetileentitypacket = this.base.getUpdatePacket();

@@ -1,6 +1,6 @@
 package com.wynprice.secretrooms.server.data;
 
-import com.wynprice.secretrooms.SecretRooms6;
+import com.wynprice.secretrooms.SecretRooms7;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.tags.ItemTags;
@@ -12,7 +12,7 @@ import static com.wynprice.secretrooms.server.data.SecretItemTags.*;
 public class SecretItemTagsProvider extends ItemTagsProvider {
 
     public SecretItemTagsProvider(DataGenerator dataGenerator, ExistingFileHelper existingFileHelper) {
-        super(dataGenerator, new SecretBlockTagsProvider(dataGenerator, existingFileHelper), SecretRooms6.MODID, existingFileHelper);
+        super(dataGenerator, new SecretBlockTagsProvider(dataGenerator, existingFileHelper), SecretRooms7.MODID, existingFileHelper);
     }
 
     @Override

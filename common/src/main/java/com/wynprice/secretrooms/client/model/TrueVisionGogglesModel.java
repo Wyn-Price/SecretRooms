@@ -1,11 +1,7 @@
 package com.wynprice.secretrooms.client.model;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.wynprice.secretrooms.SecretRooms6;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.EntityModel;
+import com.wynprice.secretrooms.SecretRooms7;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -13,15 +9,12 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 
 public class TrueVisionGogglesModel extends HumanoidModel<LivingEntity> {
 
-    public static final ModelLayerLocation TRUE_VISION_GOGGLES_MODEL = new ModelLayerLocation(new ResourceLocation(SecretRooms6.MODID, "true_vision"), "main");
+    public static final ModelLayerLocation TRUE_VISION_GOGGLES_MODEL = new ModelLayerLocation(new ResourceLocation(SecretRooms7.MODID, "true_vision"), "main");
 
     public TrueVisionGogglesModel(ModelPart part) {
         super(part, RenderType::entityTranslucent);

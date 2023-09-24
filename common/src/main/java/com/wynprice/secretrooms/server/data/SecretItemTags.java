@@ -1,11 +1,10 @@
 package com.wynprice.secretrooms.server.data;
 
-import com.wynprice.secretrooms.SecretRooms6;
+import com.wynprice.secretrooms.SecretRooms7;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.tags.Tag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.Tags;
 
@@ -16,6 +15,6 @@ public class SecretItemTags {
     public static final TagKey<Item> CLEAR_GLASS = tag("clear_glass");
 
     private static TagKey<Item> tag(String id) {
-        return ItemTags.create(new ResourceLocation(SecretRooms6.MODID, id));
+        return ItemTags.create(new ResourceLocation(SecretRooms7.MODID, id));
     }
 }

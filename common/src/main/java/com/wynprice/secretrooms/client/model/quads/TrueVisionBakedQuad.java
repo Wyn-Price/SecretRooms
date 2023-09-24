@@ -1,7 +1,7 @@
 package com.wynprice.secretrooms.client.model.quads;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.wynprice.secretrooms.SecretRooms6;
+import com.wynprice.secretrooms.SecretRooms7;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -14,7 +14,7 @@ import static java.lang.Float.floatToRawIntBits;
 import static java.lang.Float.intBitsToFloat;
 
 public class TrueVisionBakedQuad {
-    private static final ResourceLocation OVERLAY_LOCATION = new ResourceLocation(SecretRooms6.MODID, "block/overlay");
+    private static final ResourceLocation OVERLAY_LOCATION = new ResourceLocation(SecretRooms7.MODID, "block/overlay");
     private static TextureAtlasSprite overlaySprite;
 
     public static void onTextureStitch(TextureStitchEvent.Pre event) {

@@ -1,9 +1,9 @@
-package com.example.examplemod.platform;
+package com.wynprice.secretrooms.server.platform;
 
-import com.example.examplemod.platform.services.IPlatformHelper;
+import com.wynprice.secretrooms.platform.services.ISecretRoomsPlatformHelper;
 import net.fabricmc.loader.api.FabricLoader;
 
-public class FabricPlatformHelper implements IPlatformHelper {
+public class FabricPlatformHelper implements ISecretRoomsPlatformHelper {
 
     @Override
     public String getPlatformName() {

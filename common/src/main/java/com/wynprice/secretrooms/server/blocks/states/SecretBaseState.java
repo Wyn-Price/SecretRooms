@@ -21,6 +21,8 @@ public class SecretBaseState extends BlockState {
         super(block, propertiesToValueMap, codec);
     }
 
+
+    //TODO (port) replace with mixin to shouldRenderFace
     @Override
     public boolean skipRendering(BlockState p_60720_, Direction p_60721_) {
         this.removeAllKeys();

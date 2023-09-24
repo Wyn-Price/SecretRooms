@@ -1,17 +1,26 @@
 package com.wynprice.secretrooms.server.tileentity;
 
-import com.wynprice.secretrooms.SecretRooms6;
+import com.wynprice.secretrooms.SecretRooms7;
+import com.wynprice.secretrooms.platform.SecretRoomsServices;
+import com.wynprice.secretrooms.registry.RegistryHolder;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import static com.wynprice.secretrooms.server.blocks.SecretBlocks.*;
 
 public class SecretTileEntities {
 
-    public static final DeferredRegister<BlockEntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, SecretRooms6.MODID);
+    public static final RegistryHolder<BlockEntityType<?>> REGISTRY = SecretRoomsServices.PLATFORM.createBlockEntityRegistryHolder();
 
     public static final Supplier<BlockEntityType<SecretTileEntity>> SECRET_TILE_ENTITY = REGISTRY.register("secret_tile_entity", () ->
         BlockEntityType.Builder.of(SecretTileEntity::new,

@@ -62,7 +62,7 @@ class SecretBlockItem extends BlockItem {
         if(te instanceof SecretTileEntity) {
             SecretData data = ((SecretTileEntity) te).getData();
             data.setBlockState(placedOnState);
-            data.setTileEntityNBT(placedOnTileEntity != null ? placedOnTileEntity.serializeNBT() : null);
+            data.setTileEntityNBT(placedOnTileEntity != null ? placedOnTileEntity.saveWithFullMetadata() : null);
         }
     }
 }

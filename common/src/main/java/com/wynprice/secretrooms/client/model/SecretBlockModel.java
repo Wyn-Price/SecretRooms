@@ -35,11 +35,6 @@ import static com.wynprice.secretrooms.client.SecretModelData.SRM_BLOCKSTATE;
 public class SecretBlockModel implements BakedModel {
 
     private static final Supplier<BlockRenderDispatcher> DISPATCHER = () -> Minecraft.getInstance().getBlockRenderer();
-    private final BakedModel model;
-
-    public SecretBlockModel(BakedModel model) {
-        this.model = model;
-    }
 
     @Override
     public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand, IModelData extraData) {

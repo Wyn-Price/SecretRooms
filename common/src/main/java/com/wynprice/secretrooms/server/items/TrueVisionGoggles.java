@@ -2,7 +2,7 @@ package com.wynprice.secretrooms.server.items;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import com.wynprice.secretrooms.SecretRooms6;
+import com.wynprice.secretrooms.SecretRooms7;
 import com.wynprice.secretrooms.client.model.TrueVisionGogglesModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
@@ -28,13 +28,13 @@ import java.util.function.Consumer;
 
 public class TrueVisionGoggles extends ArmorItem {
 
-    private static final String ARMOR_TEXTURE = new ResourceLocation(SecretRooms6.MODID, "textures/models/armor/true_vision_goggles.png").toString();
+    private static final String ARMOR_TEXTURE = new ResourceLocation(SecretRooms7.MODID, "textures/models/armor/true_vision_goggles.png").toString();
 
     @OnlyIn(Dist.CLIENT)
     private TrueVisionGogglesModel model;
 
     public TrueVisionGoggles(Properties properties) {
-        super(DummyArmorMaterial.INSTANCE, EquipmentSlot.HEAD, properties);
+        super(DummyArmorMaterial.INSTANCE, Type.HELMET, properties);
     }
 
     @Override
@@ -61,11 +61,11 @@ public class TrueVisionGoggles extends ArmorItem {
         this.model = new TrueVisionGogglesModel(Minecraft.getInstance().getEntityModels().bakeLayer(TrueVisionGogglesModel.TRUE_VISION_GOGGLES_MODEL));
     }
 
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        return ARMOR_TEXTURE;
-    }
+//    @Nullable
+//    @Override
+//    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
+//        return ARMOR_TEXTURE;
+//    }
 
 
     @Override
@@ -74,25 +74,32 @@ public class TrueVisionGoggles extends ArmorItem {
     }
 
     @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return false;
+    public int getEnchantmentValue() {
+        return 0;
     }
 
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return false;
-    }
+
+
+//    @Override
+//    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+//        return false;
+//    }
 
     private enum DummyArmorMaterial implements ArmorMaterial {
         INSTANCE;
 
         @Override
-        public int getDurabilityForSlot(EquipmentSlot slotIn) {
+        public int getDefenseForType(Type type) {
             return 0;
         }
 
         @Override
-        public int getDefenseForSlot(EquipmentSlot slotIn) {
+        public int getDurabilityForType(Type type) {
             return 0;
         }
 

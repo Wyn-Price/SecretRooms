@@ -146,7 +146,7 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
             if(newState != mirror) {
                 data.setBlockState(newState);
                 BlockEntity tileEntity = world.getBlockEntity(currentPos);
-                data.setTileEntityNBT(tileEntity != null ? tileEntity.serializeNBT() : null);
+                data.setTileEntityNBT(tileEntity != null ? tileEntity.saveWithFullMetadata() : null);
             }
         });
         return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
@@ -157,6 +157,12 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
     public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         getMirrorState(worldIn, pos).ifPresent(mirror -> mirror.updateNeighbourShapes(new DummyIWorld(worldIn), pos, 3));
         super.setPlacedBy(worldIn, pos, state, placer, stack);
+    }
+
+    //TODO (port) figure out how to do sound type
+    @Override
+    public SoundType getSoundType(BlockState $$0) {
+        return super.getSoundType($$0);
     }
 
     @Override
@@ -208,6 +214,12 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
     @Override
     public VoxelShape getInteractionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
         return getValue(worldIn, pos, BlockState::getInteractionShape, () -> super.getInteractionShape(state, worldIn, pos));
+    }
+
+    //TODO (port) figure out friction
+    @Override
+    public float getFriction() {
+        return super.getFriction();
     }
 
     @Override
@@ -410,8 +422,8 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
 
     public static void requestModelRefresh(BlockGetter world, BlockPos pos) {
         BlockEntity tileEntity = world.getBlockEntity(pos);
-        if(tileEntity != null) {
-            tileEntity.requestModelDataUpdate();
+        if(tileEntity instanceof SecretTileEntity te) {
+            te.requestModelDataUpdateIfPossible();
         }
     }
 
