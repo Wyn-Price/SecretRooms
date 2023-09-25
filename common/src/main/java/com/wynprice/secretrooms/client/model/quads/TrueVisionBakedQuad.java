@@ -2,11 +2,11 @@ package com.wynprice.secretrooms.client.model.quads;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.wynprice.secretrooms.SecretRooms7;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraftforge.client.event.TextureStitchEvent;
 
 import java.util.Arrays;
 
@@ -15,21 +15,10 @@ import static java.lang.Float.intBitsToFloat;
 
 public class TrueVisionBakedQuad {
     private static final ResourceLocation OVERLAY_LOCATION = new ResourceLocation(SecretRooms7.MODID, "block/overlay");
-    private static TextureAtlasSprite overlaySprite;
-
-    public static void onTextureStitch(TextureStitchEvent.Pre event) {
-        if(InventoryMenu.BLOCK_ATLAS.equals(event.getAtlas().location())) {
-            event.addSprite(OVERLAY_LOCATION);
-        }
-    }
-
-    public static void onTextureStitched(TextureStitchEvent.Post event) {
-        if(InventoryMenu.BLOCK_ATLAS.equals(event.getAtlas().location())) {
-            overlaySprite = event.getAtlas().getSprite(OVERLAY_LOCATION);
-        }
-    }
 
     public static BakedQuad generateQuad(BakedQuad quad) {
+        // TODO: cache?
+        TextureAtlasSprite overlaySprite = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS).getSprite(OVERLAY_LOCATION);
         int[] data = Arrays.copyOf(quad.getVertices(), quad.getVertices().length);
         for (int i = 0; i < 4; i++) {
             int j = DefaultVertexFormat.BLOCK.getIntegerSize() * i;
@@ -46,19 +35,18 @@ public class TrueVisionBakedQuad {
             float vi;
 
             switch (quad.getDirection().getAxis()) {
-                case X:
+                case X -> {
                     ui = z;
-                    vi = 1-y;
-                    break;
-                case Y:
-                default:
+                    vi = 1 - y;
+                }
+                default -> {
                     ui = x;
                     vi = z;
-                    break;
-                case Z:
+                }
+                case Z -> {
                     ui = x;
-                    vi = 1-y;
-                    break;
+                    vi = 1 - y;
+                }
             }
 
             data[j+4] = floatToRawIntBits(overlaySprite.getU(ui*16F));

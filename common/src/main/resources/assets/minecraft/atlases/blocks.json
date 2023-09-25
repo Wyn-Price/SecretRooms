@@ -1,0 +1,8 @@
+{
+  "sources": [
+    {
+      "type": "single",
+      "resource": "secretroomsmod:block/overlay"
+    }
+  ]
+}

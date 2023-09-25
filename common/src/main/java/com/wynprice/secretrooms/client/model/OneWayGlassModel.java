@@ -1,5 +1,6 @@
 package com.wynprice.secretrooms.client.model;
 
+import com.wynprice.secretrooms.client.SecretModelRenderContext;
 import com.wynprice.secretrooms.client.model.quads.NoTintBakedQuadRetextured;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -8,6 +9,7 @@ import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,6 +18,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,21 +33,19 @@ public class OneWayGlassModel extends SecretBlockModel {
     private static BakedModel glassModel;
 
     @Override
-    protected boolean canRenderInLater(BlockState state) {
-        return MinecraftForgeClient.getRenderType() == RenderType.cutout() || super.canRenderInLater(state);
+    protected boolean canRenderInLayer(BlockState state, SecretModelRenderContext context) {
+        return context.canCurrentlyRender(RenderType.cutout()) || super.canRenderInLayer(state, context);
     }
 
     @Override
-    public List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull BakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        RenderType startLayer = MinecraftForgeClient.getRenderType();
+    protected List<BakedQuad> render(@NotNull BlockState mirrorState, @NotNull BlockState baseState, @NotNull BakedModel model, @org.jetbrains.annotations.Nullable Direction side, @NotNull RandomSource rand, SecretModelRenderContext context) {
 
         Supplier<List<BakedQuad>> superQuads = () -> getQuadsForSide(mirrorState, baseState, side, rand, extraData);
         List<BakedQuad> out = this.getQuadsNotSolid(baseState, mirrorState, superQuads, extraData);
 
-        ForgeHooksClient.setRenderType(startLayer);
-
         return out;
     }
+    
 
     private List<BakedQuad> getQuadsNotSolid(BlockState baseState, BlockState delegate, Supplier<List<BakedQuad>> superQuads, IModelData extraData) {
         List<BakedQuad> quads = new ArrayList<>();

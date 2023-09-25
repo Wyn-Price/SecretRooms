@@ -1,11 +1,9 @@
 package com.wynprice.secretrooms.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 
 public class SwitchProbeTooltip extends ClientTextTooltip {
 
@@ -16,12 +14,13 @@ public class SwitchProbeTooltip extends ClientTextTooltip {
         this.component = component;
     }
 
+
     @Override
-    public void renderImage(Font font, int x, int y, PoseStack stack, ItemRenderer item, int p_194053_) {
+    public void renderImage(Font font, int x, int y, GuiGraphics graphics) {
         int xStart = x + super.getWidth(font) + 10;
         if(this.component.getItemStackIfRender() != null) {
-            item.renderAndDecorateItem(this.component.getItemStackIfRender(), xStart, y, 0);
-            item.renderGuiItemDecorations(font, this.component.getItemStackIfRender(), xStart, y);
+            graphics.renderItem(this.component.getItemStackIfRender(), xStart, y, 0);
+            graphics.renderItemDecorations(font, this.component.getItemStackIfRender(), xStart, y);
         } else if(this.component.getSpriteIfRender() != null) {
             int colour = this.component.getSpriteColourIfRender();
             RenderSystem.setShaderColor(
@@ -29,7 +28,7 @@ public class SwitchProbeTooltip extends ClientTextTooltip {
                 ((colour >> 8) & 0xFF) / 255F,
                 (colour & 0xFF) / 255F,
                 1F);
-            GuiComponent.blit(stack, xStart, y, 0, 16, 16, this.component.getSpriteIfRender());
+            graphics.blit(xStart, y, 0, 16, 16, this.component.getSpriteIfRender());
 
         }
     }
