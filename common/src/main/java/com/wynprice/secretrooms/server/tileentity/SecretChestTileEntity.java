@@ -1,10 +1,11 @@
 package com.wynprice.secretrooms.server.tileentity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -12,12 +13,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 
 public class SecretChestTileEntity extends SecretTileEntity implements Container, MenuProvider {
-    private final ItemStackHandler handler = new ItemStackHandler(27);
+    private final NonNullList<ItemStack> stacks = NonNullList.withSize(27, ItemStack.EMPTY);
     private int numPlayersUsing;
 
     public SecretChestTileEntity(BlockPos pos, BlockState state) {
@@ -26,19 +27,19 @@ public class SecretChestTileEntity extends SecretTileEntity implements Container
 
     @Override
     public void load(CompoundTag nbt) {
-        this.handler.deserializeNBT(nbt.getCompound("Items"));
+        ContainerHelper.loadAllItems(nbt, this.stacks);
         super.load(nbt);
     }
 
     @Override
     public void saveAdditional(CompoundTag compound) {
-        compound.put("Items", this.handler.serializeNBT());
+        ContainerHelper.saveAllItems(compound, this.stacks);
         super.saveAdditional(compound);
     }
 
     @Override
     public Component getDisplayName() {
-        return new TranslatableComponent("secretroomsmod.container.secretchest.name");
+        return Component.translatable("secretroomsmod.container.secretchest.name");
     }
 
     @Nullable
@@ -82,32 +83,32 @@ public class SecretChestTileEntity extends SecretTileEntity implements Container
     @Override
     public boolean isEmpty() {
         boolean value = true;
-        for (int i = 0; i < this.handler.getSlots(); i++) {
-            value &= this.handler.getStackInSlot(i).isEmpty();
+        for (ItemStack stack : this.stacks) {
+            value &= stack.isEmpty();
         }
         return value;
     }
 
     @Override
     public ItemStack getItem(int index) {
-        return this.handler.getStackInSlot(index);
+        return this.stacks.get(index);
     }
 
     @Override
     public ItemStack removeItem(int index, int count) {
-        return this.handler.getStackInSlot(index).split(count);
+        return this.stacks.get(index).split(count);
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int index) {
-        ItemStack slot = this.handler.getStackInSlot(index);
-        this.handler.setStackInSlot(index, ItemStack.EMPTY);
+        ItemStack slot = this.stacks.get(index);
+        this.stacks.set(index, ItemStack.EMPTY);
         return slot;
     }
 
     @Override
     public void setItem(int index, ItemStack stack) {
-        this.handler.setStackInSlot(index, stack);
+        this.stacks.set(index, stack);
     }
 
     @Override
@@ -117,9 +118,7 @@ public class SecretChestTileEntity extends SecretTileEntity implements Container
 
     @Override
     public void clearContent() {
-        for (int i = 0; i < this.handler.getSlots(); i++) {
-            this.handler.setStackInSlot(i, ItemStack.EMPTY);
-        }
+        Collections.fill(this.stacks, ItemStack.EMPTY);
     }
 
     public int getNumPlayersUsing() {

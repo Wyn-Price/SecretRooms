@@ -2,7 +2,6 @@ package com.wynprice.secretrooms.server.data;
 
 import com.wynprice.secretrooms.SecretRooms7;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
-import com.wynprice.secretrooms.server.tileentity.SecretTileEntities;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;

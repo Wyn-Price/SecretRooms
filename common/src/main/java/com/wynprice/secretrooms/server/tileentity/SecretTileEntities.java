@@ -1,41 +1,32 @@
 package com.wynprice.secretrooms.server.tileentity;
 
-import com.wynprice.secretrooms.SecretRooms7;
 import com.wynprice.secretrooms.platform.SecretRoomsServices;
-import com.wynprice.secretrooms.registry.RegistryHolder;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import com.wynprice.secretrooms.server.registry.RegistryHolder;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import static com.wynprice.secretrooms.server.blocks.SecretBlocks.*;
 
+@SuppressWarnings("unchecked")
 public class SecretTileEntities {
 
     public static final RegistryHolder<BlockEntityType<?>> REGISTRY = SecretRoomsServices.PLATFORM.createBlockEntityRegistryHolder();
 
     public static final Supplier<BlockEntityType<SecretTileEntity>> SECRET_TILE_ENTITY = REGISTRY.register("secret_tile_entity", () ->
-        BlockEntityType.Builder.of(SecretTileEntity::new,
-            GHOST_BLOCK.get(), SECRET_STAIRS.get(), SECRET_LEVER.get(), SECRET_REDSTONE.get(), ONE_WAY_GLASS.get(), SECRET_WOODEN_BUTTON.get(),
-            SECRET_STONE_BUTTON.get(), SECRET_PRESSURE_PLATE.get(), SECRET_PLAYER_PRESSURE_PLATE.get(), SECRET_DOOR.get(), SECRET_IRON_DOOR.get(),
-            SECRET_TRAPDOOR.get(), SECRET_IRON_TRAPDOOR.get(), SECRET_OBSERVER.get(), SECRET_CLAMBER.get()
-        ).build(null)
+        SecretRoomsServices.PLATFORM.createBlockEntityType(SecretTileEntity::new,
+            GHOST_BLOCK, SECRET_STAIRS, SECRET_LEVER, SECRET_REDSTONE, ONE_WAY_GLASS, SECRET_WOODEN_BUTTON,
+            SECRET_STONE_BUTTON, SECRET_PRESSURE_PLATE, SECRET_PLAYER_PRESSURE_PLATE, SECRET_DOOR, SECRET_IRON_DOOR,
+            SECRET_TRAPDOOR, SECRET_IRON_TRAPDOOR, SECRET_OBSERVER, SECRET_CLAMBER
+        )
     );
 
     public static final Supplier<BlockEntityType<SecretChestTileEntity>> SECRET_CHEST_TILE_ENTITY = REGISTRY.register("secret_chest_tile_entity", () ->
-        BlockEntityType.Builder.of(SecretChestTileEntity::new, SECRET_CHEST.get(), SECRET_TRAPPED_CHEST.get()).build(null)
+            SecretRoomsServices.PLATFORM.createBlockEntityType(SecretChestTileEntity::new, SECRET_CHEST, SECRET_TRAPPED_CHEST)
     );
 
     public static final Supplier<BlockEntityType<SecretDaylightDetectorTileEntity>> SECRET_DAYLIGHT_DETECTOR_TILE_ENTITY = REGISTRY.register("secret_daylight_detector_tile_entity", () ->
-        BlockEntityType.Builder.of(SecretDaylightDetectorTileEntity::new, SECRET_DAYLIGHT_DETECTOR.get()).build(null)
+            SecretRoomsServices.PLATFORM.createBlockEntityType(SecretDaylightDetectorTileEntity::new, SECRET_DAYLIGHT_DETECTOR)
     );
 
 

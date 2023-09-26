@@ -7,24 +7,13 @@ import com.wynprice.secretrooms.client.world.DummyIWorld;
 import com.wynprice.secretrooms.server.blocks.states.SecretBaseState;
 import com.wynprice.secretrooms.server.data.SecretData;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.particle.TerrainParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,23 +24,12 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.PathComputationType;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.IBlockRenderProperties;
-import net.minecraftforge.client.model.data.ModelDataMap;
-import net.minecraftforge.fml.DistExecutor;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
@@ -165,16 +143,16 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
         return super.getSoundType($$0);
     }
 
-    @Override
-    public SoundType getSoundType(BlockState state, LevelReader world, BlockPos pos, @Nullable Entity entity) {
-        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getSoundType(world, pos1, entity), () -> super.getSoundType(state, world, pos, entity));
-    }
-
-    @Nullable
-    @Override
-    public BlockPathTypes getAiPathNodeType(BlockState state, BlockGetter world, BlockPos pos, @Nullable Mob entity) {
-        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getBlockPathType(reader, pos1, entity), () -> super.getAiPathNodeType(state, world, pos, entity));
-    }
+//    @Override
+//    public SoundType getSoundType(BlockState state, LevelReader world, BlockPos pos, @Nullable Entity entity) {
+//        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getSoundType(world, pos1, entity), () -> super.getSoundType(state, world, pos, entity));
+//    }
+//
+//    @Nullable
+//    @Override
+//    public BlockPathTypes getAiPathNodeType(BlockState state, BlockGetter world, BlockPos pos, @Nullable Mob entity) {
+//        return getValue(world, pos, (mirror, reader, pos1) -> mirror.getBlockPathType(reader, pos1, entity), () -> super.getAiPathNodeType(state, world, pos, entity));
+//    }
 
     @Override
     public boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType type) {
@@ -222,28 +200,28 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
         return super.getFriction();
     }
 
-    @Override
-    public float getFriction(BlockState state, LevelReader world, BlockPos pos, @Nullable Entity entity) {
-        return getValue(world, pos, (m, w, p) -> m.getFriction(world, p, entity), () -> super.getFriction(state, world, pos, entity));
-    }
-
-    @Override
-    public int getLightEmission(BlockState state, BlockGetter world, BlockPos pos) {
-        int result = getValue(world, pos, BlockState::getLightEmission, () -> super.getLightEmission(state, world, pos));
-        StackTraceElement element = Thread.currentThread().getStackTrace()[3];
-        //This is needed so we can control AO. Try to remove this asap
-        if ("net.minecraft.client.renderer.block.ModelBlockRenderer".equals(element.getClassName())) {
-            Optional<BlockState> mirrorState = getMirrorState(world, pos);
-            if(mirrorState.isPresent()) {
-                Boolean isAoModel = DistExecutor.callWhenOn(Dist.CLIENT, () -> () ->
-                        Minecraft.getInstance().getBlockRenderer().getBlockModel(mirrorState.get()).useAmbientOcclusion());
-                if(isAoModel != null) {
-                    return result == 0 && isAoModel ? 0 : 1;
-                }
-            }
-        }
-        return result;
-    }
+//    @Override
+//    public float getFriction(BlockState state, LevelReader world, BlockPos pos, @Nullable Entity entity) {
+//        return getValue(world, pos, (m, w, p) -> m.getFriction(world, p, entity), () -> super.getFriction(state, world, pos, entity));
+//    }
+//
+//    @Override
+//    public int getLightEmission(BlockState state, BlockGetter world, BlockPos pos) {
+//        int result = getValue(world, pos, BlockState::getLightEmission, () -> super.getLightEmission(state, world, pos));
+//        StackTraceElement element = Thread.currentThread().getStackTrace()[3];
+//        //This is needed so we can control AO. Try to remove this asap
+//        if ("net.minecraft.client.renderer.block.ModelBlockRenderer".equals(element.getClassName())) {
+//            Optional<BlockState> mirrorState = getMirrorState(world, pos);
+//            if(mirrorState.isPresent()) {
+//                Boolean isAoModel = DistExecutor.callWhenOn(Dist.CLIENT, () -> () ->
+//                        Minecraft.getInstance().getBlockRenderer().getBlockModel(mirrorState.get()).useAmbientOcclusion());
+//                if(isAoModel != null) {
+//                    return result == 0 && isAoModel ? 0 : 1;
+//                }
+//            }
+//        }
+//        return result;
+//    }
 
     @Override
     public int getLightBlock(BlockState state, BlockGetter world, BlockPos pos) {
@@ -261,112 +239,112 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
     }
 
     //Entity#createRunningParticles
-    @Override
-    public boolean addRunningEffects(BlockState state, Level world, BlockPos pos, Entity entity) {
-        Optional<BlockState> mirrorState = getMirrorState(world, pos);
-        if(mirrorState.isPresent()) {
-            BlockState blockstate = mirrorState.get();
-            if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
-                Vec3 vec3d = entity.getDeltaMovement();
-                world.addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockstate),
-                        entity.getX()+ (world.random.nextFloat() - 0.5D) * entity.getBbWidth(),
-                        entity.getY() + 0.1D,
-                        entity.getZ() + (world.random.nextFloat() - 0.5D) * entity.getBbWidth(),
-
-                        vec3d.x * -4.0D, 1.5D, vec3d.z * -4.0D);
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public void initializeClient(Consumer<IBlockRenderProperties> consumer) {
-        consumer.accept(new IBlockRenderProperties() {
-            @Override
-            //ParticleEngine#crack
-            public boolean addHitEffects(BlockState state, Level level, HitResult target, ParticleEngine manager) {
-                if(target instanceof BlockHitResult) {
-                    BlockPos pos = ((BlockHitResult) target).getBlockPos();
-                    Optional<BlockState> mirrorState = getMirrorState(level, pos);
-                    if(mirrorState.isPresent()) {
-                        BlockState blockstate = mirrorState.get();
-                        Direction side = ((BlockHitResult) target).getDirection();
-                        if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
-                            int x = pos.getX();
-                            int y = pos.getY();
-                            int z = pos.getZ();
-                            AABB axisalignedbb = blockstate.getShape(level, pos).bounds();
-                            double xPos = x + level.random.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - 0.2F) + 0.1F + axisalignedbb.minX;
-                            double yPos = y + level.random.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.2F) + 0.1F + axisalignedbb.minY;
-                            double zPos = z + level.random.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.2F) + 0.1F + axisalignedbb.minZ;
-
-                            switch (side) {
-                                case UP -> yPos = y + axisalignedbb.maxY + 0.1F;
-                                case DOWN -> yPos = y + axisalignedbb.minY - 0.1F;
-                                case NORTH -> zPos = z + axisalignedbb.minZ - 0.1F;
-                                case SOUTH -> zPos = z + axisalignedbb.maxZ + 0.1F;
-                                case WEST -> xPos = x + axisalignedbb.minX - 0.1F;
-                                case EAST -> xPos = x + axisalignedbb.maxX + 0.1F;
-                            }
-
-                            Minecraft.getInstance().particleEngine.add(
-                                new TerrainParticle((ClientLevel) level, xPos, yPos, zPos, 0.0D, 0.0D, 0.0D, blockstate, pos)
-                                    .setPower(0.2F)
-                                    .scale(0.6F)
-                            );
-                        }
-                    }
-                }
-                return true;
-            }
-
-            @Override
-            public boolean addDestroyEffects(BlockState state, Level level, BlockPos pos, ParticleEngine manager) {
-                Optional<BlockState> mirrorState = getMirrorState(level, pos);
-                if (mirrorState.isPresent()) {
-                    if(mirrorState.get().isAir()) {
-                        return false;
-                    }
-                    BlockState blockstate = mirrorState.get();
-                    VoxelShape voxelshape = blockstate.getShape(level, pos);
-                    voxelshape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> {
-                        double xDelta = Math.min(1.0D, x2 - x1);
-                        double yDelta = Math.min(1.0D, y2 - y1);
-                        double zDelta = Math.min(1.0D, z2 - z1);
-                        int xAmount = Math.max(2, Mth.ceil( xDelta / 0.25D));
-                        int yAmount = Math.max(2, Mth.ceil( yDelta / 0.25D));
-                        int zAmount = Math.max(2, Mth.ceil( zDelta / 0.25D));
-
-                        for(int x = 0; x < xAmount; ++x) {
-                            for(int y = 0; y < yAmount; ++y) {
-                                for(int z = 0; z < zAmount; ++z) {
-                                    double dx = (x + 0.5D) / xAmount;
-                                    double dy = (y + 0.5D) / yAmount;
-                                    double dz = (z + 0.5D) / zAmount;
-                                    double xPos = dx * xDelta + x1;
-                                    double yPos = dy * yDelta + y1;
-                                    double zPos = dz * zDelta + z1;
-                                    Minecraft.getInstance().particleEngine.add(
-                                        new TerrainParticle((ClientLevel) level,
-                                            pos.getX() + xPos,pos.getY() + yPos, pos.getZ() + zPos,
-                                            dx - 0.5D, dy - 0.5D,dz - 0.5D, blockstate, pos)
-                                    );
-                                }
-                            }
-                        }
-                    });
-                }
-                return true;
-            }
-        });
-    }
-
-
-    @Override
-    public boolean addLandingEffects(BlockState state1, ServerLevel worldserver, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
-        getMirrorState(worldserver, pos).ifPresent(blockState -> worldserver.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, blockState), entity.getX(), entity.getY(), entity.getZ(), numberOfParticles, 0.0D, 0.0D, 0.0D, 0.15F));
-        return true;
-    }
+//    @Override
+//    public boolean addRunningEffects(BlockState state, Level world, BlockPos pos, Entity entity) {
+//        Optional<BlockState> mirrorState = getMirrorState(world, pos);
+//        if(mirrorState.isPresent()) {
+//            BlockState blockstate = mirrorState.get();
+//            if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
+//                Vec3 vec3d = entity.getDeltaMovement();
+//                world.addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockstate),
+//                        entity.getX()+ (world.random.nextFloat() - 0.5D) * entity.getBbWidth(),
+//                        entity.getY() + 0.1D,
+//                        entity.getZ() + (world.random.nextFloat() - 0.5D) * entity.getBbWidth(),
+//
+//                        vec3d.x * -4.0D, 1.5D, vec3d.z * -4.0D);
+//            }
+//        }
+//        return true;
+//    }
+//
+//    @Override
+//    public void initializeClient(Consumer<IBlockRenderProperties> consumer) {
+//        consumer.accept(new IBlockRenderProperties() {
+//            @Override
+//            //ParticleEngine#crack
+//            public boolean addHitEffects(BlockState state, Level level, HitResult target, ParticleEngine manager) {
+//                if(target instanceof BlockHitResult) {
+//                    BlockPos pos = ((BlockHitResult) target).getBlockPos();
+//                    Optional<BlockState> mirrorState = getMirrorState(level, pos);
+//                    if(mirrorState.isPresent()) {
+//                        BlockState blockstate = mirrorState.get();
+//                        Direction side = ((BlockHitResult) target).getDirection();
+//                        if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
+//                            int x = pos.getX();
+//                            int y = pos.getY();
+//                            int z = pos.getZ();
+//                            AABB axisalignedbb = blockstate.getShape(level, pos).bounds();
+//                            double xPos = x + level.random.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - 0.2F) + 0.1F + axisalignedbb.minX;
+//                            double yPos = y + level.random.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.2F) + 0.1F + axisalignedbb.minY;
+//                            double zPos = z + level.random.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.2F) + 0.1F + axisalignedbb.minZ;
+//
+//                            switch (side) {
+//                                case UP -> yPos = y + axisalignedbb.maxY + 0.1F;
+//                                case DOWN -> yPos = y + axisalignedbb.minY - 0.1F;
+//                                case NORTH -> zPos = z + axisalignedbb.minZ - 0.1F;
+//                                case SOUTH -> zPos = z + axisalignedbb.maxZ + 0.1F;
+//                                case WEST -> xPos = x + axisalignedbb.minX - 0.1F;
+//                                case EAST -> xPos = x + axisalignedbb.maxX + 0.1F;
+//                            }
+//
+//                            Minecraft.getInstance().particleEngine.add(
+//                                new TerrainParticle((ClientLevel) level, xPos, yPos, zPos, 0.0D, 0.0D, 0.0D, blockstate, pos)
+//                                    .setPower(0.2F)
+//                                    .scale(0.6F)
+//                            );
+//                        }
+//                    }
+//                }
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean addDestroyEffects(BlockState state, Level level, BlockPos pos, ParticleEngine manager) {
+//                Optional<BlockState> mirrorState = getMirrorState(level, pos);
+//                if (mirrorState.isPresent()) {
+//                    if(mirrorState.get().isAir()) {
+//                        return false;
+//                    }
+//                    BlockState blockstate = mirrorState.get();
+//                    VoxelShape voxelshape = blockstate.getShape(level, pos);
+//                    voxelshape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> {
+//                        double xDelta = Math.min(1.0D, x2 - x1);
+//                        double yDelta = Math.min(1.0D, y2 - y1);
+//                        double zDelta = Math.min(1.0D, z2 - z1);
+//                        int xAmount = Math.max(2, Mth.ceil( xDelta / 0.25D));
+//                        int yAmount = Math.max(2, Mth.ceil( yDelta / 0.25D));
+//                        int zAmount = Math.max(2, Mth.ceil( zDelta / 0.25D));
+//
+//                        for(int x = 0; x < xAmount; ++x) {
+//                            for(int y = 0; y < yAmount; ++y) {
+//                                for(int z = 0; z < zAmount; ++z) {
+//                                    double dx = (x + 0.5D) / xAmount;
+//                                    double dy = (y + 0.5D) / yAmount;
+//                                    double dz = (z + 0.5D) / zAmount;
+//                                    double xPos = dx * xDelta + x1;
+//                                    double yPos = dy * yDelta + y1;
+//                                    double zPos = dz * zDelta + z1;
+//                                    Minecraft.getInstance().particleEngine.add(
+//                                        new TerrainParticle((ClientLevel) level,
+//                                            pos.getX() + xPos,pos.getY() + yPos, pos.getZ() + zPos,
+//                                            dx - 0.5D, dy - 0.5D,dz - 0.5D, blockstate, pos)
+//                                    );
+//                                }
+//                            }
+//                        }
+//                    });
+//                }
+//                return true;
+//            }
+//        });
+//    }
+//
+//
+//    @Override
+//    public boolean addLandingEffects(BlockState state1, ServerLevel worldserver, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
+//        getMirrorState(worldserver, pos).ifPresent(blockState -> worldserver.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, blockState), entity.getX(), entity.getY(), entity.getZ(), numberOfParticles, 0.0D, 0.0D, 0.0D, 0.15F));
+//        return true;
+//    }
 
     @Nullable
     @Override
@@ -374,7 +352,8 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
         return new SecretTileEntity(pos, state);
     }
 
-    public void applyExtraModelData(BlockGetter world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
+    public Optional<BlockState> getMappedModelState(BlockGetter world, BlockPos pos, BlockState state) {
+        return Optional.empty();
     }
 
     public Boolean getSolidValue() {

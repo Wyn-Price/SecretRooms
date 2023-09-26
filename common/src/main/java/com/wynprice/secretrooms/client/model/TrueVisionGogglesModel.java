@@ -6,11 +6,13 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.client.event.EntityRenderersEvent;
 
 public class TrueVisionGogglesModel extends HumanoidModel<LivingEntity> {
 
@@ -28,9 +30,6 @@ public class TrueVisionGogglesModel extends HumanoidModel<LivingEntity> {
     @Override
     protected Iterable<ModelPart> headParts() {
         return ImmutableList.of(this.head, this.hat);
-    }
-
-    public static void onModelDefinitionRegister(EntityRenderersEvent.RegisterLayerDefinitions event) {
     }
 
     public static MeshDefinition createMesh(CubeDeformation deformation, float yOff) {

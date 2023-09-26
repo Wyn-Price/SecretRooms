@@ -3,7 +3,6 @@ package com.wynprice.secretrooms.client.model;
 import com.wynprice.secretrooms.client.SecretModelRenderContext;
 import com.wynprice.secretrooms.client.model.quads.NoTintBakedQuadRetextured;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -13,18 +12,10 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Supplier;
 
 public class OneWayGlassModel extends SecretBlockModel {
@@ -39,34 +30,33 @@ public class OneWayGlassModel extends SecretBlockModel {
 
     @Override
     protected List<BakedQuad> render(@NotNull BlockState mirrorState, @NotNull BlockState baseState, @NotNull BakedModel model, @org.jetbrains.annotations.Nullable Direction side, @NotNull RandomSource rand, SecretModelRenderContext context) {
-
-        Supplier<List<BakedQuad>> superQuads = () -> getQuadsForSide(mirrorState, baseState, side, rand, extraData);
-        List<BakedQuad> out = this.getQuadsNotSolid(baseState, mirrorState, superQuads, extraData);
-
-        return out;
+        Supplier<List<BakedQuad>> superQuads = () -> getQuadsForSide(mirrorState, baseState, side, rand, context);
+        return this.getQuadsNotSolid(baseState, mirrorState, superQuads, context);
     }
-    
 
-    private List<BakedQuad> getQuadsNotSolid(BlockState baseState, BlockState delegate, Supplier<List<BakedQuad>> superQuads, IModelData extraData) {
+
+    private List<BakedQuad> getQuadsNotSolid(BlockState baseState, BlockState delegate, Supplier<List<BakedQuad>> superQuads, SecretModelRenderContext context) {
         List<BakedQuad> quads = new ArrayList<>();
 
-        RenderType layer = MinecraftForgeClient.getRenderType();
-        if(layer == null || layer == RenderType.cutout()) {
-            quads.addAll(this.getGlassQuadsNotSolid(baseState, superQuads, extraData));
+        if(context.canCurrentlyRender(RenderType.cutout())) {
+            quads.addAll(this.getGlassQuadsNotSolid(baseState, superQuads, context));
         }
-        if(layer == null || ItemBlockRenderTypes.canRenderInLayer(delegate, layer)) {
+        if(context.canCurrentlyRender(delegate)) {
             quads.addAll(this.getDelegateQuadsNotSolid(baseState, superQuads));
         }
 
         return quads;
     }
 
-    private List<BakedQuad> getGlassQuadsNotSolid(BlockState baseState, Supplier<List<BakedQuad>> superQuads, IModelData extraData) {
+    private List<BakedQuad> getGlassQuadsNotSolid(BlockState baseState, Supplier<List<BakedQuad>> superQuads, SecretModelRenderContext context) {
+        if(glassModel == null) {
+            refreshModel();
+        }
         List<BakedQuad> quads = new ArrayList<>();
-        for (BakedQuad bakedQuad : this.gatherAllQuads(superQuads)) {
+        for (BakedQuad bakedQuad : this.gatherAllQuads(context, superQuads)) {
             //If the quads facing direction is set to glass in the one way glass state
             if (baseState.getValue(PipeBlock.PROPERTY_BY_DIRECTION.get(bakedQuad.getDirection()))) {
-                quads.add(new NoTintBakedQuadRetextured(bakedQuad, glassModel.getParticleIcon(extraData)));
+                quads.add(new NoTintBakedQuadRetextured(bakedQuad, glassModel.getParticleIcon()));
             }
         }
         return quads;
@@ -83,18 +73,17 @@ public class OneWayGlassModel extends SecretBlockModel {
         return quads;
     }
 
-    private List<BakedQuad> getQuadsForSide(BlockState mirrorState, BlockState baseState, Direction side, Random rand, IModelData extraData) {
-        List<BakedQuad> quads = super.render(mirrorState, baseState, MC.getBlockRenderer().getBlockModel(mirrorState), side, rand, extraData);
-        super.render(mirrorState, baseState, MC.getBlockRenderer().getBlockModel(mirrorState), null, rand, extraData).stream()
+    private List<BakedQuad> getQuadsForSide(BlockState mirrorState, BlockState baseState, Direction side, RandomSource rand, SecretModelRenderContext context) {
+        List<BakedQuad> quads = super.render(mirrorState, baseState, MC.getBlockRenderer().getBlockModel(mirrorState), side, rand, context);
+        super.render(mirrorState, baseState, MC.getBlockRenderer().getBlockModel(mirrorState), null, rand, context).stream()
             .filter(q -> q.getDirection() == side)
             .forEach(quads::add);
 
         return quads;
     }
 
-    @SubscribeEvent
-    public static void onModelsReady(ModelBakeEvent event) {
-        glassModel = event.getModelManager().getModel(BlockModelShaper.stateToModelLocation(Blocks.GLASS.defaultBlockState()));
+    public static void refreshModel() {
+        glassModel = Minecraft.getInstance().getModelManager().getModel(BlockModelShaper.stateToModelLocation(Blocks.GLASS.defaultBlockState()));
 
     }
 }

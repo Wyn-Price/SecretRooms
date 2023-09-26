@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
-import java.util.Random;
 
 public class SecretGateBlock extends SecretBaseBlock {
 

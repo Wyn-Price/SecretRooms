@@ -2,18 +2,17 @@ package com.wynprice.secretrooms.client.model;
 
 import com.google.common.math.DoubleMath;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.wynprice.secretrooms.client.SecretModelData;
-import com.wynprice.secretrooms.server.utils.ModelDataUtils;
+import com.wynprice.secretrooms.client.SecretModelRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.model.data.IModelData;
+import org.joml.Vector3d;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,10 +27,10 @@ public class  SecretMappedModel extends SecretBlockModel {
     private static final Supplier<BlockRenderDispatcher> DISPATCHER = () -> Minecraft.getInstance().getBlockRenderer();
 
     @Override
-    public List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull BakedModel model, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        Optional<BlockState> blockState = ModelDataUtils.getData(extraData, SecretModelData.MODEL_MAP_STATE);
-        if(!blockState.isPresent()) {
-            return super.render(mirrorState, baseState, model, side, rand, extraData);
+    public List<BakedQuad> render(@Nonnull BlockState mirrorState, @Nonnull BlockState baseState, @Nonnull BakedModel model, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull SecretModelRenderContext context) {
+        Optional<BlockState> blockState = context.mappedState();
+        if(blockState.isEmpty()) {
+            return super.render(mirrorState, baseState, model, side, rand, context);
         }
 
         if (side != null) {
@@ -42,12 +41,11 @@ public class  SecretMappedModel extends SecretBlockModel {
 
         BlockState mappedState = blockState.get();
         BakedModel mappedModel = DISPATCHER.get().getBlockModel(mappedState);
-        AABB bb = this.createQuadBorder(mappedModel, mappedState, rand, extraData);
+        AABB bb = this.createQuadBorder(mappedModel, mappedState, rand, context);
 
-
-        List<BakedQuad> allQuads = new ArrayList<>(model.getQuads(mirrorState, null, rand, extraData));
+        List<BakedQuad> allQuads = new ArrayList<>(context.getQuads(model, mirrorState, null, rand));
         for (Direction value : Direction.values()) {
-            allQuads.addAll(model.getQuads(mirrorState, value, rand, extraData));
+            allQuads.addAll(context.getQuads(model, mirrorState, value, rand));
         }
 
         for (BakedQuad quad : allQuads) {
@@ -58,15 +56,15 @@ public class  SecretMappedModel extends SecretBlockModel {
     }
 
     private BakedQuad resizeQuad(BakedQuad texture, AABB modelRange) {
-        List<Vec3> vertices = this.getVertexPositions(texture);
-        List<Vec3> clamped = this.clampVertexPositions(modelRange, vertices);
+        List<Vector3d> vertices = this.getVertexPositions(texture);
+        List<Vector3d> clamped = this.clampVertexPositions(modelRange, vertices);
 
         int size = DefaultVertexFormat.BLOCK.getIntegerSize();
         int[] aint = new int[texture.getVertices().length];
         System.arraycopy(texture.getVertices(), 0, aint, 0, aint.length);
 
         for (int v = 0; v < clamped.size(); v++) {
-            Vec3 vec = clamped.get(v);
+            Vector3d vec = clamped.get(v);
 
             aint[v*size] = Float.floatToIntBits((float) vec.x);
             aint[v*size+1] = Float.floatToIntBits((float) vec.y);
@@ -79,7 +77,7 @@ public class  SecretMappedModel extends SecretBlockModel {
         return new BakedQuad(aint, texture.getTintIndex(), texture.getDirection(), texture.getSprite(), texture.isShade());
     }
 
-    private void resetUVPositions(int[] aint, int size, int uOff, List<Vec3> vertices, List<Vec3> clampedVertices) {
+    private void resetUVPositions(int[] aint, int size, int uOff, List<Vector3d> vertices, List<Vector3d> clampedVertices) {
         boolean uvRot = aint[uOff] == aint[size+uOff];
 
         int[] t = new int[]{ 1, 0, 3, 2 };
@@ -91,11 +89,11 @@ public class  SecretMappedModel extends SecretBlockModel {
             if(vertices.get(v).equals(clampedVertices.get(v))) {
                 continue;
             }
-            Vec3 clamped = clampedVertices.get(v);
-            Vec3 from = vertices.get(v);
+            Vector3d clamped = clampedVertices.get(v);
+            Vector3d from = vertices.get(v);
 
-            Vec3 toU = vertices.get(mappedU[v]);
-            Vec3 toV = vertices.get(mappedV[v]);
+            Vector3d toU = vertices.get(mappedU[v]);
+            Vector3d toV = vertices.get(mappedV[v]);
 
             Direction.Axis uAxis = getDifferential(from, toU);
             Direction.Axis vAxis = getDifferential(from, toV);
@@ -108,7 +106,7 @@ public class  SecretMappedModel extends SecretBlockModel {
         }
     }
 
-    private Direction.Axis getDifferential(Vec3 v1, Vec3 v2) {
+    private Direction.Axis getDifferential(Vector3d v1, Vector3d v2) {
         if(!DoubleMath.fuzzyEquals(v1.x, v2.x, 1.0E-7D)) {
             return Direction.Axis.X;
         }
@@ -125,22 +123,21 @@ public class  SecretMappedModel extends SecretBlockModel {
         return from + (to - from) * alpha;
     }
 
-    private double dist(Vec3 v1, Vec3 v2, Direction.Axis axis) {
+    private double dist(Vector3d v1, Vector3d v2, Direction.Axis axis) {
         if(axis == null) {
             return 1D;
         }
-        switch (axis) {
-            case X: return Math.abs(v1.x - v2.x);
-            case Y: return Math.abs(v1.y - v2.y);
-            case Z: return Math.abs(v1.z - v2.z);
-        }
-        return 1D; //Cannot be 0, as otherwise we divide by 0
+        return switch (axis) {
+            case X -> Math.abs(v1.x - v2.x);
+            case Y -> Math.abs(v1.y - v2.y);
+            case Z -> Math.abs(v1.z - v2.z);
+        };
     }
 
-    private List<Vec3> clampVertexPositions(AABB modelQuadRange, List<Vec3> vertices) {
-        List<Vec3> out = new ArrayList<>();
-        for (Vec3 vertex : vertices) {
-            out.add(new Vec3(
+    private List<Vector3d> clampVertexPositions(AABB modelQuadRange, List<Vector3d> vertices) {
+        List<Vector3d> out = new ArrayList<>();
+        for (Vector3d vertex : vertices) {
+            out.add(new Vector3d(
                 Mth.clamp(vertex.x, modelQuadRange.minX, modelQuadRange.maxX),
                 Mth.clamp(vertex.y, modelQuadRange.minY, modelQuadRange.maxY),
                 Mth.clamp(vertex.z, modelQuadRange.minZ, modelQuadRange.maxZ)
@@ -149,31 +146,31 @@ public class  SecretMappedModel extends SecretBlockModel {
         return out;
     }
 
-    private List<Vec3> getVertexPositions(BakedQuad quad) {
+    private List<Vector3d> getVertexPositions(BakedQuad quad) {
         int size = DefaultVertexFormat.BLOCK.getIntegerSize();
         int[] aint = quad.getVertices();
 
-        List<Vec3> out = new ArrayList<>();
+        List<Vector3d> out = new ArrayList<>();
         for (int v = 0; v < 4; v++) {
-            out.add(new Vec3(Float.intBitsToFloat(aint[v*size]), Float.intBitsToFloat(aint[v*size+1]), Float.intBitsToFloat(aint[v*size+2])));
+            out.add(new Vector3d(Float.intBitsToFloat(aint[v*size]), Float.intBitsToFloat(aint[v*size+1]), Float.intBitsToFloat(aint[v*size+2])));
         }
         return out;
     }
 
-    private AABB createQuadBorder(BakedModel mappedModel, BlockState state, Random rand, IModelData extraData) {
+    private AABB createQuadBorder(BakedModel mappedModel, BlockState state, RandomSource rand, SecretModelRenderContext context) {
         if(this.stateAreaCache.containsKey(state)) {
             return this.stateAreaCache.get(state);
         }
-        List<BakedQuad> modelQuads = new ArrayList<>(mappedModel.getQuads(state, null, rand, extraData));
+        List<BakedQuad> modelQuads = new ArrayList<>(context.getQuads(mappedModel, state, null, rand));
         for (Direction direction : Direction.values()) {
-            modelQuads.addAll(mappedModel.getQuads(state, direction, rand, extraData));
+            modelQuads.addAll(context.getQuads(mappedModel, state, direction, rand));
         }
 
-        Vec3 min = new Vec3(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
-        Vec3 max = new Vec3(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+        Vector3d min = new Vector3d(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+        Vector3d max = new Vector3d(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 
         for (BakedQuad quad : modelQuads) {
-            for (Vec3 vertexPos : this.getVertexPositions(quad)) {
+            for (Vector3d vertexPos : this.getVertexPositions(quad)) {
                 setVec(min, vertexPos, Math::min);
                 setVec(max, vertexPos, Math::max);
             }
@@ -184,7 +181,7 @@ public class  SecretMappedModel extends SecretBlockModel {
         return bb;
     }
 
-    private void setVec(Vec3 toSet, Vec3 vertex, BiFunction<Double, Double, Double> cons) {
+    private void setVec(Vector3d toSet, Vector3d vertex, BiFunction<Double, Double, Double> cons) {
         toSet.x = cons.apply(toSet.x, vertex.x);
         toSet.y = cons.apply(toSet.y, vertex.y);
         toSet.z = cons.apply(toSet.z, vertex.z);

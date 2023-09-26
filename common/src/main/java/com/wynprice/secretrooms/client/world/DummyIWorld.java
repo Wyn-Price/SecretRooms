@@ -7,22 +7,19 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Difficulty;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.*;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -37,21 +34,13 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.ticks.LevelTickAccess;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
-import java.util.function.BiPredicate;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 public class DummyIWorld implements LevelAccessor {
     private final LevelAccessor world;
@@ -133,13 +122,12 @@ public class DummyIWorld implements LevelAccessor {
     }
 
     @Override
-    public Random getRandom() {
+    public RandomSource getRandom() {
         return this.world.getRandom();
     }
 
     @Override
     public void playSound(@org.jetbrains.annotations.Nullable Player p_46775_, BlockPos p_46776_, SoundEvent p_46777_, SoundSource p_46778_, float p_46779_, float p_46780_) {
-        this.world.playSound(p_46775_, p_46776_, p_46777_, p_46778_, p_46779_, p_46780_);
     }
 
     @Override
@@ -153,6 +141,11 @@ public class DummyIWorld implements LevelAccessor {
     }
 
     @Override
+    public void gameEvent(GameEvent gameEvent, Vec3 vec3, GameEvent.Context context) {
+        this.world.gameEvent(gameEvent, vec3, context);
+    }
+
+    @Override
     public void gameEvent(@org.jetbrains.annotations.Nullable Entity p_151549_, GameEvent p_151550_, BlockPos p_151551_) {
         this.world.gameEvent(p_151549_, p_151550_, p_151551_);
     }
@@ -160,6 +153,11 @@ public class DummyIWorld implements LevelAccessor {
     @Override
     public RegistryAccess registryAccess() {
         return this.world.registryAccess();
+    }
+
+    @Override
+    public FeatureFlagSet enabledFeatures() {
+        return this.world.enabledFeatures();
     }
 
     @Override

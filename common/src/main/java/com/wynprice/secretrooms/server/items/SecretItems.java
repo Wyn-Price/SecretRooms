@@ -1,7 +1,7 @@
 package com.wynprice.secretrooms.server.items;
 
 import com.wynprice.secretrooms.platform.SecretRoomsServices;
-import com.wynprice.secretrooms.registry.RegistryHolder;
+import com.wynprice.secretrooms.server.registry.RegistryHolder;
 import com.wynprice.secretrooms.server.blocks.SecretBlocks;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;

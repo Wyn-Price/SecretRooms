@@ -8,7 +8,6 @@ import com.wynprice.secretrooms.client.model.SecretBlockModel;
 import com.wynprice.secretrooms.client.model.SecretMappedModel;
 import com.wynprice.secretrooms.client.model.quads.TrueVisionBakedQuad;
 import com.wynprice.secretrooms.clients.SimpleUnbakedGeometryLoader;
-import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
 import com.wynprice.secretrooms.server.blocks.SecretBlocks;
 import com.wynprice.secretrooms.server.data.SecretBlockLootTableProvider;
 import com.wynprice.secretrooms.server.data.SecretBlockTagsProvider;
@@ -20,22 +19,21 @@ import com.wynprice.secretrooms.server.tileentity.SecretTileEntities;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.world.effect.MobEffectUtil;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
-import net.minecraftforge.client.gui.ClientTooltipComponentManager;
+import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
@@ -47,6 +45,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Mod(SecretRooms7.MODID)
 public class SecretRooms7Forge {
@@ -69,15 +68,11 @@ public class SecretRooms7Forge {
             bus.addListener(SecretModelHandler::onBlockColors);
             bus.addListener(SecretModelHandler::onEntityModelRegistered);
 
-            bus.addListener(OneWayGlassModel::onModelsReady);
-            bus.addListener(TrueVisionBakedQuad::onTextureStitch);
-            bus.addListener(TrueVisionBakedQuad::onTextureStitched);
-
             bus.addListener(this::clientSetup);
             bus.addListener(this::registerClientTooltipComponentFactory);
             bus.addListener(this::registerCustomGeometryLoader);
 
-            forgeBus.addListener(SwitchProbe::appendHover);
+            forgeBus.addListener((RenderTooltipEvent.GatherComponents event) -> SwitchProbe.appendHover(event.getItemStack(), event.getTooltipElements()));
 
             forgeBus.addListener(TrueVisionGogglesClientHandler::onClientWorldLoad);
             forgeBus.addListener(TrueVisionGogglesClientHandler::onClientWorldTick);
@@ -85,13 +80,6 @@ public class SecretRooms7Forge {
 
     }
 
-
-    public static final CreativeModeTab TAB = new CreativeModeTab(-1, SecretRooms7.MODID) {
-        @Override
-        public ItemStack makeIcon() {
-            return new ItemStack(SecretItems.CAMOUFLAGE_PASTE.get());
-        }
-    };
 
     // TODO (port): rethink this?
     public void modifyBreakSpeed(PlayerEvent.BreakSpeed event) {
@@ -105,14 +93,15 @@ public class SecretRooms7Forge {
 
     public void gatherData(GatherDataEvent event) {
         DataGenerator gen = event.getGenerator();
-        ExistingFileHelper helper = event.getExistingFileHelper();
+        PackOutput packOutput = gen.getPackOutput();
+        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+        ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
 
-        if (event.includeServer()) {
-            gen.addProvider(new SecretRecipeProvider(gen));
-            gen.addProvider(new SecretItemTagsProvider(gen, helper));
-            gen.addProvider(new SecretBlockTagsProvider(gen, helper));
-            gen.addProvider(new SecretBlockLootTableProvider(gen));
-        }
+        SecretBlockTagsProvider block = new SecretBlockTagsProvider(packOutput, lookupProvider, existingFileHelper);
+        gen.addProvider(event.includeServer(), block);
+        gen.addProvider(event.includeServer(), new SecretItemTagsProvider(packOutput, lookupProvider, block.contentsGetter(), existingFileHelper))
+        gen.addProvider(event.includeServer(), new SecretRecipeProvider(packOutput));
+        gen.addProvider(event.includeServer(), new SecretBlockLootTableProvider(packOutput));
     }
 
     public void clientSetup(FMLClientSetupEvent clientSetupEvent) {

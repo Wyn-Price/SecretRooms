@@ -1,32 +1,15 @@
 package com.wynprice.secretrooms;
 
-import com.wynprice.secretrooms.client.SwitchProbeTooltip;
-import com.wynprice.secretrooms.client.SwitchProbeTooltipComponent;
+import com.wynprice.secretrooms.client.model.OneWayGlassModel;
 import com.wynprice.secretrooms.server.blocks.SecretBaseBlock;
-import com.wynprice.secretrooms.server.blocks.SecretBlocks;
-import com.wynprice.secretrooms.server.data.SecretBlockLootTableProvider;
-import com.wynprice.secretrooms.server.data.SecretBlockTagsProvider;
-import com.wynprice.secretrooms.server.data.SecretItemTagsProvider;
-import com.wynprice.secretrooms.server.data.SecretRecipeProvider;
 import com.wynprice.secretrooms.server.items.SecretItems;
-import com.wynprice.secretrooms.server.items.TrueVisionGoggles;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -108,5 +91,6 @@ public class SecretRooms7 {
     // TODO (port) impliment caller
     public static void onResourceReload() {
         SecretItems.TRUE_VISION_GOGGLES.get().refreshArmorModel();
+        OneWayGlassModel.refreshModel();
     }
 }

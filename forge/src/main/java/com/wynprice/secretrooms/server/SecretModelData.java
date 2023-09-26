@@ -1,4 +1,4 @@
-package com.wynprice.secretrooms.client;
+package com.wynprice.secretrooms.server;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelProperty;

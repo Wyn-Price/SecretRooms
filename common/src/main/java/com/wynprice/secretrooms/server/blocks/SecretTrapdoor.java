@@ -2,10 +2,10 @@ package com.wynprice.secretrooms.server.blocks;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
-import com.wynprice.secretrooms.client.SecretModelData;
 import com.wynprice.secretrooms.server.blocks.states.SecretMappedModelState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
@@ -27,9 +28,9 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public class SecretTrapdoor extends SecretBaseBlock {
 
@@ -45,8 +46,11 @@ public class SecretTrapdoor extends SecretBaseBlock {
     private static final VoxelShape BOTTOM_AABB = Block.box(0.001D, 0.001D, 0.001D, 15.999D, 3.0D, 15.999D);
     private static final VoxelShape TOP_AABB = Block.box(0.001D, 13.0D, 0.001D, 15.999D, 15.999D, 15.999D);
 
-    public SecretTrapdoor(Properties properties) {
+    private final BlockSetType type;
+
+    public SecretTrapdoor(Properties properties, BlockSetType type) {
         super(properties);
+        this.type = type;
         this.registerDefaultState(this.defaultBlockState()
             .setValue(HORIZONTAL_FACING, Direction.NORTH)
             .setValue(OPEN, false)
@@ -61,11 +65,12 @@ public class SecretTrapdoor extends SecretBaseBlock {
     }
 
     @Override
-    public void applyExtraModelData(BlockGetter world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
-        builder.withInitial(SecretModelData.MODEL_MAP_STATE, Blocks.OAK_TRAPDOOR.defaultBlockState()
-            .setValue(HORIZONTAL_FACING, state.getValue(HORIZONTAL_FACING))
-            .setValue(OPEN, state.getValue(OPEN))
-            .setValue(HALF, state.getValue(HALF))
+    public Optional<BlockState> getMappedModelState(BlockGetter world, BlockPos pos, BlockState state) {
+        return Optional.of(
+                Blocks.OAK_TRAPDOOR.defaultBlockState()
+                        .setValue(HORIZONTAL_FACING, state.getValue(HORIZONTAL_FACING))
+                        .setValue(OPEN, state.getValue(OPEN))
+                        .setValue(HALF, state.getValue(HALF))
         );
     }
 
@@ -148,7 +153,7 @@ public class SecretTrapdoor extends SecretBaseBlock {
 
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
-        if (this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON) {
+        if (!this.type.canOpenByHand()) {
             return InteractionResult.PASS;
         } else {
             state = state.cycle(OPEN);
@@ -159,16 +164,9 @@ public class SecretTrapdoor extends SecretBaseBlock {
         }
     }
 
-
-    protected void playSound(@Nullable Player player, Level worldIn, BlockPos pos, boolean p_185731_4_) {
-        if (p_185731_4_) {
-            int i = this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON ? 1037 : 1007;
-            worldIn.levelEvent(player, i, pos, 0);
-        } else {
-            int j = this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON ? 1036 : 1013;
-            worldIn.levelEvent(player, j, pos, 0);
-        }
-
+    protected void playSound(@Nullable Player player, Level worldIn, BlockPos pos, boolean open) {
+        worldIn.playSound(player, pos, open ? this.type.trapdoorOpen() : this.type.trapdoorClose(), SoundSource.BLOCKS, 1.0F, worldIn.getRandom().nextFloat() * 0.1F + 0.9F);
+        worldIn.gameEvent(player, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
     }
 
     @Override
@@ -219,7 +217,7 @@ public class SecretTrapdoor extends SecretBaseBlock {
     }
 
 
-    @Override
+//    @Override
     public boolean isLadder(BlockState state, net.minecraft.world.level.LevelReader world, BlockPos pos, net.minecraft.world.entity.LivingEntity entity) {
         if (state.getValue(OPEN)) {
             BlockState down = world.getBlockState(pos.below());

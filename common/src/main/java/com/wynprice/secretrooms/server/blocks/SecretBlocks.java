@@ -1,7 +1,7 @@
 package com.wynprice.secretrooms.server.blocks;
 
 import com.wynprice.secretrooms.platform.SecretRoomsServices;
-import com.wynprice.secretrooms.registry.RegistryHolder;
+import com.wynprice.secretrooms.server.registry.RegistryHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -31,8 +31,8 @@ public class SecretBlocks {
     public static final Supplier<Block> WALL_TORCH_LEVER = REGISTRY.register("wall_torch_lever", () -> new WallTorchLever(BlockBehaviour.Properties.of().noCollission().instabreak().lightLevel(s -> 14).sound(SoundType.WOOD).pushReaction(PushReaction.DESTROY)));
     public static final Supplier<Block> SECRET_PRESSURE_PLATE = REGISTRY.register("secret_pressure_plate", () -> new SecretPressurePlate(SRM_PROPS, entity -> true));
     public static final Supplier<Block> SECRET_PLAYER_PRESSURE_PLATE = REGISTRY.register("secret_player_pressure_plate", () -> new SecretPressurePlate(SRM_PROPS, entity -> entity instanceof Player));
-    public static final Supplier<Block> SECRET_DOOR = REGISTRY.register("secret_door", () -> new SecretDoor(SRM_PROPS));
-    public static final Supplier<Block> SECRET_IRON_DOOR = REGISTRY.register("secret_iron_door", () -> new SecretDoor(SRM_METAL_PROPS));
+    public static final Supplier<Block> SECRET_DOOR = REGISTRY.register("secret_door", () -> new SecretDoor(SRM_PROPS, type));
+    public static final Supplier<Block> SECRET_IRON_DOOR = REGISTRY.register("secret_iron_door", () -> new SecretDoor(SRM_METAL_PROPS, type));
     public static final Supplier<Block> SECRET_CHEST = REGISTRY.register("secret_chest", () -> new SecretChest(SRM_PROPS));
     public static final Supplier<Block> SECRET_TRAPDOOR = REGISTRY.register("secret_trapdoor", () -> new SecretTrapdoor(SRM_PROPS));
     public static final Supplier<Block> SECRET_IRON_TRAPDOOR = REGISTRY.register("secret_iron_trapdoor", () -> new SecretTrapdoor(SRM_METAL_PROPS));

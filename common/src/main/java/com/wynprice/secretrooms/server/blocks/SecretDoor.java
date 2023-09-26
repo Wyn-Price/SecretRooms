@@ -2,14 +2,15 @@ package com.wynprice.secretrooms.server.blocks;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
-import com.wynprice.secretrooms.client.SecretModelData;
 import com.wynprice.secretrooms.client.world.DummyIWorld;
 import com.wynprice.secretrooms.server.blocks.states.SecretMappedModelState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +23,7 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
-import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -32,7 +33,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -49,9 +49,19 @@ public class SecretDoor extends SecretBaseBlock {
     protected static final VoxelShape WEST_AABB = Block.box(13.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
     protected static final VoxelShape EAST_AABB = Block.box(0.0D, 0.0D, 0.0D, 3.0D, 16.0D, 16.0D);
 
-    public SecretDoor(Properties properties) {
+    private final BlockSetType type;
+
+    public SecretDoor(Properties properties, BlockSetType type) {
         super(properties);
-        this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH).setValue(OPEN, false).setValue(HINGE, DoorHingeSide.LEFT).setValue(POWERED, false).setValue(HALF, DoubleBlockHalf.LOWER));
+        this.type = type;
+        this.registerDefaultState(
+                this.defaultBlockState()
+                        .setValue(FACING, Direction.NORTH)
+                        .setValue(OPEN, false)
+                        .setValue(HINGE, DoorHingeSide.LEFT)
+                        .setValue(POWERED, false)
+                        .setValue(HALF, DoubleBlockHalf.LOWER)
+        );
     }
 
     @Override
@@ -60,9 +70,15 @@ public class SecretDoor extends SecretBaseBlock {
     }
 
     @Override
-    public void applyExtraModelData(BlockGetter world, BlockPos pos, BlockState state, ModelDataMap.Builder builder) {
-        builder.withInitial(SecretModelData. MODEL_MAP_STATE, Blocks.OAK_DOOR.defaultBlockState().setValue(FACING, state.getValue(FACING)).setValue(OPEN, state.getValue(OPEN)).setValue(HINGE, state.getValue(HINGE)).setValue(POWERED, state.getValue(POWERED)).setValue(HALF, state.getValue(HALF)));
-        super.applyExtraModelData(world, pos, state, builder);
+    public Optional<BlockState> getMappedModelState(BlockGetter world, BlockPos pos, BlockState state) {
+        return Optional.of(
+                Blocks.OAK_DOOR.defaultBlockState()
+                        .setValue(FACING, state.getValue(FACING))
+                        .setValue(OPEN, state.getValue(OPEN))
+                        .setValue(HINGE, state.getValue(HINGE))
+                        .setValue(POWERED, state.getValue(POWERED))
+                        .setValue(HALF, state.getValue(HALF))
+        );
     }
 
     @Override
@@ -159,21 +175,10 @@ public class SecretDoor extends SecretBaseBlock {
 
     @Override
     public boolean isPathfindable(BlockState state, BlockGetter worldIn, BlockPos pos, PathComputationType type) {
-        switch(type) {
-            case LAND:
-            case AIR:
-                return state.getValue(OPEN);
-            default:
-                return false;
-        }
-    }
-
-    private int getCloseSound() {
-        return this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON ? 1011 : 1012;
-    }
-
-    private int getOpenSound() {
-        return this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON ? 1005 : 1006;
+        return switch (type) {
+            case LAND, AIR -> state.getValue(OPEN);
+            default -> false;
+        };
     }
 
     @Nullable
@@ -230,7 +235,7 @@ public class SecretDoor extends SecretBaseBlock {
 
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
-        if (this.material == SecretBlocks.Materials.SRM_MATERIAL_IRON) {
+        if (!this.type.canOpenByHand()) {
             return InteractionResult.FAIL;
         } else {
             BlockPos other = state.getValue(HALF) == DoubleBlockHalf.LOWER ? pos.above() : pos.below();
@@ -238,13 +243,16 @@ public class SecretDoor extends SecretBaseBlock {
             boolean rotateClockwise = (state.getValue(HINGE) == DoorHingeSide.LEFT) == (state.getValue(OPEN));
             Rotation rotation = rotateClockwise ? Rotation.CLOCKWISE_90 : Rotation.COUNTERCLOCKWISE_90;
             LevelAccessor world = new DummyIWorld(worldIn);
-            getMirrorData(worldIn, pos).ifPresent(d -> d.setBlockState(d.getBlockState().rotate(world, pos, rotation)));
-            getMirrorData(worldIn, other).ifPresent(d -> d.setBlockState(d.getBlockState().rotate(world, other, rotation)));
+//            getMirrorData(worldIn, pos).ifPresent(d -> d.setBlockState(d.getBlockState().rotate(world, pos, rotation)));
+//            getMirrorData(worldIn, other).ifPresent(d -> d.setBlockState(d.getBlockState().rotate(world, other, rotation)));
+
+            getMirrorData(worldIn, pos).ifPresent(d -> d.setBlockState(d.getBlockState().rotate(rotation)));
+            getMirrorData(worldIn, other).ifPresent(d -> d.setBlockState(d.getBlockState().rotate(rotation)));
 
             state = state.cycle(OPEN);
             worldIn.setBlock(pos, state, 10);
-            worldIn.levelEvent(player, state.getValue(OPEN) ? this.getOpenSound() : this.getCloseSound(), pos, 0);
-
+            this.playSound(player, worldIn, pos, state.getValue(OPEN));
+            world.gameEvent(player, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
             requestModelRefresh(worldIn, pos);
             requestModelRefresh(worldIn, other);
 
@@ -252,12 +260,17 @@ public class SecretDoor extends SecretBaseBlock {
         }
     }
 
+    public boolean isOpen(BlockState state) {
+        return state.getValue(OPEN);
+    }
+
+
     @Override
     public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
         boolean flag = worldIn.hasNeighborSignal(pos) || worldIn.hasNeighborSignal(pos.relative(state.getValue(HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN));
         if (blockIn != this && flag != state.getValue(POWERED)) {
             if (flag != state.getValue(OPEN)) {
-                this.playSound(worldIn, pos, flag);
+                this.playSound(null, worldIn, pos, flag);
                 requestModelRefresh(worldIn, pos);
                 requestModelRefresh(worldIn, state.getValue(HALF) == DoubleBlockHalf.LOWER ? pos.above() : pos.below());
             }
@@ -277,15 +290,14 @@ public class SecretDoor extends SecretBaseBlock {
         }
     }
 
-    private void playSound(Level p_196426_1_, BlockPos p_196426_2_, boolean p_196426_3_) {
-        p_196426_1_.levelEvent(null, p_196426_3_ ? this.getOpenSound() : this.getCloseSound(), p_196426_2_, 0);
+    private void playSound(@Nullable Entity entity, Level level, BlockPos pos, boolean p_251628_) {
+        level.playSound(entity, pos, p_251628_ ? this.type.doorOpen() : this.type.doorClose(), SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F);
     }
 
-    @Override
-    public PushReaction getPistonPushReaction(BlockState state) {
-        return PushReaction.DESTROY;
-    }
-
+//    @Override
+//    public PushReaction getPistonPushReaction(BlockState state) {
+//        return PushReaction.DESTROY;
+//    }
 
     @Override
     public BlockState rotate(BlockState state, Rotation rot) {
