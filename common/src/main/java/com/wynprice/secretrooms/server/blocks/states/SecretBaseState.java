@@ -76,6 +76,7 @@ public class SecretBaseState extends BlockState {
     //This is to prevent Block#shouldRenderFace from returning false inccorectly
     //As the results of occlusion is usually cached, but in this case we don't
     //Want to cache it
+    // TODO (port) move to mixins
     private void addOcclusionCacheKeysForRemoval(BlockGetter worldIn, BlockPos p, Direction directionIn) {
         BlockState other = worldIn.getBlockState(p.relative(directionIn));
 
@@ -92,11 +93,12 @@ public class SecretBaseState extends BlockState {
 
     private void removeAllKeys() {
         List<Block.BlockStatePairKey> keys = TO_REMOVE.get();
-        Object2ByteLinkedOpenHashMap<Block.BlockStatePairKey> map = Block.OCCLUSION_CACHE.get();
-
-        for (Block.BlockStatePairKey key : keys) {
-            map.removeByte(key);
-        }
-        keys.clear();
+        //TODO (port) move this all to mixins
+//        Object2ByteLinkedOpenHashMap<Block.BlockStatePairKey> map = Block.OCCLUSION_CACHE.get();
+//
+//        for (Block.BlockStatePairKey key : keys) {
+//            map.removeByte(key);
+//        }
+//        keys.clear();
     }
 }

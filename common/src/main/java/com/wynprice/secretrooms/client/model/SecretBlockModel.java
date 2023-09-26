@@ -74,35 +74,7 @@ public class SecretBlockModel {
 //            ModelDataUtils.getData(data, SRM_BLOCKSTATE).map(DISPATCHER.get()::getBlockModel).orElse(this.model).getParticleIcon(data);
 //    }
 
-//    @Nonnull
-//    @Override
-//    public IModelData getModelData(@Nonnull BlockAndTintGetter world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
-//        if(tileData == EmptyModelData.INSTANCE) {
-//            BlockEntity entity = world.getBlockEntity(pos);
-//            if(entity != null) {
-//                tileData = entity.getModelData();
-//            }
-//        }
-//
-//        Optional<BlockState> mirror = ModelDataUtils.getData(tileData, SRM_BLOCKSTATE);
-//        if(mirror.isPresent()) {
-//            DelegateWorld pooled = DelegateWorld.getPooled(world);
-//            tileData = DISPATCHER.get().getBlockModel(mirror.get()).getModelData(pooled, pos, mirror.get(), tileData);
-//            pooled.release();
-//        }
-//
-//        IModelData data = this.model.getModelData(world, pos, state, tileData);
-//        if(data != tileData && tileData != EmptyModelData.INSTANCE) {
-//            if(tileData.hasProperty(SRM_BLOCKSTATE) && !data.hasProperty(SRM_BLOCKSTATE)) {
-//                data.setData(SRM_BLOCKSTATE, tileData.getData(SRM_BLOCKSTATE));
-//            }
-//            if(tileData.hasProperty(MODEL_MAP_STATE) && !data.hasProperty(MODEL_MAP_STATE)) {
-//                data.setData(MODEL_MAP_STATE, tileData.getData(MODEL_MAP_STATE));
-//            }
-//        }
-//
-//        return data;
-//    }
+
 
 //    @Override
 //    public boolean usesBlockLight() {

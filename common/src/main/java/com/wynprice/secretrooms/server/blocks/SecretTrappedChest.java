@@ -29,10 +29,11 @@ public class SecretTrappedChest extends SecretChest {
         return 0;
     }
 
-    @Override
-    public boolean shouldCheckWeakPower(BlockState state, LevelReader world, BlockPos pos, Direction side) {
-        return false;
-    }
+    // TODO (port): figure out weak power
+//    @Override
+//    public boolean shouldCheckWeakPower(BlockState state, LevelReader world, BlockPos pos, Direction side) {
+//        return false;
+//    }
 
     @Override
     public int getDirectSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {

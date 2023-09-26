@@ -5,26 +5,18 @@ import com.google.common.collect.Multimap;
 import com.wynprice.secretrooms.SecretRooms7;
 import com.wynprice.secretrooms.client.model.TrueVisionGogglesModel;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.IItemRenderProperties;
-
-import javax.annotation.Nullable;
-import java.util.function.Consumer;
 
 public class TrueVisionGoggles extends ArmorItem {
 
@@ -42,19 +34,21 @@ public class TrueVisionGoggles extends ArmorItem {
         return ImmutableMultimap.of();
     }
 
-    @Override
-    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
-        super.initializeClient(consumer);
-        consumer.accept(new IItemRenderProperties() {
-            @Override
-            public HumanoidModel<?> getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
-                if(model == null) {
-                    refreshArmorModel();
-                }
-                return model;
-            }
-        });
-    }
+// TODO (port): Mixin
+//
+//    @Override
+//    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+//        super.initializeClient(consumer);
+//        consumer.accept(new IItemRenderProperties() {
+//            @Override
+//            public HumanoidModel<?> getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
+//                if(model == null) {
+//                    refreshArmorModel();
+//                }
+//                return model;
+//            }
+//        });
+//    }
 
     @OnlyIn(Dist.CLIENT)
     public void refreshArmorModel() {

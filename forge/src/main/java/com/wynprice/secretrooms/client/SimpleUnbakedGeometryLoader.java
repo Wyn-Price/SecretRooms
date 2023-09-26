@@ -1,8 +1,9 @@
-package com.wynprice.secretrooms.clients;
+package com.wynprice.secretrooms.client;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.wynprice.secretrooms.client.model.SecretBlockModel;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 
@@ -10,9 +11,9 @@ import java.util.function.Supplier;
 
 public class SimpleUnbakedGeometryLoader implements IGeometryLoader<SimpleUnbakedGeometery> {
 
-    private final Supplier<BakedModel> supplier;
+    private final Supplier<SecretBlockModel> supplier;
 
-    private SimpleUnbakedGeometryLoader(Supplier<BakedModel> supplier) {
+    private SimpleUnbakedGeometryLoader(Supplier<SecretBlockModel> supplier) {
         this.supplier = supplier;
     }
 
@@ -21,7 +22,7 @@ public class SimpleUnbakedGeometryLoader implements IGeometryLoader<SimpleUnbake
         return new SimpleUnbakedGeometery(this.supplier);
     }
 
-    public static SimpleUnbakedGeometryLoader create(Supplier<BakedModel> supplier) {
+    public static SimpleUnbakedGeometryLoader create(Supplier<SecretBlockModel> supplier) {
         return new SimpleUnbakedGeometryLoader(supplier);
     }
 }

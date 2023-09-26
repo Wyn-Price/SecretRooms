@@ -85,10 +85,11 @@ public class SecretDaylightDetector extends SecretBaseBlock {
         }
     }
 
-    @Override
-    public boolean shouldCheckWeakPower(BlockState state, LevelReader world, BlockPos pos, Direction side) {
-        return false;
-    }
+    // TODO (port): figure out weak power
+//    @Override
+//    public boolean shouldCheckWeakPower(BlockState state, LevelReader world, BlockPos pos, Direction side) {
+//        return false;
+//    }
 
     @Override
     public boolean isSignalSource(BlockState state) {

@@ -83,10 +83,11 @@ public class SecretButton extends SecretBaseBlock {
         return blockState.getValue(POWERED) ? 15 : 0;
     }
 
-    @Override
-    public boolean shouldCheckWeakPower(BlockState state, LevelReader world, BlockPos pos, Direction side) {
-        return !state.getValue(POWERED);
-    }
+    // TODO (port): figure out weak power
+//    @Override
+//    public boolean shouldCheckWeakPower(BlockState state, LevelReader world, BlockPos pos, Direction side) {
+//        return !state.getValue(POWERED);
+//    }
 
     @Override
     public boolean isSignalSource(BlockState state) {

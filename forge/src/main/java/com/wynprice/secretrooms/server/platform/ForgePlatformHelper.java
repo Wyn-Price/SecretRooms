@@ -5,7 +5,9 @@ import com.wynprice.secretrooms.platform.services.ISecretRoomsPlatformHelper;
 import com.wynprice.secretrooms.server.registry.RegistryHolder;
 import com.wynprice.secretrooms.server.registry.ForgeRegistryHolder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -15,6 +17,7 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryManager;
 
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -33,6 +36,16 @@ public class ForgePlatformHelper implements ISecretRoomsPlatformHelper {
     @Override
     public RegistryHolder<BlockEntityType<?>> createBlockEntityRegistryHolder() {
         return new ForgeRegistryHolder<>(ForgeRegistries.BLOCK_ENTITY_TYPES, SecretRooms7.MODID);
+    }
+
+    @Override
+    public RegistryHolder<CreativeModeTab> createCreativeTabRegistryHolder() {
+        return new ForgeRegistryHolder<>(RegistryManager.ACTIVE.getRegistry(Registries.CREATIVE_MODE_TAB), SecretRooms7.MODID);
+    }
+
+    @Override
+    public CreativeModeTab.Builder createTabBuilder() {
+        return CreativeModeTab.builder();
     }
 
     @Override

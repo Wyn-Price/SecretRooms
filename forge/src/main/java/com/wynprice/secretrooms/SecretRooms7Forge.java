@@ -1,19 +1,22 @@
 package com.wynprice.secretrooms;
 
 import com.wynprice.secretrooms.client.SecretModelHandler;
+import com.wynprice.secretrooms.client.SimpleUnbakedGeometryLoader;
 import com.wynprice.secretrooms.client.SwitchProbeTooltip;
 import com.wynprice.secretrooms.client.SwitchProbeTooltipComponent;
 import com.wynprice.secretrooms.client.model.OneWayGlassModel;
 import com.wynprice.secretrooms.client.model.SecretBlockModel;
 import com.wynprice.secretrooms.client.model.SecretMappedModel;
-import com.wynprice.secretrooms.client.model.quads.TrueVisionBakedQuad;
-import com.wynprice.secretrooms.clients.SimpleUnbakedGeometryLoader;
+import com.wynprice.secretrooms.server.SecretCreativeTab;
 import com.wynprice.secretrooms.server.blocks.SecretBlocks;
 import com.wynprice.secretrooms.server.data.SecretBlockLootTableProvider;
 import com.wynprice.secretrooms.server.data.SecretBlockTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretItemTagsProvider;
 import com.wynprice.secretrooms.server.data.SecretRecipeProvider;
-import com.wynprice.secretrooms.server.items.*;
+import com.wynprice.secretrooms.server.items.SecretItems;
+import com.wynprice.secretrooms.server.items.SwitchProbe;
+import com.wynprice.secretrooms.server.items.TrueVisionGogglesClientHandler;
+import com.wynprice.secretrooms.server.items.TrueVisionGogglesHandler;
 import com.wynprice.secretrooms.server.registry.ForgeRegistryHolder;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntities;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -21,13 +24,9 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;
@@ -57,12 +56,13 @@ public class SecretRooms7Forge {
         ((ForgeRegistryHolder<?>) SecretBlocks.REGISTRY).register(bus);
         ((ForgeRegistryHolder<?>) SecretItems.REGISTRY).register(bus);
         ((ForgeRegistryHolder<?>) SecretTileEntities.REGISTRY).register(bus);
+        ((ForgeRegistryHolder<?>) SecretCreativeTab.REGISTRY).register(bus);
 
         bus.addListener(this::onRegisterReloads);
 
         forgeBus.addListener(this::modifyBreakSpeed);
-        forgeBus.addListener(TrueVisionGogglesHandler::onLootTableLoad);
-        forgeBus.addListener(TrueVisionGogglesHandler::onPlayerTick);
+//        forgeBus.addListener(TrueVisionGogglesHandler::onLootTableLoad);
+//        forgeBus.addListener(TrueVisionGogglesHandler::onPlayerTick);
 
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
             bus.addListener(SecretModelHandler::onBlockColors);
@@ -74,8 +74,8 @@ public class SecretRooms7Forge {
 
             forgeBus.addListener((RenderTooltipEvent.GatherComponents event) -> SwitchProbe.appendHover(event.getItemStack(), event.getTooltipElements()));
 
-            forgeBus.addListener(TrueVisionGogglesClientHandler::onClientWorldLoad);
-            forgeBus.addListener(TrueVisionGogglesClientHandler::onClientWorldTick);
+//            forgeBus.addListener(TrueVisionGogglesClientHandler::onClientWorldLoad);
+//            forgeBus.addListener(TrueVisionGogglesClientHandler::onClientWorldTick);
         });
 
     }
@@ -99,7 +99,7 @@ public class SecretRooms7Forge {
 
         SecretBlockTagsProvider block = new SecretBlockTagsProvider(packOutput, lookupProvider, existingFileHelper);
         gen.addProvider(event.includeServer(), block);
-        gen.addProvider(event.includeServer(), new SecretItemTagsProvider(packOutput, lookupProvider, block.contentsGetter(), existingFileHelper))
+        gen.addProvider(event.includeServer(), new SecretItemTagsProvider(packOutput, lookupProvider, block.contentsGetter(), existingFileHelper));
         gen.addProvider(event.includeServer(), new SecretRecipeProvider(packOutput));
         gen.addProvider(event.includeServer(), new SecretBlockLootTableProvider(packOutput));
     }

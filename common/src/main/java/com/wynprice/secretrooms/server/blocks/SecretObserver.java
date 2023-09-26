@@ -91,10 +91,11 @@ public class SecretObserver extends SecretBaseBlock {
         return blockState.getValue(POWERED) && blockState.getValue(FACING) == side ? 15 : 0;
     }
 
-    @Override
-    public boolean shouldCheckWeakPower(BlockState state, LevelReader world, BlockPos pos, Direction side) {
-        return false;
-    }
+    // TODO (port): figure out weak power
+//    @Override
+//    public boolean shouldCheckWeakPower(BlockState state, LevelReader world, BlockPos pos, Direction side) {
+//        return false;
+//    }
 
     @Override
     public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {

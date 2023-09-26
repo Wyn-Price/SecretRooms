@@ -1,5 +1,6 @@
-package com.wynprice.secretrooms.clients;
+package com.wynprice.secretrooms.client;
 
+import com.wynprice.secretrooms.client.model.SecretBlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
@@ -15,14 +16,14 @@ import java.util.function.Supplier;
 
 public class SimpleUnbakedGeometery implements IUnbakedGeometry<SimpleUnbakedGeometery> {
 
-    private final Supplier<BakedModel> supplier;
+    private final Supplier<SecretBlockModel> supplier;
 
-    public SimpleUnbakedGeometery(Supplier<BakedModel> supplier) {
+    public SimpleUnbakedGeometery(Supplier<SecretBlockModel> supplier) {
         this.supplier = supplier;
     }
 
     @Override
     public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
-        return this.supplier.get();
+        return new SecretModelForge(this.supplier.get());
     }
 }
