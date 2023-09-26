@@ -21,7 +21,7 @@
     },
     "mixins": [
         "secretrooms.mixins.json",
-        "secretrooms.fabric.mixins.json"
+      "secretroomsmod.fabric.mixins.json"
     ],
     "depends": {
         "fabricloader": ">=0.14",
