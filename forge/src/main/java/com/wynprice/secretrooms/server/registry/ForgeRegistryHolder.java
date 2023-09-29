@@ -1,5 +1,7 @@
 package com.wynprice.secretrooms.server.registry;
 
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -13,6 +15,10 @@ public class ForgeRegistryHolder<T> implements RegistryHolder<T> {
     private final DeferredRegister<T> wrapped;
 
     public ForgeRegistryHolder(IForgeRegistry<T> registry, String modid) {
+        this.wrapped = DeferredRegister.create(registry, modid);
+    }
+
+    public ForgeRegistryHolder(ResourceKey<? extends Registry<T>> registry, String modid) {
         this.wrapped = DeferredRegister.create(registry, modid);
     }
 

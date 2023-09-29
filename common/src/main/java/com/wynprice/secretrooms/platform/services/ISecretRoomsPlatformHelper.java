@@ -1,6 +1,7 @@
 package com.wynprice.secretrooms.platform.services;
 
 import com.wynprice.secretrooms.server.registry.RegistryHolder;
+import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.CreativeModeTab;
@@ -27,6 +28,7 @@ public interface ISecretRoomsPlatformHelper {
 
     @SuppressWarnings("unchecked")
     <T extends BlockEntity> BlockEntityType<T> createBlockEntityType(BiFunction<BlockPos, BlockState, T> creator, Supplier<Block>... blocks);
-
     TagKey<Item> getDyesItemTag();
+
+    void updateModelData(SecretTileEntity tileEntity);
 }

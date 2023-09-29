@@ -29,10 +29,7 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
-import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
@@ -65,8 +62,8 @@ public class SecretRooms7Forge {
 //        forgeBus.addListener(TrueVisionGogglesHandler::onPlayerTick);
 
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
-            bus.addListener(SecretModelHandler::onBlockColors);
-            bus.addListener(SecretModelHandler::onEntityModelRegistered);
+            bus.addListener((RegisterColorHandlersEvent.Block event) -> SecretModelHandler.onBlockColors(event::register));
+            bus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> SecretModelHandler.onEntityModelRegistered(event::registerLayerDefinition));
 
             bus.addListener(this::clientSetup);
             bus.addListener(this::registerClientTooltipComponentFactory);

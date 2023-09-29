@@ -3,12 +3,15 @@ package com.wynprice.secretrooms.client;
 import com.wynprice.secretrooms.ModelDataUtils;
 import com.wynprice.secretrooms.client.model.SecretBlockModel;
 import com.wynprice.secretrooms.client.world.DelegateWorld;
+import com.wynprice.secretrooms.server.SecretModelData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -70,6 +73,18 @@ public class SecretModelForge implements IDynamicBakedModel {
     @Override
     public TextureAtlasSprite getParticleIcon() {
         return Minecraft.getInstance().getModelManager().getMissingModel().getParticleIcon();
+    }
+
+    @Override
+    public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
+        Optional<BlockState> blockState = ModelDataUtils.getData(data, SRM_BLOCKSTATE);
+        if (blockState.isEmpty()) {
+            return IDynamicBakedModel.super.getParticleIcon(data);
+        }
+
+        BlockState state = blockState.get();
+        BakedModel bakedModel = Minecraft.getInstance().getModelManager().getModel(BlockModelShaper.stateToModelLocation(state));
+        return bakedModel.getParticleIcon(data);
     }
 
     @Override

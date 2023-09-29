@@ -1,28 +1,17 @@
-modLoader = "javafml" #mandatory
-loaderVersion = "[46,)" #mandatory This is typically bumped every Minecraft version by Forge. See https://files.minecraftforge.net/ for a list of versions.
-license = "C0-1.0" # Review your options at https://choosealicense.com/.
-#issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
-[[mods]] #mandatory
-modId = "multiloader" #mandatory
-version = "${file.jarVersion}" #mandatory
-displayName = "${mod_name}" #mandatory
+modLoader = "javafml"
+loaderVersion = "[46,)"
+license="All rights reserved"
+issueTrackerURL="https://github.com/Wyn-Price/SecretRooms/issues"
+[[mods]]
+modId = "secretroomsmod"
+version = "${file.jarVersion}"
+displayName = "${mod_name}"
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional (see https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/)
 #displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional (displayed in the mod UI)
-logoFile = "multiloader.png" #optional (needs to be in the root of your mod jar (root of your 'resources' folder))
-credits = "Thanks for this example mod goes to Java" #optional
-authors = "${mod_author}" #optional
-description = '''
-This is a long form description of the mod. You can write whatever you want here
-''' #mandatory (Supports multiline text)
-[[dependencies.multiloader]] #optional
-modId = "forge" #mandatory
-mandatory = true #mandatory
-versionRange = "[46,)" #mandatory
-ordering = "NONE" # The order that this dependency should load in relation to your mod, required to be either 'BEFORE' or 'AFTER' if the dependency is not mandatory
-side = "BOTH" # Side this dependency is applied on - 'BOTH', 'CLIENT' or 'SERVER'
-[[dependencies.multiloader]]
-modId = "minecraft"
-mandatory = true
-versionRange = "[1.20,1.21)"
-ordering = "NONE"
-side = "BOTH"
+logoFile = "secretrooms.png"
+authors="Wyn Price"
+credits="Originally made by AbrarSyed, continued for 1.12+ by Wyn Price"
+description='''This mod adds a variety of cool blocks that camouflage themselves to the surrounding world.
+All of these blocks have extremely useful functions that allow you to simply hide your diamonds, or punish all who dare try to get to them.
+Hidden doors, pressure plates, hidden levers and more!
+'''

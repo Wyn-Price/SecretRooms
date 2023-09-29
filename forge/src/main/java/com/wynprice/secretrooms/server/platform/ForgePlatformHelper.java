@@ -4,6 +4,7 @@ import com.wynprice.secretrooms.SecretRooms7;
 import com.wynprice.secretrooms.platform.services.ISecretRoomsPlatformHelper;
 import com.wynprice.secretrooms.server.registry.RegistryHolder;
 import com.wynprice.secretrooms.server.registry.ForgeRegistryHolder;
+import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
@@ -40,7 +41,7 @@ public class ForgePlatformHelper implements ISecretRoomsPlatformHelper {
 
     @Override
     public RegistryHolder<CreativeModeTab> createCreativeTabRegistryHolder() {
-        return new ForgeRegistryHolder<>(RegistryManager.ACTIVE.getRegistry(Registries.CREATIVE_MODE_TAB), SecretRooms7.MODID);
+        return new ForgeRegistryHolder<>(Registries.CREATIVE_MODE_TAB, SecretRooms7.MODID);
     }
 
     @Override
@@ -60,5 +61,10 @@ public class ForgePlatformHelper implements ISecretRoomsPlatformHelper {
     @Override
     public TagKey<Item> getDyesItemTag() {
         return Tags.Items.DYES;
+    }
+
+    @Override
+    public void updateModelData(SecretTileEntity tileEntity) {
+        tileEntity.requestModelDataUpdate();
     }
 }

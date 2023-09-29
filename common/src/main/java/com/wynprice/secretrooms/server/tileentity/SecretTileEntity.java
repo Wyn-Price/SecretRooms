@@ -1,5 +1,6 @@
 package com.wynprice.secretrooms.server.tileentity;
 
+import com.wynprice.secretrooms.platform.SecretRoomsServices;
 import com.wynprice.secretrooms.server.data.SecretData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -45,7 +46,7 @@ public class SecretTileEntity extends BlockEntity {
     }
 
     public void requestModelDataUpdateIfPossible() {
-        //TODO (port) if forge, run requestModelDataUpdate
+        SecretRoomsServices.PLATFORM.updateModelData(this);
     }
 
 
